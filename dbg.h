@@ -41,29 +41,38 @@ License (MIT):
 namespace dbg_macro {
 
 template <typename T>
-void PrettyPrint(std::ostream& stream, T&& value) {
+void prettyPrint(std::ostream& stream, const T& value) {
   stream << value;
 }
 
 template <>
-void PrettyPrint(std::ostream& stream, bool&& value) {
+void prettyPrint(std::ostream& stream, const bool& value) {
   stream << std::boolalpha << value;
 }
 
 template <>
-void PrettyPrint(std::ostream& stream, const bool& value) {
-  stream << std::boolalpha << value;
+void prettyPrint(std::ostream& stream, const std::string& value) {
+  stream << '"' << value << '"';
 }
 
 template <typename S>
-void PrettyPrint(std::ostream& stream, const std::vector<S>& value) {
-  const auto n = std::min(5, static_cast<int>(value.size()));
+void prettyPrint(std::ostream& stream, const std::vector<S>& value) {
+  stream << "{";
+  const int size = value.size();
+  const auto n = std::min(5, size);
   for (int i = 0; i < n; ++i) {
     stream << value[i];
     if (i != n - 1) {
       stream << ", ";
     }
   }
+
+  if (size > n) {
+      stream << ", ...";
+  }
+
+  stream << "}";
+  stream << " (size=" << size << ")";
 }
 
 class DebugOutput {
@@ -81,7 +90,8 @@ class DebugOutput {
               << m_line << " (" << m_function_name << ")] " << ansi(ANSI_RESET) << m_argument
               << ansi(ANSI_BOLD) << " = " << ansi(ANSI_RESET)
               << ansi(ANSI_VALUE_COLOR);
-    PrettyPrint(std::cerr, std::forward<T>(value));
+    const T& ref = value;
+    prettyPrint(std::cerr, ref);
     std::cerr << ansi(ANSI_RESET) << std::endl;
 
     return std::forward<T>(value);

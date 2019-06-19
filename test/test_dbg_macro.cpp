@@ -30,6 +30,7 @@ int main() {
   const bool test_bool = false;
   const uint64_t test_uint64_t = 12345678987654321;
   const int* test_pointer = &test_int;
+  const int* test_pointer_null = nullptr;
   const int& test_ref_to_int = test_int;
   const char* test_c_string = "hello";
   const std::string test_string = "hello";
@@ -39,6 +40,7 @@ int main() {
   dbg(test_bool);
   dbg(test_uint64_t);
   dbg(test_pointer);
+  dbg(test_pointer_null);
   dbg(test_ref_to_int);
   dbg(test_c_string);
   dbg(test_string);
@@ -72,6 +74,15 @@ int main() {
 
   const std::vector<int> dummy_vec_int{1, 2, 3};
   dbg(dummy_vec_int);
+
+  std::vector<int> dummy_vec_int_nonconst{1, 2, 3};
+  dbg(dummy_vec_int_nonconst);
+
+  std::vector<char> vec_chars{'h', 'e', 'l', 'l', 'o'};
+  dbg(vec_chars);
+
+  std::vector<bool> vec_bools{true, true, false, false, false, true, false};
+  dbg(vec_bools);
 
   dbg("====== side effects");
 
