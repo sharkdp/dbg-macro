@@ -36,6 +36,8 @@ License (MIT):
 #include <string>
 #include <vector>
 
+#include <unistd.h>
+
 namespace dbg_macro {
 
 template <typename T>
@@ -67,24 +69,39 @@ void PrettyPrint(std::ostream& stream, const std::vector<S>& value) {
 class DebugOutput {
  public:
   DebugOutput(const char* filename, int line, const char* argument)
-      : m_filename(filename), m_line(line), m_argument(argument) {}
+      : m_stderr_is_a_tty(isatty(fileno(stderr))),
+        m_filename(filename),
+        m_line(line),
+        m_argument(argument) {}
 
   template <typename T>
   T&& print(T&& value) {
-    std::cerr << ANSI_WARNING_COLOR << "[DEBUG " << m_filename << ":" << m_line
-              << "] " << ANSI_RESET << m_argument << ANSI_BOLD << " = "
-              << ANSI_RESET << ANSI_VALUE_COLOR;
+    std::cerr << ansi(ANSI_WARNING_COLOR) << "[DEBUG " << m_filename << ":"
+              << m_line << "] " << ansi(ANSI_RESET) << m_argument
+              << ansi(ANSI_BOLD) << " = " << ansi(ANSI_RESET)
+              << ansi(ANSI_VALUE_COLOR);
     PrettyPrint(std::cerr, std::forward<T>(value));
-    std::cerr << ANSI_RESET << std::endl;
+    std::cerr << ansi(ANSI_RESET) << std::endl;
 
     return std::forward<T>(value);
   }
 
  private:
+  const char* ansi(const char* code) {
+    if (m_stderr_is_a_tty) {
+      return code;
+    } else {
+      return ANSI_EMPTY;
+    }
+  }
+
+  const bool m_stderr_is_a_tty;
+
   const std::string m_filename;
   const int m_line;
   const char* m_argument;
 
+  static constexpr const char* const ANSI_EMPTY = "";
   static constexpr const char* const ANSI_WARNING_COLOR = "\x1b[33;01m";
   static constexpr const char* const ANSI_VALUE_COLOR = "\x1b[36m";
   static constexpr const char* const ANSI_BOLD = "\x1b[01m";
@@ -93,6 +110,7 @@ class DebugOutput {
 
 }  // namespace dbg_macro
 
-#define dbg(VALUE) dbg_macro::DebugOutput(__FILE__, __LINE__, #VALUE).print((VALUE))
+#define dbg(VALUE) \
+  dbg_macro::DebugOutput(__FILE__, __LINE__, #VALUE).print((VALUE))
 
 #endif  // DBG_MACRO_DBG_H
