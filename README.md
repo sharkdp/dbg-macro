@@ -9,7 +9,7 @@ This projects provides a single header file ([`dbg.h`](dbg.h)) that defines a `d
 macro which can be used in all circumstances where you would typically write
 `printf("…", …)` or `std::cout << … << std::endl;` for yet another time.
 
-## Example:
+## Examples
 
 ``` c++
 #include <dbg.h>
@@ -36,7 +36,7 @@ int factorial(int n) {
 }
 ```
 
-## Features:
+## Features
 
  * Prints file name, line number, function name and the original expression
  * Easy to read, colorized output
