@@ -73,6 +73,12 @@ int main() {
   const std::vector<int> dummy_vec_int{1, 2, 3};
   dbg(dummy_vec_int);
 
+  dbg("====== side effects");
+
+  int x = 1;
+  dbg(++x);
+  assert(x == 2);
+
   dbg("====== class example");
 
   Test test(42);
