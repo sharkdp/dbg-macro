@@ -58,6 +58,18 @@ int factorial(int n) {
  * The `dbg.h` header issues a compiler warning when included
  * Works for containers
 
+## Installation
+
+To make this actually useful, the `dbg.h` header has to be available from all kinds of different
+places and in all kinds of environments. The quick & dirty way is to actually copy the header file
+to `/usr/include` or to clone the repository and symlink `dbg.h` to `/usr/include/dbg.h`.
+``` bash
+git clone https://github.com/sharkdp/dbg-macro
+sudo ln -s $(readlink -f dbg-macro/dbg.h) /usr/include/dbg.h
+```
+Ideally, if this turns out to be a good idea, we would ship packages for various distributions so
+you don't have to make untracked changes to your filesystem.
+
 ## Acknowledgement
 
 This project is inspired by Rusts [`dbg!(…)` macro](https://doc.rust-lang.org/std/macro.dbg.html).
