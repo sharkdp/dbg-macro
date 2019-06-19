@@ -36,14 +36,14 @@ int factorial(int n) {
 }
 
 // Prints:
-// [DEBUG test_dbg_macro.cpp:9 (factorial)] n <= 1 = false
-// [DEBUG test_dbg_macro.cpp:9 (factorial)] n <= 1 = false
-// [DEBUG test_dbg_macro.cpp:9 (factorial)] n <= 1 = false
-// [DEBUG test_dbg_macro.cpp:9 (factorial)] n <= 1 = true
-// [DEBUG test_dbg_macro.cpp:10 (factorial)] 1 = 1
-// [DEBUG test_dbg_macro.cpp:12 (factorial)] n * factorial(n - 1) = 2
-// [DEBUG test_dbg_macro.cpp:12 (factorial)] n * factorial(n - 1) = 6
-// [DEBUG test_dbg_macro.cpp:12 (factorial)] n * factorial(n - 1) = 24
+// [DEBUG factorial.cpp:9 (factorial)] n <= 1 = false
+// [DEBUG factorial.cpp:9 (factorial)] n <= 1 = false
+// [DEBUG factorial.cpp:9 (factorial)] n <= 1 = false
+// [DEBUG factorial.cpp:9 (factorial)] n <= 1 = true
+// [DEBUG factorial.cpp:10 (factorial)] 1 = 1
+// [DEBUG factorial.cpp:12 (factorial)] n * factorial(n - 1) = 2
+// [DEBUG factorial.cpp:12 (factorial)] n * factorial(n - 1) = 6
+// [DEBUG factorial.cpp:12 (factorial)] n * factorial(n - 1) = 24
 ```
 
 ## Features
