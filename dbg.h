@@ -29,6 +29,8 @@ License (MIT):
 #ifndef DBG_MACRO_DBG_H
 #define DBG_MACRO_DBG_H
 
+#pragma message("WARNING: the 'dbg.h' header is included in your code base")
+
 #include <ios>
 #include <iostream>
 #include <string>
