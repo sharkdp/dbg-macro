@@ -7,22 +7,40 @@ up everything correctly and just want a quick way to inspect some values at runt
 
 This projects provides a single header file ([`dbg.h`](dbg.h)) that defines a `dbg(…)`
 macro which can be used in all circumstances where you would typically write
-`printf("…", …)` or `std::cout << … << std::endl;` for the *n*th-time.
+`printf("…", …)` or `std::cout << … << std::endl;` for yet another time.
+
+## Example:
+
+``` c++
+#include <dbg.h>
+
+int main() {
+  std::string message = "hello";
+  dbg(message);  // [DEBUG example.cpp:5 (main)] message = "hello"
+
+  std::vector<int> numbers{1, 17, 42};
+  dbg(numbers);  // [DEBUG example.cpp:8 (main)] numbers = {1, 17, 42} (size=3)
+
+  return 0;
+}
+```
+
+```c++
+// Use it inside expressions:
+int factorial(int n) {
+   if (dbg(n <= 1)) {
+       return dbg(1);
+   } else {
+       return dbg(n * factorial(n - 1));
+   }
+}
+```
 
 ## Features:
 
- * Can be used inside expressions:
-   ``` c++
-   int factorial(int n) {
-       if (dbg(n <= 1)) {
-           return dbg(1);
-       } else {
-           return dbg(n * factorial(n - 1));
-       }
-   }
-   ```
  * Prints file name, line number, function name and the original expression
  * Easy to read, colorized output
+ * Can be used inside normal expressions
  * The `dbg.h` header issues a compiler warning when included
  * Works for containers
 
