@@ -104,7 +104,7 @@ bool prettyPrint(std::ostream& stream, const std::vector<S>& value) {
   }
 
   stream << "}";
-  stream << " (size=" << size << ")";
+  stream << " (size: " << size << ")";
   return true;
 }
 

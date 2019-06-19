@@ -8,7 +8,7 @@ int main() {
   const int b = dbg(3 * a) + 1;  // [DEBUG example.cpp:8 (main)] 3 * a = 6
 
   std::vector<int> numbers{b, 13, 42};
-  dbg(numbers);  // [DEBUG example.cpp:11 (main)] numbers = {7, 13, 42} (size=3)
+  dbg(numbers);  // [DEBUG example.cpp:11 (main)] numbers = {7, 13, 42} (size: 3)
 
   dbg("this line is executed");  // [DEBUG example.cpp:13 (main)] this line is executed
 
