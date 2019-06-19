@@ -33,6 +33,7 @@ License (MIT):
 
 #include <ios>
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -41,41 +42,53 @@ License (MIT):
 namespace dbg_macro {
 
 template <typename T>
-void prettyPrint(std::ostream& stream, const T& value) {
+bool prettyPrint(std::ostream& stream, const T& value) {
   stream << value;
+  return true;
 }
 
 template <>
-void prettyPrint(std::ostream& stream, const bool& value) {
+bool prettyPrint(std::ostream& stream, const bool& value) {
   stream << std::boolalpha << value;
+  return true;
 }
 
 template <>
-void prettyPrint(std::ostream& stream, const char& value) {
+bool prettyPrint(std::ostream& stream, const char& value) {
   stream << "'" << value << "'";
+  return true;
 }
 
 template <typename P>
-void prettyPrint(std::ostream& stream, P* const& value) {
+bool prettyPrint(std::ostream& stream, P* const& value) {
   if (value == nullptr) {
     stream << "nullptr";
   } else {
     stream << value;
   }
+  return true;
+}
+
+template <int N>
+bool prettyPrint(std::ostream& stream, const char (&value)[N]) {
+  stream << value;
+  return false;
 }
 
 template <>
-void prettyPrint(std::ostream& stream, const char* const& value) {
+bool prettyPrint(std::ostream& stream, const char* const& value) {
   stream << '"' << value << '"';
+  return true;
 }
 
 template <>
-void prettyPrint(std::ostream& stream, const std::string& value) {
+bool prettyPrint(std::ostream& stream, const std::string& value) {
   stream << '"' << value << '"';
+  return true;
 }
 
 template <typename S>
-void prettyPrint(std::ostream& stream, const std::vector<S>& value) {
+bool prettyPrint(std::ostream& stream, const std::vector<S>& value) {
   stream << "{";
   const int size = value.size();
   const auto n = std::min(5, size);
@@ -92,6 +105,7 @@ void prettyPrint(std::ostream& stream, const std::vector<S>& value) {
 
   stream << "}";
   stream << " (size=" << size << ")";
+  return true;
 }
 
 class DebugOutput {
@@ -104,20 +118,24 @@ class DebugOutput {
         m_argument(argument) {}
 
   template <typename T>
-  T&& print(T&& value) {
-    std::cerr << ansi(ANSI_WARNING_COLOR) << "[DEBUG " << m_filename << ":"
-              << m_line << " (" << m_function_name << ")] " << ansi(ANSI_RESET) << m_argument
-              << ansi(ANSI_BOLD) << " = " << ansi(ANSI_RESET)
-              << ansi(ANSI_VALUE_COLOR);
+  T&& print(T&& value) const {
     const T& ref = value;
-    prettyPrint(std::cerr, ref);
-    std::cerr << ansi(ANSI_RESET) << std::endl;
+    std::stringstream stream_value;
+    const bool print_expression = prettyPrint(stream_value, ref);
+
+    std::cerr << ansi(ANSI_WARNING_COLOR) << "[DEBUG " << m_filename << ":"
+              << m_line << " (" << m_function_name << ")] ";
+    if (print_expression) {
+      std::cerr << ansi(ANSI_RESET) << m_argument << ansi(ANSI_BOLD) << " = ";
+    }
+    std::cerr << ansi(ANSI_RESET)
+              << ansi(ANSI_VALUE_COLOR) << stream_value.str() << ansi(ANSI_RESET) << std::endl;
 
     return std::forward<T>(value);
   }
 
  private:
-  const char* ansi(const char* code) {
+  const char* ansi(const char* code) const {
     if (m_stderr_is_a_tty) {
       return code;
     } else {

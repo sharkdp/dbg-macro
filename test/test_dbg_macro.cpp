@@ -49,7 +49,7 @@ int main() {
   dbg(test_c_string);
   dbg(test_string);
 
-  dbg("====== r-values");
+  dbg("====== r-values, literals, constants, etc.");
 
   dbg(42);
   dbg(3.14);
@@ -60,6 +60,8 @@ int main() {
 
   std::string message = "hello world";
   dbg(std::move(message));
+
+  dbg(sizeof(int));
 
   dbg("====== expressions inside macros");
 
