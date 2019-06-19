@@ -39,7 +39,7 @@ int factorial(int n) {
    }
 }
 
-// Prints:
+// A call to factorial(4) prints:
 // [DEBUG factorial.cpp:9 (factorial)] n <= 1 = false
 // [DEBUG factorial.cpp:9 (factorial)] n <= 1 = false
 // [DEBUG factorial.cpp:9 (factorial)] n <= 1 = false
