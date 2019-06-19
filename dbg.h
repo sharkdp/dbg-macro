@@ -70,10 +70,10 @@ class DebugOutput {
   template <typename T>
   T&& print(T&& value) {
     std::cerr << ANSI_WARNING_COLOR << "[DEBUG " << m_filename << ":" << m_line
-              << "] " << ANSI_RESET << m_argument << ANSI_BOLD << " = {"
+              << "] " << ANSI_RESET << m_argument << ANSI_BOLD << " = "
               << ANSI_RESET << ANSI_VALUE_COLOR;
     PrettyPrint(std::cerr, std::forward<T>(value));
-    std::cerr << ANSI_RESET << ANSI_BOLD << "}" << ANSI_RESET << std::endl;
+    std::cerr << ANSI_RESET << std::endl;
 
     return std::forward<T>(value);
   }
