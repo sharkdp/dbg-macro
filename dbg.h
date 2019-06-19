@@ -68,16 +68,17 @@ void PrettyPrint(std::ostream& stream, const std::vector<S>& value) {
 
 class DebugOutput {
  public:
-  DebugOutput(const char* filename, int line, const char* argument)
+  DebugOutput(const char* filename, int line, const char* function_name, const char* argument)
       : m_stderr_is_a_tty(isatty(fileno(stderr))),
         m_filename(filename),
         m_line(line),
+        m_function_name(function_name),
         m_argument(argument) {}
 
   template <typename T>
   T&& print(T&& value) {
     std::cerr << ansi(ANSI_WARNING_COLOR) << "[DEBUG " << m_filename << ":"
-              << m_line << "] " << ansi(ANSI_RESET) << m_argument
+              << m_line << " (" << m_function_name << ")] " << ansi(ANSI_RESET) << m_argument
               << ansi(ANSI_BOLD) << " = " << ansi(ANSI_RESET)
               << ansi(ANSI_VALUE_COLOR);
     PrettyPrint(std::cerr, std::forward<T>(value));
@@ -99,7 +100,8 @@ class DebugOutput {
 
   const std::string m_filename;
   const int m_line;
-  const char* m_argument;
+  const std::string m_function_name;
+  const std::string m_argument;
 
   static constexpr const char* const ANSI_EMPTY = "";
   static constexpr const char* const ANSI_WARNING_COLOR = "\x1b[33;01m";
@@ -111,6 +113,6 @@ class DebugOutput {
 }  // namespace dbg_macro
 
 #define dbg(VALUE) \
-  dbg_macro::DebugOutput(__FILE__, __LINE__, #VALUE).print((VALUE))
+  dbg_macro::DebugOutput(__FILE__, __LINE__, __func__, #VALUE).print((VALUE))
 
 #endif  // DBG_MACRO_DBG_H

@@ -21,7 +21,7 @@ macro which can be used in all circumstances where you would typically write
        }
    }
    ```
- * Prints file name, line number and the original expression
+ * Prints file name, line number, function name and the original expression
  * Easy to read, colorized output
  * The `dbg.h` header issues a compiler warning when included
  * Works for containers
