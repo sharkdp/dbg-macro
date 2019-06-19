@@ -51,6 +51,25 @@ void prettyPrint(std::ostream& stream, const bool& value) {
 }
 
 template <>
+void prettyPrint(std::ostream& stream, const char& value) {
+  stream << "'" << value << "'";
+}
+
+template <typename P>
+void prettyPrint(std::ostream& stream, P* const& value) {
+  if (value == nullptr) {
+    stream << "nullptr";
+  } else {
+    stream << value;
+  }
+}
+
+template <>
+void prettyPrint(std::ostream& stream, const char* const& value) {
+  stream << '"' << value << '"';
+}
+
+template <>
 void prettyPrint(std::ostream& stream, const std::string& value) {
   stream << '"' << value << '"';
 }

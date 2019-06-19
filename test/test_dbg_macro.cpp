@@ -25,12 +25,14 @@ class Test {
 int main() {
   dbg("====== primitive types");
 
-  const int test_int = 42;
+  int test_int = 42;
   const float test_float = 3.14;
   const bool test_bool = false;
+  const char test_char = 'X';
   const uint64_t test_uint64_t = 12345678987654321;
-  const int* test_pointer = &test_int;
-  const int* test_pointer_null = nullptr;
+  int* test_pointer = &test_int;
+  const int* test_pointer_to_const = &test_int;
+  int* test_pointer_null = nullptr;
   const int& test_ref_to_int = test_int;
   const char* test_c_string = "hello";
   const std::string test_string = "hello";
@@ -38,8 +40,10 @@ int main() {
   dbg(test_int);
   dbg(test_float);
   dbg(test_bool);
+  dbg(test_char);
   dbg(test_uint64_t);
   dbg(test_pointer);
+  dbg(test_pointer_to_const);
   dbg(test_pointer_null);
   dbg(test_ref_to_int);
   dbg(test_c_string);
