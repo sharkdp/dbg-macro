@@ -34,6 +34,8 @@ License (MIT):
 #include <string>
 #include <vector>
 
+namespace dbg_macro {
+
 template <typename T>
 void PrettyPrint(std::ostream& stream, T&& value) {
   stream << value;
@@ -66,12 +68,14 @@ class DebugOutput {
       : m_filename(filename), m_line(line), m_argument(argument) {}
 
   template <typename T>
-  void print(T&& value) {
+  T&& print(T&& value) {
     std::cerr << ANSI_WARNING_COLOR << "[DEBUG " << m_filename << ":" << m_line
               << "] " << ANSI_RESET << m_argument << ANSI_BOLD << " = {"
               << ANSI_RESET << ANSI_VALUE_COLOR;
     PrettyPrint(std::cerr, std::forward<T>(value));
     std::cerr << ANSI_RESET << ANSI_BOLD << "}" << ANSI_RESET << std::endl;
+
+    return std::forward<T>(value);
   }
 
  private:
@@ -85,6 +89,8 @@ class DebugOutput {
   static constexpr const char* const ANSI_RESET = "\x1b[0m";
 };
 
-#define dbg(VALUE) DebugOutput(__FILE__, __LINE__, #VALUE).print((VALUE));
+}  // namespace dbg_macro
+
+#define dbg(VALUE) dbg_macro::DebugOutput(__FILE__, __LINE__, #VALUE).print((VALUE))
 
 #endif  // DBG_MACRO_DBG_H
