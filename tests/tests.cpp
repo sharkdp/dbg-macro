@@ -15,7 +15,7 @@ void simple_assert_helper(const bool condition, const char* expr) {
   }
 }
 
-#define simple_assert(expr) simple_assert_helper(expr, #expr)
+#define simple_assert(expr) simple_assert_helper((expr), #expr)
 
 template <typename T>
 std::string prettyPrint(T&& value) {
