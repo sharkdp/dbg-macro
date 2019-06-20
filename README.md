@@ -17,43 +17,32 @@ macro that can be used in all circumstances where you would typically write
 #include <vector>
 #include <dbg.h>
 
+// You can use "dbg(..)" in expressions:
+int factorial(int n) {
+  if (dbg(n <= 1)) {
+    return dbg(1);
+  } else {
+    return dbg(n * factorial(n - 1));
+  }
+}
+
 int main() {
   std::string message = "hello";
-  dbg(message);  // [DEBUG example.cpp:6 (main)] message = "hello"
+  dbg(message);  // [example.cpp:15 (main)] message = "hello" (std::__cxx11::basic_string<char>)
 
   const int a = 2;
-  const int b = dbg(3 * a) + 1;  // [DEBUG example.cpp:9 (main)] 3 * a = 6
+  const int b = dbg(3 * a) + 1;  // [example.cpp:18 (main)] 3 * a = 6 (int)
 
   std::vector<int> numbers{b, 13, 42};
-  dbg(numbers);  // [DEBUG example.cpp:12 (main)] numbers = {7, 13, 42} (size: 3)
+  dbg(numbers);  // [example.cpp:21 (main)] numbers = {7, 13, 42} (size: 3) (std::vector<int>)
 
-  dbg("this line is executed");  // [DEBUG example.cpp:14 (main)] this line is executed
+  dbg("this line is executed");  // [example.cpp:23 (main)] this line is executed
 
-  dbg(sizeof(int));  // [DEBUG example.cpp:16 (main)] sizeof(int) = 4
+  factorial(4);
 
   return 0;
 }
-```
 
-```c++
-// Use it inside expressions:
-int factorial(int n) {
-   if (dbg(n <= 1)) {
-       return dbg(1);
-   } else {
-       return dbg(n * factorial(n - 1));
-   }
-}
-
-// A call to factorial(4) prints:
-// [DEBUG factorial.cpp:9 (factorial)] n <= 1 = false
-// [DEBUG factorial.cpp:9 (factorial)] n <= 1 = false
-// [DEBUG factorial.cpp:9 (factorial)] n <= 1 = false
-// [DEBUG factorial.cpp:9 (factorial)] n <= 1 = true
-// [DEBUG factorial.cpp:10 (factorial)] 1 = 1
-// [DEBUG factorial.cpp:12 (factorial)] n * factorial(n - 1) = 2
-// [DEBUG factorial.cpp:12 (factorial)] n * factorial(n - 1) = 6
-// [DEBUG factorial.cpp:12 (factorial)] n * factorial(n - 1) = 24
 ```
 
 ## Features
