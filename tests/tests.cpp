@@ -17,14 +17,6 @@ void simple_assert_helper(const bool condition, const char* expr) {
 
 #define simple_assert(expr) simple_assert_helper(expr, #expr)
 
-int factorial(int n) {
-  if (dbg(n <= 1)) {
-    return dbg(1);
-  } else {
-    return dbg(n * factorial(n - 1));
-  }
-}
-
 template <typename T>
 std::string prettyPrint(T&& value) {
   std::stringstream stream;
@@ -116,10 +108,6 @@ int main() {
   int x = 1;
   dbg(++x);
   simple_assert(x == 2);
-
-  dbg("====== 'factorial' example");
-
-  factorial(4);
 
   dbg("====== prettyPrint tests");
 
