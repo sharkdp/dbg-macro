@@ -131,12 +131,16 @@ int main() {
   simple_assert(prettyPrint('X') == "'X'");
   simple_assert(prettyPrint(test_c_string) == "\"hello\"");
 
-  simple_assert(prettyPrint(std::vector<int>{}) ==
-                "{} (size: 0)");
+  simple_assert(prettyPrint(std::vector<int>{}) == "{} (size: 0)");
 
   simple_assert(prettyPrint(std::vector<int>{1, 2, 3}) ==
                 "{1, 2, 3} (size: 3)");
 
   simple_assert(prettyPrint(std::vector<int>{1, 2, 3, 4, 5, 6, 7, 8, 9}) ==
                 "{1, 2, 3, 4, 5, ...} (size: 9)");
+
+  dbg("====== type_name<T>() tests");
+
+  simple_assert(dbg_macro::type_name<int>() == "int");
+  simple_assert(dbg_macro::type_name<char>() == "char");
 }
