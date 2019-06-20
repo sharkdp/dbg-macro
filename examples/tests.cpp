@@ -1,16 +1,21 @@
+#include <array>
 #include <cstdint>
+#include <iostream>
+#include <list>
+#include <sstream>
 #include <string>
 #include <vector>
-#include <array>
-#include <list>
 
 #include <dbg.h>
 
-void simple_assert(const bool condition) {
+void simple_assert_helper(const bool condition, const char* expr) {
   if (!condition) {
+    std::cerr << "assertion '" << expr << "' failed!\n";
     std::exit(1);
   }
 }
+
+#define simple_assert(expr) simple_assert_helper(expr, #expr)
 
 int factorial(int n) {
   if (dbg(n <= 1)) {
@@ -18,6 +23,13 @@ int factorial(int n) {
   } else {
     return dbg(n * factorial(n - 1));
   }
+}
+
+template <typename T>
+std::string prettyPrint(T&& value) {
+  std::stringstream stream;
+  dbg_macro::prettyPrint(stream, std::forward<T>(value));
+  return stream.str();
 }
 
 int main() {
@@ -53,7 +65,7 @@ int main() {
   dbg(3.14);
   dbg(false);
   dbg(12345678987654321);
-  dbg((void*)nullptr);
+  dbg(static_cast<void*>(nullptr));
   dbg("string literal");
 
   std::string message = "hello world";
@@ -96,7 +108,7 @@ int main() {
   const std::array<int, 2> dummy_array{0, 4};
   dbg(dummy_array);
 
-  const std::list<int> dummy_list{1,2,3,4,5,6,7,8,9};
+  const std::list<int> dummy_list{1, 2, 3, 4, 5, 6, 7, 8, 9};
   dbg(dummy_list);
 
   dbg("====== side effects");
@@ -108,4 +120,23 @@ int main() {
   dbg("====== 'factorial' example");
 
   factorial(4);
+
+  dbg("====== prettyPrint tests");
+
+  simple_assert(prettyPrint(3) == "3");
+  simple_assert(prettyPrint(3.14) == "3.14");
+  simple_assert(prettyPrint(true) == "true");
+  simple_assert(prettyPrint(static_cast<void*>(nullptr)) == "nullptr");
+  simple_assert(prettyPrint("string literal") == "string literal");
+  simple_assert(prettyPrint('X') == "'X'");
+  simple_assert(prettyPrint(test_c_string) == "\"hello\"");
+
+  simple_assert(prettyPrint(std::vector<int>{}) ==
+                "{} (size: 0)");
+
+  simple_assert(prettyPrint(std::vector<int>{1, 2, 3}) ==
+                "{1, 2, 3} (size: 3)");
+
+  simple_assert(prettyPrint(std::vector<int>{1, 2, 3, 4, 5, 6, 7, 8, 9}) ==
+                "{1, 2, 3, 4, 5, ...} (size: 9)");
 }
