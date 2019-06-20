@@ -24,6 +24,15 @@ std::string prettyPrint(T&& value) {
   return stream.str();
 }
 
+struct user_defined_type {
+  int x;
+};
+
+std::ostream& operator<<(std::ostream& out, const user_defined_type& v) {
+  out << "user_defined_type{" << v.x << "}";
+  return out;
+}
+
 int main() {
   dbg("====== primitive types");
 
@@ -103,6 +112,11 @@ int main() {
   const std::list<int> dummy_list{1, 2, 3, 4, 5, 6, 7, 8, 9};
   dbg(dummy_list);
 
+  dbg("====== user-defined types");
+
+  user_defined_type udt{42};
+  dbg(udt);
+
   dbg("====== side effects");
 
   int x = 1;
@@ -127,8 +141,12 @@ int main() {
   simple_assert(prettyPrint(std::vector<int>{1, 2, 3, 4, 5, 6, 7, 8, 9}) ==
                 "{1, 2, 3, 4, 5, ...} (size: 9)");
 
+  simple_assert(prettyPrint(udt) == "user_defined_type{42}");
+
   dbg("====== type_name<T>() tests");
 
   simple_assert(dbg_macro::type_name<int>() == "int");
   simple_assert(dbg_macro::type_name<char>() == "char");
+  simple_assert(dbg_macro::type_name<user_defined_type>() ==
+                "user_defined_type");
 }
