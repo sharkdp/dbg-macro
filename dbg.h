@@ -41,7 +41,43 @@ License (MIT):
 
 namespace dbg_macro {
 
-// Implementation of is_detected to specialize for container-like types
+// Implementation of 'type_name<T>()'
+
+template <typename T>
+const char* type_name_impl() {
+#if defined(__clang__)
+  return __PRETTY_FUNCTION__;
+#elif defined(__GNUC__) && !defined(__clang__)
+  return __PRETTY_FUNCTION__;
+#elif defined(_MSC_VER)
+  return __FUNCSIG__;
+#else
+#error "No support for this compiler."
+#endif
+}
+
+template <typename T>
+std::string type_name() {
+#if defined(__clang__)
+  size_t prefixlen =
+      sizeof("const char *dbg_macro::type_name_impl() [T = ") - 1;
+  size_t suffixlen = sizeof("]") - 1;
+#elif defined(__GNUC__) && !defined(__clang__)
+  size_t prefixlen =
+      sizeof("const char* dbg_macro::type_name_impl() [with T = ") - 1;
+  size_t suffixlen = sizeof("]") - 1;
+#elif defined(_MSC_VER)
+  size_t prefixlen =
+      sizeof("const char *__cdecl dbg_macro::type_name_impl<") - 1;
+  size_t suffixlen = sizeof(">(void)") - 1;
+#else
+#error "No support for this compiler."
+#endif
+  std::string type = type_name_impl<T>();
+  return type.substr(prefixlen, type.size() - prefixlen - suffixlen);
+}
+
+// Implementation of 'is_detected' to specialize for container-like types
 
 namespace detail_detector {
 
@@ -74,8 +110,8 @@ struct detector<Default, void_t<Op<Args...>>, Op, Args...> {
 }  // namespace detail_detector
 
 template <template <class...> class Op, class... Args>
-using is_detected =
-    typename detail_detector::detector<detail_detector::nonesuch, void, Op, Args...>::value_t;
+using is_detected = typename detail_detector::
+    detector<detail_detector::nonesuch, void, Op, Args...>::value_t;
 
 template <typename T>
 using detect_begin_t = decltype(begin(std::declval<T>()));
@@ -171,12 +207,12 @@ class DebugOutput {
   DebugOutput(const char* filepath,
               int line,
               const char* function_name,
-              const char* argument)
+              const char* expression)
       : m_stderr_is_a_tty(isatty(fileno(stderr))),
         m_filepath(filepath),
         m_line(line),
         m_function_name(function_name),
-        m_argument(argument) {
+        m_expression(expression) {
     const int path_length = m_filepath.length();
     if (path_length > MAX_PATH_LENGTH) {
       m_filepath = ".." + m_filepath.substr(path_length - MAX_PATH_LENGTH,
@@ -188,15 +224,22 @@ class DebugOutput {
   T&& print(T&& value) const {
     const T& ref = value;
     std::stringstream stream_value;
-    const bool print_expression = prettyPrint(stream_value, ref);
+    const bool print_expr_and_type = prettyPrint(stream_value, ref);
 
-    std::cerr << ansi(ANSI_WARNING_COLOR) << "[DEBUG " << m_filepath << ":"
-              << m_line << " (" << m_function_name << ")] ";
-    if (print_expression) {
-      std::cerr << ansi(ANSI_RESET) << m_argument << ansi(ANSI_BOLD) << " = ";
+    std::cerr << ansi(ANSI_DEBUG) << "[" << m_filepath << ":" << m_line << " ("
+              << m_function_name << ")] " << ansi(ANSI_RESET);
+    if (print_expr_and_type) {
+      std::cerr << ansi(ANSI_EXPRESSION) << m_expression << ansi(ANSI_RESET)
+                << " = ";
     }
-    std::cerr << ansi(ANSI_RESET) << ansi(ANSI_VALUE_COLOR)
-              << stream_value.str() << ansi(ANSI_RESET) << std::endl;
+    std::cerr << ansi(ANSI_VALUE) << stream_value.str() << ansi(ANSI_RESET);
+    if (print_expr_and_type) {
+      using ValueType = typename std::remove_cv<
+          typename std::remove_reference<T>::type>::type;
+      std::cerr << " (" << ansi(ANSI_TYPE) << type_name<ValueType>()
+                << ansi(ANSI_RESET) << ")";
+    }
+    std::cerr << std::endl;
 
     return std::forward<T>(value);
   }
@@ -215,14 +258,15 @@ class DebugOutput {
   std::string m_filepath;
   const int m_line;
   const std::string m_function_name;
-  const std::string m_argument;
+  const std::string m_expression;
 
   static constexpr int MAX_PATH_LENGTH = 20;
 
   static constexpr const char* const ANSI_EMPTY = "";
-  static constexpr const char* const ANSI_WARNING_COLOR = "\x1b[33;01m";
-  static constexpr const char* const ANSI_VALUE_COLOR = "\x1b[36m";
-  static constexpr const char* const ANSI_BOLD = "\x1b[01m";
+  static constexpr const char* const ANSI_DEBUG = "\x1b[02m";
+  static constexpr const char* const ANSI_EXPRESSION = "\x1b[36m";
+  static constexpr const char* const ANSI_VALUE = "\x1b[01m";
+  static constexpr const char* const ANSI_TYPE = "\x1b[32m";
   static constexpr const char* const ANSI_RESET = "\x1b[0m";
 };
 
