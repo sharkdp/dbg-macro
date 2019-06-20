@@ -163,17 +163,26 @@ prettyPrint(std::ostream &stream, Container const &value) {
   return true;
 }
 
-class DebugOutput {
+template <typename ...Args>
+class DebugOutput_impl {
  public:
-  DebugOutput(const char* filename, int line, const char* function_name, const char* argument)
+  DebugOutput_impl(const char* filename, int line, const char* function_name, Args && ... args)
       : m_stderr_is_a_tty(isatty(fileno(stderr))),
         m_filename(filename),
         m_line(line),
         m_function_name(function_name),
-        m_argument(argument) {}
+        m_arguments{args...} {}
+
+  template <typename... Brgs>
+  void print(Brgs&&... brgs) {
+    size_t i = 0;
+    // expander trick to emulate C++17 fold expression
+    using expander = int[];
+    (void)expander{0, (void(printValue(std::forward<Brgs>(brgs), i++)), 0)...};
+  }
 
   template <typename T>
-  T&& print(T&& value) const {
+  void printValue(T&& value, size_t i) const {
     const T& ref = value;
     std::stringstream stream_value;
     const bool print_expression = prettyPrint(stream_value, ref);
@@ -181,12 +190,10 @@ class DebugOutput {
     std::cerr << ansi(ANSI_WARNING_COLOR) << "[DEBUG " << m_filename << ":"
               << m_line << " (" << m_function_name << ")] ";
     if (print_expression) {
-      std::cerr << ansi(ANSI_RESET) << m_argument << ansi(ANSI_BOLD) << " = ";
+      std::cerr << ansi(ANSI_RESET) <<  m_arguments[i] << ansi(ANSI_BOLD) << " = ";
     }
     std::cerr << ansi(ANSI_RESET)
               << ansi(ANSI_VALUE_COLOR) << stream_value.str() << ansi(ANSI_RESET) << std::endl;
-
-    return std::forward<T>(value);
   }
 
  private:
@@ -203,7 +210,7 @@ class DebugOutput {
   const std::string m_filename;
   const int m_line;
   const std::string m_function_name;
-  const std::string m_argument;
+  const char * m_arguments[sizeof...(Args)];
 
   static constexpr const char* const ANSI_EMPTY = "";
   static constexpr const char* const ANSI_WARNING_COLOR = "\x1b[33;01m";
@@ -212,10 +219,46 @@ class DebugOutput {
   static constexpr const char* const ANSI_RESET = "\x1b[0m";
 };
 
+template <typename... Args>
+DebugOutput_impl<Args...> DebugOutput(const char* filename,
+                                      int line,
+                                      const char* function_name,
+                                      Args&&... args) {
+  return DebugOutput_impl<Args...>{filename, line, function_name,
+                                   std::forward<Args>(args)...};
+}
+
 }  // namespace dbg_macro
 
-// We use a variadic macro to support commas inside expressions (e.g. initializer lists):
-#define dbg(...) \
-  dbg_macro::DebugOutput(__FILE__, __LINE__, __func__, #__VA_ARGS__).print((__VA_ARGS__))
+#define STRINGIFY(s) _STRINGIFY(s)
+#define _STRINGIFY(s) #s
+
+#define FOREACH_1(fn, x) fn(x)
+#define FOREACH_2(fn, x, ...) fn(x), FOREACH_1(fn, __VA_ARGS__)
+#define FOREACH_3(fn, x, ...) fn(x), FOREACH_2(fn, __VA_ARGS__)
+#define FOREACH_4(fn, x, ...) fn(x), FOREACH_3(fn, __VA_ARGS__)
+#define FOREACH_5(fn, x, ...) fn(x), FOREACH_4(fn, __VA_ARGS__)
+#define FOREACH_6(fn, x, ...) fn(x), FOREACH_5(fn, __VA_ARGS__)
+#define FOREACH_7(fn, x, ...) fn(x), FOREACH_6(fn, __VA_ARGS__)
+
+#define FOREACH_N(_1, _2, _3, _4, _5, _6, _7, N, ...) N
+
+// clang-format off
+#define FOREACH(fn, ...) \
+  FOREACH_N(__VA_ARGS__, \
+          FOREACH_7,     \
+          FOREACH_6,     \
+          FOREACH_5,     \
+          FOREACH_4,     \
+          FOREACH_3,     \
+          FOREACH_2,     \
+          FOREACH_1)     \
+  (fn, __VA_ARGS__)
+// clang-format on
+
+#define dbg(...)                                          \
+  dbg_macro::DebugOutput(__FILE__, __LINE__, __func__,    \
+                         FOREACH(STRINGIFY, __VA_ARGS__)) \
+      .print(__VA_ARGS__)
 
 #endif  // DBG_MACRO_DBG_H
