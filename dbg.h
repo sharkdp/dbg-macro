@@ -109,11 +109,13 @@ typename std::enable_if<!has_begin_end_size<T>::value, bool>::type prettyPrint(
   return true;
 }
 
+template <>
 bool prettyPrint(std::ostream& stream, const bool& value) {
   stream << std::boolalpha << value;
   return true;
 }
 
+template <>
 bool prettyPrint(std::ostream& stream, const char& value) {
   stream << "'" << value << "'";
   return true;
@@ -135,12 +137,8 @@ bool prettyPrint(std::ostream& stream, const char (&value)[N]) {
   return false;
 }
 
+template <>
 bool prettyPrint(std::ostream& stream, const char* const& value) {
-  stream << '"' << value << '"';
-  return true;
-}
-
-bool prettyPrint(std::ostream& stream, const std::string& value) {
   stream << '"' << value << '"';
   return true;
 }
@@ -165,6 +163,12 @@ prettyPrint(std::ostream& stream, Container const& value) {
 
   stream << "}";
   stream << " (size: " << size << ")";
+  return true;
+}
+
+template <>
+bool prettyPrint(std::ostream& stream, const std::string& value) {
+  stream << '"' << value << '"';
   return true;
 }
 
