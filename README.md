@@ -50,11 +50,13 @@ The code above produces this output:
 
 ## Features
 
- * Prints file name, line number, function name and the original expression
  * Easy to read, colorized output
- * Can be used inside normal expressions
- * The `dbg.h` header issues a compiler warning when included
- * Works for containers
+ * Prints file name, line number, function name and the original expression
+ * Adds type information for the printed-out value
+ * Specialized pretty-printers for containers, pointers, string literals, etc.
+ * Can be used inside expressions
+ * The `dbg.h` header issues a compiler warning when included (so you don't forget to remove)
+ * C++11 compatible
 
 ## Installation
 
