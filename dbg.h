@@ -149,8 +149,8 @@ template <typename Container>
 typename std::enable_if<has_begin_end_size<Container>::value, bool>::type
 prettyPrint(std::ostream& stream, Container const& value) {
   stream << "{";
-  size_t const size = value.size();
-  size_t const n = std::min(size_t{5}, size);
+  const size_t size = value.size();
+  const size_t n = std::min(size_t{5}, size);
   size_t i = 0;
   for (auto it = begin(value); it != end(value) && i < n; ++it, ++i) {
     stream << *it;
