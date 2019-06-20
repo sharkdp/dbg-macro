@@ -30,9 +30,7 @@ struct user_defined_type {
 
 class user_defined_class {
  public:
-  void some_method(int x) {
-    dbg(x);
-  }
+  void some_method(int x) { dbg(x); }
 };
 
 std::ostream& operator<<(std::ostream& out, const user_defined_type& v) {
