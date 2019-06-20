@@ -170,15 +170,21 @@ prettyPrint(std::ostream& stream, Container const& value) {
 
 class DebugOutput {
  public:
-  DebugOutput(const char* filename,
+  DebugOutput(const char* filepath,
               int line,
               const char* function_name,
               const char* argument)
       : m_stderr_is_a_tty(isatty(fileno(stderr))),
-        m_filename(filename),
+        m_filepath(filepath),
         m_line(line),
         m_function_name(function_name),
-        m_argument(argument) {}
+        m_argument(argument) {
+    const int path_length = m_filepath.length();
+    if (path_length > MAX_PATH_LENGTH) {
+      m_filepath = ".." + m_filepath.substr(path_length - MAX_PATH_LENGTH,
+                                            MAX_PATH_LENGTH);
+    }
+  }
 
   template <typename T>
   T&& print(T&& value) const {
@@ -186,7 +192,7 @@ class DebugOutput {
     std::stringstream stream_value;
     const bool print_expression = prettyPrint(stream_value, ref);
 
-    std::cerr << ansi(ANSI_WARNING_COLOR) << "[DEBUG " << m_filename << ":"
+    std::cerr << ansi(ANSI_WARNING_COLOR) << "[DEBUG " << m_filepath << ":"
               << m_line << " (" << m_function_name << ")] ";
     if (print_expression) {
       std::cerr << ansi(ANSI_RESET) << m_argument << ansi(ANSI_BOLD) << " = ";
@@ -208,10 +214,12 @@ class DebugOutput {
 
   const bool m_stderr_is_a_tty;
 
-  const std::string m_filename;
+  std::string m_filepath;
   const int m_line;
   const std::string m_function_name;
   const std::string m_argument;
+
+  static constexpr int MAX_PATH_LENGTH = 20;
 
   static constexpr const char* const ANSI_EMPTY = "";
   static constexpr const char* const ANSI_WARNING_COLOR = "\x1b[33;01m";
