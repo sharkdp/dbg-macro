@@ -7,7 +7,7 @@
 Debuggers are great. But sometimes you just don't have the time and nerve to set
 up everything correctly and just want a quick way to inspect some values at runtime.
 
-This projects provides a single header file ([`dbg.h`](dbg.h)) with a `dbg(…)`
+This projects provides a [single header file](dbg.h) with a `dbg(…)`
 macro that can be used in all circumstances where you would typically write
 `printf("…", …)` or `std::cout << … << std::endl;`, but with a few extras.
 
