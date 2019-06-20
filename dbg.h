@@ -36,7 +36,6 @@ License (MIT):
 #include <sstream>
 #include <string>
 #include <type_traits>
-#include <vector>
 
 #include <unistd.h>
 
