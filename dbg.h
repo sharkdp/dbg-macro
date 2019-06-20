@@ -41,7 +41,7 @@ License (MIT):
 
 namespace dbg_macro {
 
-// -- begin is_detected
+namespace detail {
 
 struct nonesuch {
   nonesuch() = delete;
@@ -49,8 +49,6 @@ struct nonesuch {
   nonesuch(nonesuch const&) = delete;
   void operator=(nonesuch const&) = delete;
 };
-
-namespace detail {
 
 template <typename...>
 using void_t = void;
@@ -75,15 +73,7 @@ struct detector<Default, void_t<Op<Args...>>, Op, Args...> {
 
 template <template <class...> class Op, class... Args>
 using is_detected =
-    typename detail::detector<nonesuch, void, Op, Args...>::value_t;
-
-template <template <class...> class Op, class... Args>
-using detected_t = typename detail::detector<nonesuch, void, Op, Args...>::type;
-
-template <class Default, template <class...> class Op, class... Args>
-using detected_or = detail::detector<Default, void, Op, Args...>;
-
-// -- end is_detected
+    typename detail::detector<detail::nonesuch, void, Op, Args...>::value_t;
 
 template <typename T>
 using detect_begin_t = decltype(begin(std::declval<T>()));
@@ -100,6 +90,8 @@ struct has_begin_end_size {
                                 is_detected<detect_end_t, T>::value &&
                                 is_detected<detect_size_t, T>::value;
 };
+
+// Specializations of "prettyPrint"
 
 template <typename T>
 typename std::enable_if<!has_begin_end_size<T>::value, bool>::type prettyPrint(
