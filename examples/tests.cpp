@@ -20,15 +20,6 @@ int factorial(int n) {
   }
 }
 
-class Test {
-  public:
-    Test(int m) : member(dbg(m)) {
-    }
-
-  private:
-    int member;
-};
-
 int main() {
   dbg("====== primitive types");
 
@@ -113,10 +104,6 @@ int main() {
   int x = 1;
   dbg(++x);
   simple_assert(x == 2);
-
-  dbg("====== class example");
-
-  Test test(42);
 
   dbg("====== 'factorial' example");
 
