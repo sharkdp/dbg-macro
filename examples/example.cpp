@@ -1,3 +1,4 @@
+#include <vector>
 #include <dbg.h>
 
 int main() {

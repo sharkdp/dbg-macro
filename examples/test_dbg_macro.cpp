@@ -2,6 +2,8 @@
 #include <string>
 #include <vector>
 #include <cassert>
+#include <array>
+#include <list>
 
 #include <dbg.h>
 
@@ -94,6 +96,12 @@ int main() {
   dbg(vec_bools);
 
   dbg(std::vector<int>{0, 1, 0, 1});
+
+  const std::array<int, 2> dummy_array{0, 4};
+  dbg(dummy_array);
+
+  const std::list<int> dummy_list{1,2,3,4,5,6,7,8,9};
+  dbg(dummy_list);
 
   dbg("====== side effects");
 
