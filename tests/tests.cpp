@@ -117,6 +117,13 @@ int main() {
   const std::list<int> dummy_list{1, 2, 3, 4, 5, 6, 7, 8, 9};
   dbg(dummy_list);
 
+  std::vector<std::vector<int>> vec_of_vec_of_ints{{1, 2}, {3, 4, 5}};
+  dbg(vec_of_vec_of_ints);
+
+  std::vector<std::vector<std::vector<int>>> vec_of_vec_of_vec_of_ints{
+      {{1, 2}, {3, 4, 5}}, {{3}}};
+  dbg(vec_of_vec_of_vec_of_ints);
+
   dbg("====== user-defined types");
 
   user_defined_type udt{42};
@@ -147,13 +154,11 @@ int main() {
   simple_assert(prettyPrint('X') == "'X'");
   simple_assert(prettyPrint(test_c_string) == "\"hello\"");
 
-  simple_assert(prettyPrint(std::vector<int>{}) == "{} (size: 0)");
-
-  simple_assert(prettyPrint(std::vector<int>{1, 2, 3}) ==
-                "{1, 2, 3} (size: 3)");
-
+  simple_assert(prettyPrint(std::vector<int>{}) == "{}");
+  simple_assert(prettyPrint(std::vector<int>{1, 2, 3}) == "{1, 2, 3}");
   simple_assert(prettyPrint(std::vector<int>{1, 2, 3, 4, 5, 6, 7, 8, 9}) ==
-                "{1, 2, 3, 4, 5, ...} (size: 9)");
+                "{1, 2, 3, 4, 5, ... size:9}");
+  simple_assert(prettyPrint(vec_of_vec_of_ints) == "{{1, 2}, {3, 4, 5}}");
 
   simple_assert(prettyPrint(udt) == "user_defined_type{42}");
 
