@@ -28,7 +28,7 @@ int factorial(int n) {
 
 int main() {
   std::string message = "hello";
-  dbg(message);  // [example.cpp:15 (main)] message = "hello" (std::__cxx11::basic_string<char>)
+  dbg(message);  // [example.cpp:15 (main)] message = "hello" (std::string)
 
   const int a = 2;
   const int b = dbg(3 * a) + 1;  // [example.cpp:18 (main)] 3 * a = 6 (int)
