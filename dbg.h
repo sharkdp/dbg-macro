@@ -200,7 +200,7 @@ prettyPrint(std::ostream& stream, Container const& value) {
   const size_t n = std::min(size_t{5}, size);
   size_t i = 0;
   for (auto it = begin(value); it != end(value) && i < n; ++it, ++i) {
-    stream << *it;
+    prettyPrint(stream, *it);
     if (i != n - 1) {
       stream << ", ";
     }
@@ -208,10 +208,10 @@ prettyPrint(std::ostream& stream, Container const& value) {
 
   if (size > n) {
     stream << ", ...";
+    stream << " size:" << size;
   }
 
   stream << "}";
-  stream << " (size: " << size << ")";
   return true;
 }
 
