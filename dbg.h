@@ -44,39 +44,43 @@ namespace dbg_macro {
 // -- begin is_detected
 
 struct nonesuch {
-    nonesuch() = delete;
-    ~nonesuch() = delete;
-    nonesuch(nonesuch const&) = delete;
-    void operator=(nonesuch const&) = delete;
+  nonesuch() = delete;
+  ~nonesuch() = delete;
+  nonesuch(nonesuch const&) = delete;
+  void operator=(nonesuch const&) = delete;
 };
 
 namespace detail {
 
-template <typename ...>
+template <typename...>
 using void_t = void;
 
-template <class Default, class AlwaysVoid,
-          template<class...> class Op, class... Args>
+template <class Default,
+          class AlwaysVoid,
+          template <class...>
+          class Op,
+          class... Args>
 struct detector {
   using value_t = std::false_type;
   using type = Default;
 };
 
-template <class Default, template<class...> class Op, class... Args>
+template <class Default, template <class...> class Op, class... Args>
 struct detector<Default, void_t<Op<Args...>>, Op, Args...> {
   using value_t = std::true_type;
   using type = Op<Args...>;
 };
 
-} // namespace detail
+}  // namespace detail
 
-template <template<class...> class Op, class... Args>
-using is_detected = typename detail::detector<nonesuch, void, Op, Args...>::value_t;
+template <template <class...> class Op, class... Args>
+using is_detected =
+    typename detail::detector<nonesuch, void, Op, Args...>::value_t;
 
-template <template<class...> class Op, class... Args>
+template <template <class...> class Op, class... Args>
 using detected_t = typename detail::detector<nonesuch, void, Op, Args...>::type;
 
-template <class Default, template<class...> class Op, class... Args>
+template <class Default, template <class...> class Op, class... Args>
 using detected_or = detail::detector<Default, void, Op, Args...>;
 
 // -- end is_detected
@@ -92,14 +96,15 @@ using detect_size_t = decltype(std::declval<T>().size());
 
 template <typename T>
 struct has_begin_end_size {
-    static constexpr bool value = is_detected<detect_begin_t, T>::value
-                                  && is_detected<detect_end_t, T>::value
-                                  && is_detected<detect_size_t, T>::value;
+  static constexpr bool value = is_detected<detect_begin_t, T>::value &&
+                                is_detected<detect_end_t, T>::value &&
+                                is_detected<detect_size_t, T>::value;
 };
 
 template <typename T>
-typename std::enable_if<!has_begin_end_size<T>::value, bool>::type
-prettyPrint(std::ostream& stream, const T& value) {
+typename std::enable_if<!has_begin_end_size<T>::value, bool>::type prettyPrint(
+    std::ostream& stream,
+    const T& value) {
   stream << value;
   return true;
 }
@@ -142,7 +147,7 @@ bool prettyPrint(std::ostream& stream, const std::string& value) {
 
 template <typename Container>
 typename std::enable_if<has_begin_end_size<Container>::value, bool>::type
-prettyPrint(std::ostream &stream, Container const &value) {
+prettyPrint(std::ostream& stream, Container const& value) {
   stream << "{";
   size_t const size = value.size();
   size_t const n = std::min(size_t{5}, size);
@@ -155,7 +160,7 @@ prettyPrint(std::ostream &stream, Container const &value) {
   }
 
   if (size > n) {
-      stream << ", ...";
+    stream << ", ...";
   }
 
   stream << "}";
@@ -165,7 +170,10 @@ prettyPrint(std::ostream &stream, Container const &value) {
 
 class DebugOutput {
  public:
-  DebugOutput(const char* filename, int line, const char* function_name, const char* argument)
+  DebugOutput(const char* filename,
+              int line,
+              const char* function_name,
+              const char* argument)
       : m_stderr_is_a_tty(isatty(fileno(stderr))),
         m_filename(filename),
         m_line(line),
@@ -183,8 +191,8 @@ class DebugOutput {
     if (print_expression) {
       std::cerr << ansi(ANSI_RESET) << m_argument << ansi(ANSI_BOLD) << " = ";
     }
-    std::cerr << ansi(ANSI_RESET)
-              << ansi(ANSI_VALUE_COLOR) << stream_value.str() << ansi(ANSI_RESET) << std::endl;
+    std::cerr << ansi(ANSI_RESET) << ansi(ANSI_VALUE_COLOR)
+              << stream_value.str() << ansi(ANSI_RESET) << std::endl;
 
     return std::forward<T>(value);
   }
@@ -214,8 +222,10 @@ class DebugOutput {
 
 }  // namespace dbg_macro
 
-// We use a variadic macro to support commas inside expressions (e.g. initializer lists):
-#define dbg(...) \
-  dbg_macro::DebugOutput(__FILE__, __LINE__, __func__, #__VA_ARGS__).print((__VA_ARGS__))
+// We use a variadic macro to support commas inside expressions (e.g.
+// initializer lists):
+#define dbg(...)                                                     \
+  dbg_macro::DebugOutput(__FILE__, __LINE__, __func__, #__VA_ARGS__) \
+      .print((__VA_ARGS__))
 
 #endif  // DBG_MACRO_DBG_H
