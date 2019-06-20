@@ -166,6 +166,7 @@ int main() {
 
   simple_assert(dbg_macro::type_name<int>() == "int");
   simple_assert(dbg_macro::type_name<char>() == "char");
+  simple_assert(dbg_macro::type_name<std::string>() == "std::string");
   simple_assert(dbg_macro::type_name<user_defined_type>() ==
                 "user_defined_type");
 }
