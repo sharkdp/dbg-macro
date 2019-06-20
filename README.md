@@ -46,7 +46,7 @@ int main() {
 
 The code above produces this output:
 
-![dbg(…) macro output](https://i.imgur.com/lQ3Z1D2.png)
+![dbg(…) macro output](https://i.imgur.com/NHEYk9A.png)
 
 ## Features
 
