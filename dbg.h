@@ -41,7 +41,9 @@ License (MIT):
 
 namespace dbg_macro {
 
-namespace detail {
+// Implementation of is_detected to specialize for container-like types
+
+namespace detail_detector {
 
 struct nonesuch {
   nonesuch() = delete;
@@ -69,11 +71,11 @@ struct detector<Default, void_t<Op<Args...>>, Op, Args...> {
   using type = Op<Args...>;
 };
 
-}  // namespace detail
+}  // namespace detail_detector
 
 template <template <class...> class Op, class... Args>
 using is_detected =
-    typename detail::detector<detail::nonesuch, void, Op, Args...>::value_t;
+    typename detail_detector::detector<detail_detector::nonesuch, void, Op, Args...>::value_t;
 
 template <typename T>
 using detect_begin_t = decltype(begin(std::declval<T>()));
