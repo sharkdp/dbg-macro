@@ -28,6 +28,13 @@ struct user_defined_type {
   int x;
 };
 
+class user_defined_class {
+ public:
+  void some_method(int x) {
+    dbg(x);
+  }
+};
+
 std::ostream& operator<<(std::ostream& out, const user_defined_type& v) {
   out << "user_defined_type{" << v.x << "}";
   return out;
@@ -122,6 +129,15 @@ int main() {
   int x = 1;
   dbg(++x);
   simple_assert(x == 2);
+
+  dbg("====== function name tests");
+
+  user_defined_class{}.some_method(42);
+
+  [](int x) {
+    dbg("called from within a lambda!");
+    return x;
+  }(42);
 
   dbg("====== prettyPrint tests");
 
