@@ -164,9 +164,11 @@ int main() {
 
   dbg("====== type_name<T>() tests");
 
-  simple_assert(dbg_macro::type_name<int>() == "int");
-  simple_assert(dbg_macro::type_name<char>() == "char");
-  simple_assert(dbg_macro::type_name<std::string>() == "std::string");
-  simple_assert(dbg_macro::type_name<user_defined_type>() ==
-                "user_defined_type");
+  simple_assert(dbg_macro::type_name(dbg_macro::type_tag<int>{}) == "int");
+  simple_assert(dbg_macro::type_name(dbg_macro::type_tag<char>{}) == "char");
+  simple_assert(dbg_macro::type_name(dbg_macro::type_tag<std::string>{}) ==
+                "std::string");
+  simple_assert(
+      dbg_macro::type_name(dbg_macro::type_tag<user_defined_type>{}) ==
+      "user_defined_type");
 }

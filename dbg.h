@@ -36,6 +36,7 @@ License (MIT):
 #include <sstream>
 #include <string>
 #include <type_traits>
+#include <vector>
 
 #include <unistd.h>
 
@@ -61,7 +62,10 @@ const char* type_name_impl() {
 }
 
 template <typename T>
-std::string type_name() {
+struct type_tag {};
+
+template <int&... ExplicitArgumentBarrier, typename T>
+std::string type_name(type_tag<T>) {
 #if defined(__clang__)
   size_t prefixlen =
       sizeof("const char *dbg_macro::type_name_impl() [T = ") - 1;
@@ -81,9 +85,13 @@ std::string type_name() {
   return type.substr(prefixlen, type.size() - prefixlen - suffixlen);
 }
 
-template <>
-std::string type_name<std::string>() {
+std::string type_name(type_tag<std::string>) {
   return "std::string";
+}
+
+template <typename T>
+std::string type_name(type_tag<std::vector<T, std::allocator<T>>>) {
+  return "std::vector<" + type_name(type_tag<T>{}) + ">";
 }
 
 // Implementation of 'is_detected' to specialize for container-like types
@@ -245,7 +253,7 @@ class DebugOutput {
   }
 
   template <typename T>
-  T&& print(T&& value) const {
+  T&& print(std::string const &type, T&& value) const {
     const T& ref = value;
     std::stringstream stream_value;
     const bool print_expr_and_type = prettyPrint(stream_value, ref);
@@ -258,10 +266,7 @@ class DebugOutput {
     }
     std::cerr << ansi(ANSI_VALUE) << stream_value.str() << ansi(ANSI_RESET);
     if (print_expr_and_type) {
-      using ValueType = typename std::remove_cv<
-          typename std::remove_reference<T>::type>::type;
-      std::cerr << " (" << ansi(ANSI_TYPE) << type_name<ValueType>()
-                << ansi(ANSI_RESET) << ")";
+      std::cerr << " (" << ansi(ANSI_TYPE) << type << ansi(ANSI_RESET) << ")";
     }
     std::cerr << std::endl;
 
@@ -298,8 +303,10 @@ class DebugOutput {
 
 // We use a variadic macro to support commas inside expressions (e.g.
 // initializer lists):
-#define dbg(...)                                                     \
-  dbg_macro::DebugOutput(__FILE__, __LINE__, __func__, #__VA_ARGS__) \
-      .print((__VA_ARGS__))
+#define dbg(...)                                                              \
+  dbg_macro::DebugOutput(__FILE__, __LINE__, __func__, #__VA_ARGS__)          \
+      .print(                                                                 \
+          dbg_macro::type_name(dbg_macro::type_tag<decltype(__VA_ARGS__)>{}), \
+          (__VA_ARGS__))
 
 #endif  // DBG_MACRO_DBG_H
