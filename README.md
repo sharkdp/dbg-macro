@@ -42,8 +42,11 @@ int main() {
 
   return 0;
 }
-
 ```
+
+The code above produces this output:
+
+![dbg(…) macro output](https://i.imgur.com/lQ3Z1D2.png)
 
 ## Features
 
