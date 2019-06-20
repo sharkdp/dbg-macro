@@ -1,5 +1,7 @@
 # `dbg(…)`
 
+[![Build Status](https://travis-ci.org/sharkdp/dbg-macro.svg?branch=master)](https://travis-ci.org/sharkdp/dbg-macro)
+
 *A macro for `printf`-style debugging fans.*
 
 Debuggers are great. But sometimes you just don't have the time and nerve to set
