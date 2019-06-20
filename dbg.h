@@ -39,6 +39,10 @@ License (MIT):
 
 #include <unistd.h>
 
+#if __cplusplus >= 201703L
+#include <optional>
+#endif
+
 namespace dbg_macro {
 
 // Implementation of 'type_name<T>()'
@@ -172,6 +176,21 @@ bool prettyPrint(std::ostream& stream, const char* const& value) {
   stream << '"' << value << '"';
   return true;
 }
+
+#if __cplusplus >= 201703L
+
+template <typename T>
+bool prettyPrint(std::ostream& stream, const std::optional<T>& value) {
+  if (value) {
+    stream << '{' << *value << '}';
+  } else {
+    stream << "nullopt";
+  }
+
+  return true;
+}
+
+#endif  // __cplusplus >= 201703L
 
 template <typename Container>
 typename std::enable_if<has_begin_end_size<Container>::value, bool>::type
