@@ -81,6 +81,11 @@ std::string type_name() {
   return type.substr(prefixlen, type.size() - prefixlen - suffixlen);
 }
 
+template <>
+std::string type_name<std::string>() {
+  return "std::string";
+}
+
 // Implementation of 'is_detected' to specialize for container-like types
 
 namespace detail_detector {
