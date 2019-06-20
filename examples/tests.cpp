@@ -1,11 +1,16 @@
 #include <cstdint>
 #include <string>
 #include <vector>
-#include <cassert>
 #include <array>
 #include <list>
 
 #include <dbg.h>
+
+void simple_assert(const bool condition) {
+  if (!condition) {
+    std::exit(1);
+  }
+}
 
 int factorial(int n) {
   if (dbg(n <= 1)) {
@@ -73,14 +78,14 @@ int main() {
   dbg("====== using dbg(..) inside expressions");
 
   const auto new_int = dbg(test_int) + dbg(2);
-  assert(new_int == 44);
+  simple_assert(new_int == 44);
 
   const auto my_string = dbg("my string");
-  assert(my_string == std::string("my string"));
+  simple_assert(my_string == std::string("my string"));
 
   dbg("====== containers");
 
-  const std::vector<int> dummy_vec_int{1, 2, 3};
+  const std::vector<int> dummy_vec_int{3, 2, 3};
   dbg(dummy_vec_int);
 
   std::vector<int> dummy_vec_int_nonconst{1, 2, 3};
@@ -107,7 +112,7 @@ int main() {
 
   int x = 1;
   dbg(++x);
-  assert(x == 2);
+  simple_assert(x == 2);
 
   dbg("====== class example");
 
