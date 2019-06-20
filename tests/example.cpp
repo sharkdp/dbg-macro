@@ -1,6 +1,13 @@
 #include <vector>
 #include <dbg.h>
 
+// Customization point for type information
+namespace dbg_macro {
+    std::string get_type_name(type_tag<bool>) {
+        return "truth value";
+    }
+}
+
 // You can use "dbg(..)" in expressions:
 int factorial(int n) {
   if (dbg(n <= 1)) {
