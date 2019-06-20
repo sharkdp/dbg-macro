@@ -84,11 +84,16 @@ int main() {
   std::vector<int> dummy_vec_int_nonconst{1, 2, 3};
   dbg(dummy_vec_int_nonconst);
 
+  const std::vector<int> dummy_vec_empty{};
+  dbg(dummy_vec_empty);
+
   std::vector<char> vec_chars{'h', 'e', 'l', 'l', 'o'};
   dbg(vec_chars);
 
   std::vector<bool> vec_bools{true, true, false, false, false, true, false};
   dbg(vec_bools);
+
+  dbg(std::vector<int>{0, 1, 0, 1});
 
   dbg("====== side effects");
 
