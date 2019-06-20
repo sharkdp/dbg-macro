@@ -35,25 +35,81 @@ License (MIT):
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 #include <unistd.h>
 
 namespace dbg_macro {
 
+// -- begin is_detected
+
+struct nonesuch {
+    nonesuch() = delete;
+    ~nonesuch() = delete;
+    nonesuch(nonesuch const&) = delete;
+    void operator=(nonesuch const&) = delete;
+};
+
+namespace detail {
+
+template <typename ...>
+using void_t = void;
+
+template <class Default, class AlwaysVoid,
+          template<class...> class Op, class... Args>
+struct detector {
+  using value_t = std::false_type;
+  using type = Default;
+};
+
+template <class Default, template<class...> class Op, class... Args>
+struct detector<Default, void_t<Op<Args...>>, Op, Args...> {
+  using value_t = std::true_type;
+  using type = Op<Args...>;
+};
+
+} // namespace detail
+
+template <template<class...> class Op, class... Args>
+using is_detected = typename detail::detector<nonesuch, void, Op, Args...>::value_t;
+
+template <template<class...> class Op, class... Args>
+using detected_t = typename detail::detector<nonesuch, void, Op, Args...>::type;
+
+template <class Default, template<class...> class Op, class... Args>
+using detected_or = detail::detector<Default, void, Op, Args...>;
+
+// -- end is_detected
+
 template <typename T>
-bool prettyPrint(std::ostream& stream, const T& value) {
+using detect_begin_t = decltype(begin(std::declval<T>()));
+
+template <typename T>
+using detect_end_t = decltype(end(std::declval<T>()));
+
+template <typename T>
+using detect_size_t = decltype(std::declval<T>().size());
+
+template <typename T>
+struct has_begin_end_size {
+    static constexpr bool value = is_detected<detect_begin_t, T>::value
+                                  && is_detected<detect_end_t, T>::value
+                                  && is_detected<detect_size_t, T>::value;
+};
+
+template <typename T>
+typename std::enable_if<!has_begin_end_size<T>::value, bool>::type
+prettyPrint(std::ostream& stream, const T& value) {
   stream << value;
   return true;
 }
 
-template <>
 bool prettyPrint(std::ostream& stream, const bool& value) {
   stream << std::boolalpha << value;
   return true;
 }
 
-template <>
 bool prettyPrint(std::ostream& stream, const char& value) {
   stream << "'" << value << "'";
   return true;
@@ -75,25 +131,25 @@ bool prettyPrint(std::ostream& stream, const char (&value)[N]) {
   return false;
 }
 
-template <>
 bool prettyPrint(std::ostream& stream, const char* const& value) {
   stream << '"' << value << '"';
   return true;
 }
 
-template <>
 bool prettyPrint(std::ostream& stream, const std::string& value) {
   stream << '"' << value << '"';
   return true;
 }
 
-template <typename S>
-bool prettyPrint(std::ostream& stream, const std::vector<S>& value) {
+template <typename Container>
+typename std::enable_if<has_begin_end_size<Container>::value, bool>::type
+prettyPrint(std::ostream &stream, Container const &value) {
   stream << "{";
-  const int size = value.size();
-  const auto n = std::min(5, size);
-  for (int i = 0; i < n; ++i) {
-    stream << value[i];
+  size_t const size = value.size();
+  size_t const n = std::min(size_t{5}, size);
+  size_t i = 0;
+  for (auto it = begin(value); it != end(value) && i < n; ++it, ++i) {
+    stream << *it;
     if (i != n - 1) {
       stream << ", ";
     }
