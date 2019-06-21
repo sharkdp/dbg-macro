@@ -72,6 +72,15 @@ you don't have to make untracked changes to your filesystem.
 
 ## Customization
 
+If you want `dbg(…)` to work for your custom datatype, you can simply overload `operator<<` for
+`std::ostream&`:
+```c++
+std::ostream& operator<<(std::ostream& out, const user_defined_type& v) {
+  out << "…";
+  return out;
+}
+```
+
 If you want to modify the type name that is printed by `dbg(…)`, you can add a custom
 `get_type_name` overload:
 ```c++
