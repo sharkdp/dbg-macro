@@ -196,14 +196,36 @@ struct has_begin_end_size {
                                 is_detected<detect_size_t, T>::value;
 };
 
+template <typename T>
+using ostream_operator_t = decltype(std::declval<std::ostream&>() << std::declval<T>());
+
+template <typename T>
+struct has_ostream_operator {
+  static constexpr bool value = is_detected<ostream_operator_t, T>::value;
+};
+
+
 // Specializations of "pretty_print"
+
+template <typename T>
+void pretty_print(std::ostream& stream, const T& value, std::true_type) {
+  stream << value;
+}
+
+template <typename T>
+void pretty_print(std::ostream&, const T&, std::false_type) {
+  static_assert(has_ostream_operator<const T&>::value,
+                "Type does not support the << ostream operator");
+}
 
 template <typename T>
 typename std::enable_if<!has_begin_end_size<T>::value &&
                             !std::is_enum<T>::value,
                         bool>::type
 pretty_print(std::ostream& stream, const T& value) {
-  stream << value;
+  pretty_print(
+      stream, value,
+      std::integral_constant<bool, has_ostream_operator<const T&>::value>{});
   return true;
 }
 
