@@ -44,7 +44,7 @@ int main() {
 }
 ```
 
-The code above produces this output:
+The code above produces this output ([try it yourself](https://repl.it/@sharkdp/dbg-macro-demo)):
 
 ![dbg(…) macro output](https://i.imgur.com/NHEYk9A.png)
 
