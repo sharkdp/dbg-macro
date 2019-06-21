@@ -17,13 +17,6 @@ macro that can be used in all circumstances where you would typically write
 #include <vector>
 #include <dbg.h>
 
-// Customization point for type information
-namespace dbg_macro {
-    std::string get_type_name(type_tag<bool>) {
-        return "truth value";
-    }
-}
-
 // You can use "dbg(..)" in expressions:
 int factorial(int n) {
   if (dbg(n <= 1)) {
@@ -76,6 +69,19 @@ sudo ln -s $(readlink -f dbg-macro/dbg.h) /usr/include/dbg.h
 ```
 Ideally, if this turns out to be a good idea, we would ship packages for various distributions so
 you don't have to make untracked changes to your filesystem.
+
+## Customization
+
+If you want to modify the type name that is printed by `dbg(…)`, you can add a custom
+`get_type_name` overload:
+```c++
+// Customization point for type information
+namespace dbg_macro {
+    std::string get_type_name(type_tag<bool>) {
+        return "truth value";
+    }
+}
+```
 
 ## Acknowledgement
 
