@@ -46,19 +46,37 @@ License (MIT):
 
 namespace dbg_macro {
 
+namespace pretty_function {
+
+// Compiler-agnostic version of __PRETTY_FUNCTION__ and constants to
+// extract the template argument in `type_name_impl`
+
+#if defined(__clang__)
+#define DBG_MACRO_PRETTY_FUNCTION __PRETTY_FUNCTION__
+static constexpr size_t PREFIX_LENGTH =
+    sizeof("const char *dbg_macro::type_name_impl() [T = ") - 1;
+static constexpr size_t SUFFIX_LENGTH = sizeof("]") - 1;
+#elif defined(__GNUC__) && !defined(__clang__)
+#define DBG_MACRO_PRETTY_FUNCTION __PRETTY_FUNCTION__
+static constexpr size_t PREFIX_LENGTH =
+    sizeof("const char* dbg_macro::type_name_impl() [with T = ") - 1;
+static constexpr size_t SUFFIX_LENGTH = sizeof("]") - 1;
+#elif defined(_MSC_VER)
+#define DBG_MACRO_PRETTY_FUNCTION __FUNCSIG__
+static constexpr size_t PREFIX_LENGTH =
+    sizeof("const char *__cdecl dbg_macro::type_name_impl<") - 1;
+static constexpr size_t SUFFIX_LENGTH = sizeof(">(void)") - 1;
+#else
+#error "This compiler is currently not supported by dbg_macro."
+#endif
+
+}  // namespace pretty_function
+
 // Implementation of 'type_name<T>()'
 
 template <typename T>
 const char* type_name_impl() {
-#if defined(__clang__)
-  return __PRETTY_FUNCTION__;
-#elif defined(__GNUC__) && !defined(__clang__)
-  return __PRETTY_FUNCTION__;
-#elif defined(_MSC_VER)
-  return __FUNCSIG__;
-#else
-#error "No support for this compiler."
-#endif
+  return DBG_MACRO_PRETTY_FUNCTION;
 }
 
 template <typename T>
@@ -66,23 +84,11 @@ struct type_tag {};
 
 template <int&... ExplicitArgumentBarrier, typename T>
 std::string get_type_name(type_tag<T>) {
-#if defined(__clang__)
-  size_t prefixlen =
-      sizeof("const char *dbg_macro::type_name_impl() [T = ") - 1;
-  size_t suffixlen = sizeof("]") - 1;
-#elif defined(__GNUC__) && !defined(__clang__)
-  size_t prefixlen =
-      sizeof("const char* dbg_macro::type_name_impl() [with T = ") - 1;
-  size_t suffixlen = sizeof("]") - 1;
-#elif defined(_MSC_VER)
-  size_t prefixlen =
-      sizeof("const char *__cdecl dbg_macro::type_name_impl<") - 1;
-  size_t suffixlen = sizeof(">(void)") - 1;
-#else
-#error "No support for this compiler."
-#endif
+  namespace pf = pretty_function;
+
   std::string type = type_name_impl<T>();
-  return type.substr(prefixlen, type.size() - prefixlen - suffixlen);
+  return type.substr(pf::PREFIX_LENGTH,
+                     type.size() - pf::PREFIX_LENGTH - pf::SUFFIX_LENGTH);
 }
 
 template <typename T>
@@ -154,7 +160,8 @@ using void_t = void;
 
 template <class Default,
           class AlwaysVoid,
-          template <class...> class Op,
+          template <class...>
+          class Op,
           class... Args>
 struct detector {
   using value_t = std::false_type;
@@ -189,10 +196,10 @@ struct has_begin_end_size {
                                 is_detected<detect_size_t, T>::value;
 };
 
-// Specializations of "prettyPrint"
+// Specializations of "pretty_print"
 
 template <typename T>
-typename std::enable_if<!has_begin_end_size<T>::value, bool>::type prettyPrint(
+typename std::enable_if<!has_begin_end_size<T>::value, bool>::type pretty_print(
     std::ostream& stream,
     const T& value) {
   stream << value;
@@ -200,19 +207,19 @@ typename std::enable_if<!has_begin_end_size<T>::value, bool>::type prettyPrint(
 }
 
 template <>
-inline bool prettyPrint(std::ostream& stream, const bool& value) {
+inline bool pretty_print(std::ostream& stream, const bool& value) {
   stream << std::boolalpha << value;
   return true;
 }
 
 template <>
-inline bool prettyPrint(std::ostream& stream, const char& value) {
+inline bool pretty_print(std::ostream& stream, const char& value) {
   stream << "'" << value << "'";
   return true;
 }
 
 template <typename P>
-bool prettyPrint(std::ostream& stream, P* const& value) {
+bool pretty_print(std::ostream& stream, P* const& value) {
   if (value == nullptr) {
     stream << "nullptr";
   } else {
@@ -222,13 +229,13 @@ bool prettyPrint(std::ostream& stream, P* const& value) {
 }
 
 template <int N>
-bool prettyPrint(std::ostream& stream, const char (&value)[N]) {
+bool pretty_print(std::ostream& stream, const char (&value)[N]) {
   stream << value;
   return false;
 }
 
 template <>
-inline bool prettyPrint(std::ostream& stream, const char* const& value) {
+inline bool pretty_print(std::ostream& stream, const char* const& value) {
   stream << '"' << value << '"';
   return true;
 }
@@ -236,7 +243,7 @@ inline bool prettyPrint(std::ostream& stream, const char* const& value) {
 #if __cplusplus >= 201703L
 
 template <typename T>
-bool prettyPrint(std::ostream& stream, const std::optional<T>& value) {
+bool pretty_print(std::ostream& stream, const std::optional<T>& value) {
   if (value) {
     stream << '{' << *value << '}';
   } else {
@@ -250,13 +257,13 @@ bool prettyPrint(std::ostream& stream, const std::optional<T>& value) {
 
 template <typename Container>
 typename std::enable_if<has_begin_end_size<Container>::value, bool>::type
-prettyPrint(std::ostream& stream, Container const& value) {
+pretty_print(std::ostream& stream, Container const& value) {
   stream << "{";
   const size_t size = value.size();
   const size_t n = std::min(size_t{5}, size);
   size_t i = 0;
   for (auto it = begin(value); it != end(value) && i < n; ++it, ++i) {
-    prettyPrint(stream, *it);
+    pretty_print(stream, *it);
     if (i != n - 1) {
       stream << ", ";
     }
@@ -272,7 +279,7 @@ prettyPrint(std::ostream& stream, Container const& value) {
 }
 
 template <>
-inline bool prettyPrint(std::ostream& stream, const std::string& value) {
+inline bool pretty_print(std::ostream& stream, const std::string& value) {
   stream << '"' << value << '"';
   return true;
 }
@@ -299,7 +306,7 @@ class DebugOutput {
   T&& print(const std::string& type, T&& value) const {
     const T& ref = value;
     std::stringstream stream_value;
-    const bool print_expr_and_type = prettyPrint(stream_value, ref);
+    const bool print_expr_and_type = pretty_print(stream_value, ref);
 
     std::cerr << ansi(ANSI_DEBUG) << "[" << m_filepath << ":" << m_line << " ("
               << m_function_name << ")] " << ansi(ANSI_RESET);

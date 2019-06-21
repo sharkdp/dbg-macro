@@ -19,9 +19,9 @@ void assert_eq(const L& lhs, const R& rhs) {
 }
 
 template <typename T>
-std::string prettyPrint(T&& value) {
+std::string pretty_print(T&& value) {
   std::stringstream stream;
-  dbg_macro::prettyPrint(stream, std::forward<T>(value));
+  dbg_macro::pretty_print(stream, std::forward<T>(value));
   return stream.str();
 }
 
@@ -38,6 +38,11 @@ std::ostream& operator<<(std::ostream& out, const user_defined_type& v) {
   out << "user_defined_type{" << v.x << "}";
   return out;
 }
+
+/* enum class user_defined_enum { */
+/*   VALUE1, */
+/*   VALUE2 */
+/* }; */
 
 int main() {
   dbg("====== primitive types");
@@ -130,6 +135,9 @@ int main() {
   user_defined_type udt{42};
   dbg(udt);
 
+  /* user_defined_enum ude = user_defined_enum::VALUE2; */
+  /* dbg(ude); */
+
   dbg("====== side effects");
 
   int x = 1;
@@ -145,23 +153,23 @@ int main() {
     return x;
   }(42);
 
-  dbg("====== prettyPrint tests");
+  dbg("====== pretty_print tests");
 
-  assert_eq(prettyPrint(3), "3");
-  assert_eq(prettyPrint(3.14), "3.14");
-  assert_eq(prettyPrint(true), "true");
-  assert_eq(prettyPrint(static_cast<void*>(nullptr)), "nullptr");
-  assert_eq(prettyPrint("string literal"), "string literal");
-  assert_eq(prettyPrint('X'), "'X'");
-  assert_eq(prettyPrint(test_c_string), "\"hello\"");
+  assert_eq(pretty_print(3), "3");
+  assert_eq(pretty_print(3.14), "3.14");
+  assert_eq(pretty_print(true), "true");
+  assert_eq(pretty_print(static_cast<void*>(nullptr)), "nullptr");
+  assert_eq(pretty_print("string literal"), "string literal");
+  assert_eq(pretty_print('X'), "'X'");
+  assert_eq(pretty_print(test_c_string), "\"hello\"");
 
-  assert_eq(prettyPrint(std::vector<int>{}), "{}");
-  assert_eq(prettyPrint(std::vector<int>{1, 2, 3}), "{1, 2, 3}");
-  assert_eq(prettyPrint(std::vector<int>{1, 2, 3, 4, 5, 6, 7, 8, 9}),
+  assert_eq(pretty_print(std::vector<int>{}), "{}");
+  assert_eq(pretty_print(std::vector<int>{1, 2, 3}), "{1, 2, 3}");
+  assert_eq(pretty_print(std::vector<int>{1, 2, 3, 4, 5, 6, 7, 8, 9}),
             "{1, 2, 3, 4, 5, ... size:9}");
-  assert_eq(prettyPrint(vec_of_vec_of_ints), "{{1, 2}, {3, 4, 5}}");
+  assert_eq(pretty_print(vec_of_vec_of_ints), "{{1, 2}, {3, 4, 5}}");
 
-  assert_eq(prettyPrint(udt), "user_defined_type{42}");
+  assert_eq(pretty_print(udt), "user_defined_type{42}");
 
   dbg("====== type_name<T>() tests");
 
