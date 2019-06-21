@@ -158,7 +158,7 @@ int main() {
   assert_eq(prettyPrint(std::vector<int>{}), "{}");
   assert_eq(prettyPrint(std::vector<int>{1, 2, 3}), "{1, 2, 3}");
   assert_eq(prettyPrint(std::vector<int>{1, 2, 3, 4, 5, 6, 7, 8, 9}),
-                   "{1, 2, 3, 4, 5, ... size:9}");
+            "{1, 2, 3, 4, 5, ... size:9}");
   assert_eq(prettyPrint(vec_of_vec_of_ints), "{{1, 2}, {3, 4, 5}}");
 
   assert_eq(prettyPrint(udt), "user_defined_type{42}");
@@ -183,7 +183,7 @@ int main() {
   assert_eq(type_name<int const&>(), "int const&");
 
   assert_eq(type_name<int*>(), "int *");
-  assert_eq(type_name<int** const *>(), "int * * const *");
+  assert_eq(type_name<int** const*>(), "int * * const *");
   assert_eq(type_name<const int*>(), "int const *");
   assert_eq(type_name<const int&>(), "int const&");
   assert_eq(type_name<int const* const>(), "int const * const");
@@ -192,6 +192,6 @@ int main() {
   assert_eq(type_name<std::vector<int>>(), "std::vector<int>");
   assert_eq(type_name<std::vector<int const*>>(), "std::vector<int const *>");
   assert_eq(type_name<std::vector<std::vector<int>>>(),
-                   "std::vector<std::vector<int>>");
+            "std::vector<std::vector<int>>");
   assert_eq(type_name<user_defined_type>(), "user_defined_type");
 }

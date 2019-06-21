@@ -289,7 +289,7 @@ class DebugOutput {
   }
 
   template <typename T>
-  T&& print(std::string const &type, T&& value) const {
+  T&& print(const std::string& type, T&& value) const {
     const T& ref = value;
     std::stringstream stream_value;
     const bool print_expr_and_type = prettyPrint(stream_value, ref);
