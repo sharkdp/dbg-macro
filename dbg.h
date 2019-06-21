@@ -113,23 +113,23 @@ std::string type_name() {
   return get_type_name(type_tag<T>{});
 }
 
-std::string get_type_name(type_tag<short>) {
+inline std::string get_type_name(type_tag<short>) {
   return "short";
 }
 
-std::string get_type_name(type_tag<unsigned short>) {
+inline std::string get_type_name(type_tag<unsigned short>) {
   return "unsigned short";
 }
 
-std::string get_type_name(type_tag<long>) {
+inline std::string get_type_name(type_tag<long>) {
   return "long";
 }
 
-std::string get_type_name(type_tag<unsigned long>) {
+inline std::string get_type_name(type_tag<unsigned long>) {
   return "unsigned long";
 }
 
-std::string get_type_name(type_tag<std::string>) {
+inline std::string get_type_name(type_tag<std::string>) {
   return "std::string";
 }
 
@@ -154,8 +154,7 @@ using void_t = void;
 
 template <class Default,
           class AlwaysVoid,
-          template <class...>
-          class Op,
+          template <class...> class Op,
           class... Args>
 struct detector {
   using value_t = std::false_type;
@@ -201,13 +200,13 @@ typename std::enable_if<!has_begin_end_size<T>::value, bool>::type prettyPrint(
 }
 
 template <>
-bool prettyPrint(std::ostream& stream, const bool& value) {
+inline bool prettyPrint(std::ostream& stream, const bool& value) {
   stream << std::boolalpha << value;
   return true;
 }
 
 template <>
-bool prettyPrint(std::ostream& stream, const char& value) {
+inline bool prettyPrint(std::ostream& stream, const char& value) {
   stream << "'" << value << "'";
   return true;
 }
@@ -229,7 +228,7 @@ bool prettyPrint(std::ostream& stream, const char (&value)[N]) {
 }
 
 template <>
-bool prettyPrint(std::ostream& stream, const char* const& value) {
+inline bool prettyPrint(std::ostream& stream, const char* const& value) {
   stream << '"' << value << '"';
   return true;
 }
@@ -273,7 +272,7 @@ prettyPrint(std::ostream& stream, Container const& value) {
 }
 
 template <>
-bool prettyPrint(std::ostream& stream, const std::string& value) {
+inline bool prettyPrint(std::ostream& stream, const std::string& value) {
   stream << '"' << value << '"';
   return true;
 }
