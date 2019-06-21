@@ -105,6 +105,22 @@ std::string type_name() {
   return get_type_name(type_tag<T>{});
 }
 
+std::string get_type_name(type_tag<short>) {
+  return "short";
+}
+
+std::string get_type_name(type_tag<unsigned short>) {
+  return "unsigned short";
+}
+
+std::string get_type_name(type_tag<long>) {
+  return "long";
+}
+
+std::string get_type_name(type_tag<unsigned long>) {
+  return "unsigned long";
+}
+
 std::string get_type_name(type_tag<std::string>) {
   return "std::string";
 }

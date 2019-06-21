@@ -170,6 +170,10 @@ int main() {
   assert_eq(type_name<void>(), "void");
   assert_eq(type_name<int>(), "int");
   assert_eq(type_name<char>(), "char");
+  assert_eq(type_name<short>(), "short");
+  assert_eq(type_name<long>(), "long");
+  assert_eq(type_name<unsigned short>(), "unsigned short");
+  assert_eq(type_name<unsigned long>(), "unsigned long");
   assert_eq(type_name<float>(), "float");
 
   assert_eq(type_name<int const>(), "int const");
