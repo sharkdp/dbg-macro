@@ -1,6 +1,6 @@
 # `dbg(…)`
 
-[![Build Status](https://travis-ci.org/sharkdp/dbg-macro.svg?branch=master)](https://travis-ci.org/sharkdp/dbg-macro)  [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](dbg.h)
+[![Build Status](https://travis-ci.org/sharkdp/dbg-macro.svg?branch=master)](https://travis-ci.org/sharkdp/dbg-macro)  [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](dbg.h) [![Try it online](https://img.shields.io/badge/try-online-orchid.svg)](https://repl.it/@sharkdp/dbg-macro-demo)
 
 *A macro for `printf`-style debugging fans.*
 
