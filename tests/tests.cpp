@@ -8,14 +8,15 @@
 
 #include <dbg.h>
 
-void simple_assert_helper(const bool condition, const char* expr) {
-  if (!condition) {
-    std::cerr << "assertion '" << expr << "' failed!\n";
+template <typename L, typename R>
+void assert_eq(const L& lhs, const R& rhs) {
+  if (lhs != rhs) {
+    std::cerr << "Assertion 'lhs == rhs' failed!\n";
+    dbg(lhs);
+    dbg(rhs);
     std::exit(1);
   }
 }
-
-#define simple_assert(expr) simple_assert_helper((expr), #expr)
 
 template <typename T>
 std::string prettyPrint(T&& value) {
@@ -87,10 +88,10 @@ int main() {
   dbg("====== using dbg(..) inside expressions");
 
   const auto new_int = dbg(test_int) + dbg(2);
-  simple_assert(new_int == 44);
+  assert_eq(new_int, 44);
 
   const auto my_string = dbg("my string");
-  simple_assert(my_string == std::string("my string"));
+  assert_eq(my_string, std::string("my string"));
 
   dbg("====== containers");
 
@@ -133,7 +134,7 @@ int main() {
 
   int x = 1;
   dbg(++x);
-  simple_assert(x == 2);
+  assert_eq(x, 2);
 
   dbg("====== function name tests");
 
@@ -146,27 +147,47 @@ int main() {
 
   dbg("====== prettyPrint tests");
 
-  simple_assert(prettyPrint(3) == "3");
-  simple_assert(prettyPrint(3.14) == "3.14");
-  simple_assert(prettyPrint(true) == "true");
-  simple_assert(prettyPrint(static_cast<void*>(nullptr)) == "nullptr");
-  simple_assert(prettyPrint("string literal") == "string literal");
-  simple_assert(prettyPrint('X') == "'X'");
-  simple_assert(prettyPrint(test_c_string) == "\"hello\"");
+  assert_eq(prettyPrint(3), "3");
+  assert_eq(prettyPrint(3.14), "3.14");
+  assert_eq(prettyPrint(true), "true");
+  assert_eq(prettyPrint(static_cast<void*>(nullptr)), "nullptr");
+  assert_eq(prettyPrint("string literal"), "string literal");
+  assert_eq(prettyPrint('X'), "'X'");
+  assert_eq(prettyPrint(test_c_string), "\"hello\"");
 
-  simple_assert(prettyPrint(std::vector<int>{}) == "{}");
-  simple_assert(prettyPrint(std::vector<int>{1, 2, 3}) == "{1, 2, 3}");
-  simple_assert(prettyPrint(std::vector<int>{1, 2, 3, 4, 5, 6, 7, 8, 9}) ==
-                "{1, 2, 3, 4, 5, ... size:9}");
-  simple_assert(prettyPrint(vec_of_vec_of_ints) == "{{1, 2}, {3, 4, 5}}");
+  assert_eq(prettyPrint(std::vector<int>{}), "{}");
+  assert_eq(prettyPrint(std::vector<int>{1, 2, 3}), "{1, 2, 3}");
+  assert_eq(prettyPrint(std::vector<int>{1, 2, 3, 4, 5, 6, 7, 8, 9}),
+                   "{1, 2, 3, 4, 5, ... size:9}");
+  assert_eq(prettyPrint(vec_of_vec_of_ints), "{{1, 2}, {3, 4, 5}}");
 
-  simple_assert(prettyPrint(udt) == "user_defined_type{42}");
+  assert_eq(prettyPrint(udt), "user_defined_type{42}");
 
   dbg("====== type_name<T>() tests");
 
-  simple_assert(dbg_macro::type_name<int>() == "int");
-  simple_assert(dbg_macro::type_name<char>() == "char");
-  simple_assert(dbg_macro::type_name<std::string>() == "std::string");
-  simple_assert(dbg_macro::type_name<user_defined_type>() ==
-                "user_defined_type");
+  using namespace dbg_macro;
+
+  assert_eq(type_name<void>(), "void");
+  assert_eq(type_name<int>(), "int");
+  assert_eq(type_name<char>(), "char");
+  assert_eq(type_name<float>(), "float");
+
+  assert_eq(type_name<int const>(), "int const");
+  assert_eq(type_name<int volatile>(), "int volatile");
+
+  assert_eq(type_name<int&>(), "int&");
+  assert_eq(type_name<int const&>(), "int const&");
+
+  assert_eq(type_name<int*>(), "int *");
+  assert_eq(type_name<int** const *>(), "int * * const *");
+  assert_eq(type_name<const int*>(), "int const *");
+  assert_eq(type_name<const int&>(), "int const&");
+  assert_eq(type_name<int const* const>(), "int const * const");
+
+  assert_eq(type_name<std::string>(), "std::string");
+  assert_eq(type_name<std::vector<int>>(), "std::vector<int>");
+  assert_eq(type_name<std::vector<int const*>>(), "std::vector<int const *>");
+  assert_eq(type_name<std::vector<std::vector<int>>>(),
+                   "std::vector<std::vector<int>>");
+  assert_eq(type_name<user_defined_type>(), "user_defined_type");
 }
