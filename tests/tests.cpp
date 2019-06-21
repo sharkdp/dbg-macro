@@ -186,7 +186,7 @@ int main() {
   assert_eq(type_name<int** const*>(), "int** const*");
   assert_eq(type_name<const int*>(), "const int*");
   assert_eq(type_name<int* const>(), "int* const");
-  assert_eq(type_name<int const* const>(), "const int* const");
+  assert_eq(type_name<const int* const>(), "const int* const");
 
   assert_eq(type_name<std::string>(), "std::string");
   assert_eq(type_name<std::vector<int>>(), "std::vector<int>");
