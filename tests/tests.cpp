@@ -176,21 +176,21 @@ int main() {
   assert_eq(type_name<unsigned long>(), "unsigned long");
   assert_eq(type_name<float>(), "float");
 
-  assert_eq(type_name<int const>(), "int const");
-  assert_eq(type_name<int volatile>(), "int volatile");
+  assert_eq(type_name<const int>(), "const int");
+  assert_eq(type_name<volatile int>(), "volatile int");
 
   assert_eq(type_name<int&>(), "int&");
-  assert_eq(type_name<int const&>(), "int const&");
+  assert_eq(type_name<const int&>(), "const int&");
 
-  assert_eq(type_name<int*>(), "int *");
-  assert_eq(type_name<int** const*>(), "int * * const *");
-  assert_eq(type_name<const int*>(), "int const *");
-  assert_eq(type_name<const int&>(), "int const&");
-  assert_eq(type_name<int const* const>(), "int const * const");
+  assert_eq(type_name<int*>(), "int*");
+  assert_eq(type_name<int** const*>(), "int** const*");
+  assert_eq(type_name<const int*>(), "const int*");
+  assert_eq(type_name<int* const>(), "int* const");
+  assert_eq(type_name<int const* const>(), "const int* const");
 
   assert_eq(type_name<std::string>(), "std::string");
   assert_eq(type_name<std::vector<int>>(), "std::vector<int>");
-  assert_eq(type_name<std::vector<int const*>>(), "std::vector<int const *>");
+  assert_eq(type_name<std::vector<const int*>>(), "std::vector<const int*>");
   assert_eq(type_name<std::vector<std::vector<int>>>(),
             "std::vector<std::vector<int>>");
   assert_eq(type_name<user_defined_type>(), "user_defined_type");

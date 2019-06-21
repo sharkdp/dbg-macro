@@ -88,13 +88,21 @@ std::string get_type_name(type_tag<T>) {
 template <typename T>
 std::string type_name() {
   if (std::is_volatile<T>::value) {
-    return type_name<typename std::remove_volatile<T>::type>() + " volatile";
+    if (std::is_pointer<T>::value) {
+      return type_name<typename std::remove_volatile<T>::type>() + " volatile";
+    } else {
+      return "volatile " + type_name<typename std::remove_volatile<T>::type>();
+    }
   }
   if (std::is_const<T>::value) {
-    return type_name<typename std::remove_const<T>::type>() + " const";
+    if (std::is_pointer<T>::value) {
+      return type_name<typename std::remove_const<T>::type>() + " const";
+    } else {
+      return "const " + type_name<typename std::remove_const<T>::type>();
+    }
   }
   if (std::is_pointer<T>::value) {
-    return type_name<typename std::remove_pointer<T>::type>() + " *";
+    return type_name<typename std::remove_pointer<T>::type>() + "*";
   }
   if (std::is_lvalue_reference<T>::value) {
     return type_name<typename std::remove_reference<T>::type>() + "&";
