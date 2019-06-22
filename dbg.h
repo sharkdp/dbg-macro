@@ -38,7 +38,10 @@ License (MIT):
 #include <type_traits>
 #include <vector>
 
+#if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
 #include <unistd.h>
+#define DBG_MACRO_ISATTY_ENABLED
+#endif
 
 #if __cplusplus >= 201703L
 #include <optional>
@@ -301,7 +304,12 @@ class DebugOutput {
               int line,
               const char* function_name,
               const char* expression)
-      : m_stderr_is_a_tty(isatty(fileno(stderr))),
+      :
+#ifdef DBG_MACRO_ISATTY_ENABLED
+        m_use_colorized_output(isatty(fileno(stderr))),
+#else
+        m_use_colorized_output(true),
+#endif
         m_filepath(filepath),
         m_line(line),
         m_function_name(function_name),
@@ -336,14 +344,14 @@ class DebugOutput {
 
  private:
   const char* ansi(const char* code) const {
-    if (m_stderr_is_a_tty) {
+    if (m_use_colorized_output) {
       return code;
     } else {
       return ANSI_EMPTY;
     }
   }
 
-  const bool m_stderr_is_a_tty;
+  const bool m_use_colorized_output;
 
   std::string m_filepath;
   const int m_line;
