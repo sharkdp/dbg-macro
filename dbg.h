@@ -362,10 +362,14 @@ class DebugOutput {
 
 }  // namespace dbg_macro
 
+#ifndef DBG_MACRO_DISABLE
 // We use a variadic macro to support commas inside expressions (e.g.
 // initializer lists):
 #define dbg(...)                                                     \
   dbg_macro::DebugOutput(__FILE__, __LINE__, __func__, #__VA_ARGS__) \
       .print(dbg_macro::type_name<decltype(__VA_ARGS__)>(), (__VA_ARGS__))
+#else
+#define dbg(...) __VA_ARGS__
+#endif  // DBG_MACRO_DISABLE
 
 #endif  // DBG_MACRO_DBG_H
