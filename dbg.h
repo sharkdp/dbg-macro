@@ -199,9 +199,10 @@ struct has_begin_end_size {
 // Specializations of "pretty_print"
 
 template <typename T>
-typename std::enable_if<!has_begin_end_size<T>::value, bool>::type pretty_print(
-    std::ostream& stream,
-    const T& value) {
+typename std::enable_if<!has_begin_end_size<T>::value &&
+                            !std::is_enum<T>::value,
+                        bool>::type
+pretty_print(std::ostream& stream, const T& value) {
   stream << value;
   return true;
 }
@@ -275,6 +276,16 @@ pretty_print(std::ostream& stream, Container const& value) {
   }
 
   stream << "}";
+  return true;
+}
+
+template <typename Enum>
+typename std::enable_if<std::is_enum<Enum>::value, bool>::type pretty_print(
+    std::ostream& stream,
+    Enum const& value) {
+  using UnderlyingType = typename std::underlying_type<Enum>::type;
+  stream << static_cast<UnderlyingType>(value);
+
   return true;
 }
 
