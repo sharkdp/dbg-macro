@@ -228,7 +228,7 @@ bool pretty_print(std::ostream& stream, P* const& value) {
   return true;
 }
 
-template <int N>
+template <size_t N>
 bool pretty_print(std::ostream& stream, const char (&value)[N]) {
   stream << value;
   return false;
