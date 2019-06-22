@@ -1,14 +1,22 @@
 image: Visual Studio 2017
+
+environment:
+  matrix:
+    - GENERATOR: "Visual Studio 14"
+      CONFIG: Debug
+
+    - GENERATOR: "Visual Studio 15 Win64"
+      CONFIG: Release
+
 install:
   - call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
   - cmake --version
 build_script:
   - mkdir build && cd build
   - set CXXFLAGS="/std:c++11"
-  - cmake ..
-  - make
+  - cmake .. -DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake "-G%GENERATOR%"
+  - cmake --build . --config "%CONFIG%"
 test_script:
   - .\dbg_macro-example.exe
   - .\dbg_macro-tests.exe
-  - make test
 deploy: off
