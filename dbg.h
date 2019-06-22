@@ -31,6 +31,7 @@ License (MIT):
 
 #pragma message("WARNING: the 'dbg.h' header is included in your code base")
 
+#include <algorithm>
 #include <ios>
 #include <iostream>
 #include <sstream>
