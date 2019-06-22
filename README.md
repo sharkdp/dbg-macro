@@ -53,7 +53,7 @@ The code above produces this output ([try it yourself](https://repl.it/@sharkdp/
  * Easy to read, colorized output (colors auto-disable when the output is not an interactive terminal)
  * Prints file name, line number, function name and the original expression
  * Adds type information for the printed-out value
- * Specialized pretty-printers for containers, pointers, string literals, `std::optional`, etc.
+ * Specialized pretty-printers for containers, pointers, string literals, enums, `std::optional`, etc.
  * Can be used inside expressions
  * The `dbg.h` header issues a compiler warning when included (so you don't forget to remove)
  * C++11 compatible
