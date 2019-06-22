@@ -39,10 +39,8 @@ std::ostream& operator<<(std::ostream& out, const user_defined_type& v) {
   return out;
 }
 
-/* enum class user_defined_enum { */
-/*   VALUE1, */
-/*   VALUE2 */
-/* }; */
+enum user_defined_enum { UDE_VALUE13 = 13, UDE_VALUE42 = 42 };
+enum class user_defined_enum_class { VALUE13 = 13, VALUE42 = 42 };
 
 int main() {
   dbg("====== primitive types");
@@ -135,8 +133,10 @@ int main() {
   user_defined_type udt{42};
   dbg(udt);
 
-  /* user_defined_enum ude = user_defined_enum::VALUE2; */
-  /* dbg(ude); */
+  user_defined_enum ude = UDE_VALUE42;
+  dbg(ude);
+  user_defined_enum_class udec = user_defined_enum_class::VALUE42;
+  dbg(udec);
 
   dbg("====== side effects");
 
@@ -170,6 +170,8 @@ int main() {
   assert_eq(pretty_print(vec_of_vec_of_ints), "{{1, 2}, {3, 4, 5}}");
 
   assert_eq(pretty_print(udt), "user_defined_type{42}");
+  assert_eq(pretty_print(ude), "42");
+  assert_eq(pretty_print(udec), "42");
 
   dbg("====== type_name<T>() tests");
 
@@ -201,5 +203,8 @@ int main() {
   assert_eq(type_name<std::vector<const int*>>(), "std::vector<const int*>");
   assert_eq(type_name<std::vector<std::vector<int>>>(),
             "std::vector<std::vector<int>>");
+
   assert_eq(type_name<user_defined_type>(), "user_defined_type");
+  assert_eq(type_name<user_defined_enum>(), "user_defined_enum");
+  assert_eq(type_name<user_defined_enum_class>(), "user_defined_enum_class");
 }
