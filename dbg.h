@@ -256,13 +256,11 @@ pretty_print(std::ostream& stream, const T& value) {
   return true;
 }
 
-template <>
 inline bool pretty_print(std::ostream& stream, const bool& value) {
   stream << std::boolalpha << value;
   return true;
 }
 
-template <>
 inline bool pretty_print(std::ostream& stream, const char& value) {
   stream << "'" << value << "'";
   return true;
@@ -341,7 +339,6 @@ typename std::enable_if<std::is_enum<Enum>::value, bool>::type pretty_print(
   return true;
 }
 
-template <>
 inline bool pretty_print(std::ostream& stream, const std::string& value) {
   stream << '"' << value << '"';
   return true;
