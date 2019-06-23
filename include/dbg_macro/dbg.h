@@ -43,15 +43,19 @@ License (MIT):
 
 namespace dbg_macro {
 
-#if defined(__linux__) || defined(__APPLE__)
-  #include <unistd.h>
-  #define ISATTY(FD) isatty(FD)
-  #define FILENO(STREAM) fileno(STREAM)
+#if defined(__unix__) || defined(__APPLE__)
+#include <unistd.h>
 #elif defined(_WIN32)
-  #include <io.h>
-  #define ISATTY(FD) _isatty(FD)
-  #define FILENO(STREAM) _fileno(STREAM)
+#include <io.h>
 #endif
+
+bool is_colorized_output_enabled() {
+#if defined(__unix__) || defined(__APPLE__)
+  return isatty(fileno(stderr));
+#elif defined(_WIN32)
+  return _isatty(_fileno(stderr));
+#endif
+}
 
 namespace pretty_function {
 
@@ -297,7 +301,7 @@ class DebugOutput {
               int line,
               const char* function_name,
               const char* expression)
-      : m_stderr_is_a_tty(ISATTY(FILENO(stderr))),
+      : m_use_colorized_output(is_colorized_output_enabled()),
         m_filepath(filepath),
         m_line(line),
         m_function_name(function_name),
@@ -332,14 +336,14 @@ class DebugOutput {
 
  private:
   const char* ansi(const char* code) const {
-    if (m_stderr_is_a_tty) {
+    if (m_use_colorized_output) {
       return code;
     } else {
       return ANSI_EMPTY;
     }
   }
 
-  const bool m_stderr_is_a_tty;
+  const bool m_use_colorized_output;
 
   std::string m_filepath;
   const int m_line;
