@@ -1,23 +1,41 @@
 language: cpp
+matrix:
+  include:
+    - os: linux
+      dist: xenial
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-7
+      env:
+        - MATRIX_EVAL="CXX=g++-7"
 
-image: xenial
+    - os: linux
+      dist: xenial
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-8
+      env:
+         - MATRIX_EVAL="CXX=g++-8"
 
-compiler:
-  - clang
-  - gcc
+    - os: osx
+      osx_image: xcode10.1
 
+    - os: osx
+      osx_image: xcode10.2
 before_install:
-  - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
-  - sudo apt-get update -qq
-  - sudo apt-get install g++-8 libstdc++-8-dev
-  - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-8 90
-  - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 90
-
+  - eval "${MATRIX_EVAL}"
 script:
   - mkdir build
   - cd build
-  - cmake -DBUILD_TESTS=ON ..
-  - make
-  - ./dbg_macro-example
-  - ./dbg_macro-tests
-  - make test
+  - cmake .. -DCMAKE_BUILD_TYPE=Release -DDBG_MACRO_BUILD_TESTS=ON -DDBG_MACRO_BUILD_EXAMPLES=ON
+  - make -j2
+  - ctest
+  - ./examples/example_factorial
+  - ./examples/example_gcd
+  - ./examples/example_temperature
