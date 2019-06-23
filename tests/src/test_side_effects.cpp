@@ -1,14 +1,4 @@
-#include <dbg_macro/dbg.h>
-
-template <typename L, typename R>
-void assert_eq(const L& lhs, const R& rhs) {
-  if (lhs != rhs) {
-    std::cerr << "Assertion 'lhs == rhs' failed!\n";
-    dbg(lhs);
-    dbg(rhs);
-    std::exit(1);
-  }
-}
+#include "test.h"
 
 int main(int argc, char const* argv[]) {
   int x = 1;
