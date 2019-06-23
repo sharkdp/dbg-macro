@@ -29,8 +29,6 @@ License (MIT):
 #ifndef DBG_MACRO_DBG_H
 #define DBG_MACRO_DBG_H
 
-#pragma message("WARNING: the 'dbg.h' header is included in your code base")
-
 #include <algorithm>
 #include <ios>
 #include <iostream>
@@ -39,16 +37,21 @@ License (MIT):
 #include <type_traits>
 #include <vector>
 
-#if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
-#include <unistd.h>
-#define DBG_MACRO_ISATTY_ENABLED
-#endif
-
 #if __cplusplus >= 201703L
 #include <optional>
 #endif
 
 namespace dbg_macro {
+
+#if defined(__linux__) || defined(__APPLE__)
+  #include <unistd.h>
+  #define ISATTY(FD) isatty(FD)
+  #define FILENO(STREAM) fileno(STREAM)
+#elif defined(_WIN32)
+  #include <io.h>
+  #define ISATTY(FD) _isatty(FD)
+  #define FILENO(STREAM) _fileno(STREAM)
+#endif
 
 namespace pretty_function {
 
@@ -203,19 +206,20 @@ struct has_begin_end_size {
 // Specializations of "pretty_print"
 
 template <typename T>
-typename std::enable_if<!has_begin_end_size<T>::value &&
-                            !std::is_enum<T>::value,
-                        bool>::type
-pretty_print(std::ostream& stream, const T& value) {
+typename std::enable_if<!has_begin_end_size<T>::value, bool>::type pretty_print(
+    std::ostream& stream,
+    const T& value) {
   stream << value;
   return true;
 }
 
+template <>
 inline bool pretty_print(std::ostream& stream, const bool& value) {
   stream << std::boolalpha << value;
   return true;
 }
 
+template <>
 inline bool pretty_print(std::ostream& stream, const char& value) {
   stream << "'" << value << "'";
   return true;
@@ -231,7 +235,7 @@ bool pretty_print(std::ostream& stream, P* const& value) {
   return true;
 }
 
-template <size_t N>
+template <int N>
 bool pretty_print(std::ostream& stream, const char (&value)[N]) {
   stream << value;
   return false;
@@ -265,7 +269,7 @@ pretty_print(std::ostream& stream, Container const& value) {
   const size_t size = value.size();
   const size_t n = std::min(size_t{5}, size);
   size_t i = 0;
-  for (auto it = std::begin(value); it != std::end(value) && i < n; ++it, ++i) {
+  for (auto it = begin(value); it != end(value) && i < n; ++it, ++i) {
     pretty_print(stream, *it);
     if (i != n - 1) {
       stream << ", ";
@@ -281,16 +285,7 @@ pretty_print(std::ostream& stream, Container const& value) {
   return true;
 }
 
-template <typename Enum>
-typename std::enable_if<std::is_enum<Enum>::value, bool>::type pretty_print(
-    std::ostream& stream,
-    Enum const& value) {
-  using UnderlyingType = typename std::underlying_type<Enum>::type;
-  stream << static_cast<UnderlyingType>(value);
-
-  return true;
-}
-
+template <>
 inline bool pretty_print(std::ostream& stream, const std::string& value) {
   stream << '"' << value << '"';
   return true;
@@ -302,17 +297,12 @@ class DebugOutput {
               int line,
               const char* function_name,
               const char* expression)
-      :
-#ifdef DBG_MACRO_ISATTY_ENABLED
-        m_use_colorized_output(isatty(fileno(stderr))),
-#else
-        m_use_colorized_output(true),
-#endif
+      : m_stderr_is_a_tty(ISATTY(FILENO(stderr))),
         m_filepath(filepath),
         m_line(line),
         m_function_name(function_name),
         m_expression(expression) {
-    const int path_length = m_filepath.length();
+    const std::size_t path_length = m_filepath.length();
     if (path_length > MAX_PATH_LENGTH) {
       m_filepath = ".." + m_filepath.substr(path_length - MAX_PATH_LENGTH,
                                             MAX_PATH_LENGTH);
@@ -342,14 +332,14 @@ class DebugOutput {
 
  private:
   const char* ansi(const char* code) const {
-    if (m_use_colorized_output) {
+    if (m_stderr_is_a_tty) {
       return code;
     } else {
       return ANSI_EMPTY;
     }
   }
 
-  const bool m_use_colorized_output;
+  const bool m_stderr_is_a_tty;
 
   std::string m_filepath;
   const int m_line;
@@ -368,14 +358,10 @@ class DebugOutput {
 
 }  // namespace dbg_macro
 
-#ifndef DBG_MACRO_DISABLE
 // We use a variadic macro to support commas inside expressions (e.g.
 // initializer lists):
 #define dbg(...)                                                     \
   dbg_macro::DebugOutput(__FILE__, __LINE__, __func__, #__VA_ARGS__) \
       .print(dbg_macro::type_name<decltype(__VA_ARGS__)>(), (__VA_ARGS__))
-#else
-#define dbg(...) __VA_ARGS__
-#endif  // DBG_MACRO_DISABLE
 
 #endif  // DBG_MACRO_DBG_H
