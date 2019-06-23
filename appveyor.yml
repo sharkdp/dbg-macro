@@ -14,6 +14,4 @@ build_script:
 
     .\examples\Debug\example_factorial.exe
 
-    .\examples\Debug\example_gcd.exe
-
     .\examples\Debug\example_temperature.exe
