@@ -1,10 +1,4 @@
-cmake_minimum_required(VERSION 3.8)
-
-project(tests LANGUAGES CXX)
-
-###############################################################################
 # Add Tests
-###############################################################################
 
 dbg_macro_add_test(test_array "src/test_array.cpp")
 dbg_macro_add_test(test_class "src/test_class.cpp")
