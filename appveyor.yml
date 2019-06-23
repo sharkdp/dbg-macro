@@ -10,7 +10,7 @@ build_script:
 
     msbuild dbg_macro.sln
 
-    ctest -C Debug
+    ctest --output-on-failure -C Debug
 
     .\examples\Debug\example_factorial.exe
 
