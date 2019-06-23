@@ -47,3 +47,11 @@ if(DBG_MACRO_BUILD_TESTS)
 	endmacro()
 	add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/tests")
 endif()
+
+###############################################################################
+# Install
+###############################################################################
+
+install(TARGETS dbg_macro EXPORT dbg_macroConfig)
+install(EXPORT dbg_macroConfig NAMESPACE dbg_macro:: DESTINATION lib/cmake/dbg_macro)
+install(DIRECTORY include DESTINATION .)
