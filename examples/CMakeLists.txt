@@ -7,5 +7,4 @@ project(examples LANGUAGES CXX)
 ###############################################################################
 
 dbg_macro_add_example(example_factorial "src/example_factorial.cpp")
-dbg_macro_add_example(example_gcd "src/example_gcd.cpp")
 dbg_macro_add_example(example_temperature "src/example_temperature.cpp")
