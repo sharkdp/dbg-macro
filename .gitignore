@@ -1,1 +1,6 @@
 /build
+/.vs
+
+out/
+
+\.vscode/
