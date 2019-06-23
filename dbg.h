@@ -362,7 +362,7 @@ class DebugOutput {
 
 }  // namespace dbg_macro
 
-#ifndef DBG_MACRO_DISABLE
+#if !defined(DBG_MACRO_DISABLE) && !defined(NDEBUG)
 // We use a variadic macro to support commas inside expressions (e.g.
 // initializer lists):
 #define dbg(...)                                                     \
