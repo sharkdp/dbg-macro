@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.8)
 
 project(dbg_macro LANGUAGES CXX)
 
@@ -18,7 +18,7 @@ add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 target_include_directories(${PROJECT_NAME} INTERFACE
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 	$<INSTALL_INTERFACE:include>)
-
+target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_11)
 
 ###############################################################################
 # Build Examples
@@ -27,7 +27,6 @@ target_include_directories(${PROJECT_NAME} INTERFACE
 if(DBG_MACRO_BUILD_EXAMPLES)
 	macro(dbg_macro_add_example EXAMPLENAME)
 		add_executable(${EXAMPLENAME} ${ARGN})
-		target_compile_features(${EXAMPLENAME} PRIVATE cxx_std_11)
 		target_link_libraries(${EXAMPLENAME} PRIVATE dbg_macro::dbg_macro)
 		set_target_properties(${EXAMPLENAME} PROPERTIES FOLDER examples)
 	endmacro()
@@ -42,7 +41,6 @@ if(DBG_MACRO_BUILD_TESTS)
 	enable_testing()
 	macro(dbg_macro_add_test TESTNAME)
 		add_executable(${TESTNAME} ${ARGN})
-		target_compile_features(${TESTNAME} PRIVATE cxx_std_11)
 		target_link_libraries(${TESTNAME} PRIVATE dbg_macro::dbg_macro)
 		add_test(NAME ${TESTNAME} COMMAND ${TESTNAME})
 		set_target_properties(${TESTNAME} PROPERTIES FOLDER tests)
