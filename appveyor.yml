@@ -1,22 +1,19 @@
-image: Visual Studio 2017
-
-environment:
-  matrix:
-    - GENERATOR: "Visual Studio 14"
-      CONFIG: Debug
-
-    - GENERATOR: "Visual Studio 15 Win64"
-      CONFIG: Release
-
-install:
-  - call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
-  - cmake --version
+version: '{build}'
+image: Visual Studio 2019
 build_script:
-  - mkdir build && cd build
-  - set CXXFLAGS="/std:c++11"
-  - cmake .. -DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake "-G%GENERATOR%"
-  - cmake --build . --config "%CONFIG%"
-test_script:
-  - .\dbg_macro-example.exe
-  - .\dbg_macro-tests.exe
-deploy: off
+- pwsh: >-
+    mkdir build
+
+    cd build
+
+    cmake .. -DDBG_MACRO_BUILD_TESTS=ON -DDBG_MACRO_BUILD_EXAMPLES=ON
+
+    msbuild dbg_macro.sln
+
+    ctest -C Debug
+
+    .\examples\Debug\example_factorial.exe
+
+    .\examples\Debug\example_gcd.exe
+
+    .\examples\Debug\example_temperature.exe
