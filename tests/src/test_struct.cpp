@@ -26,6 +26,12 @@ std::ostream& operator<<(std::ostream& out, const user_defined_type& v) {
   return out;
 }
 
+namespace dbg_macro {
+    std::string get_type_name(type_tag<user_defined_type>) {
+        return "user_defined_type";
+    }
+}
+
 int main(int argc, char const* argv[]) {
   user_defined_type udt{42};
   dbg(udt);
