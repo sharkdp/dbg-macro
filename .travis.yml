@@ -28,22 +28,22 @@ matrix:
       addons:
         apt:
           sources:
-            - llvm-toolchain-xenial-7.0
+            - llvm-toolchain-xenial-7
           packages:
-            - clang-7.0
+            - clang-7
       env:
-        - MATRIX_EVAL="CXX=clang++-7.0"
+        - MATRIX_EVAL="CXX=clang++-7"
 
     - os: linux
       dist: xenial
       addons:
         apt:
           sources:
-            - llvm-toolchain-xenial-8.0
+            - llvm-toolchain-xenial-8
           packages:
-            - clang-8.0
+            - clang-8
       env:
-        - MATRIX_EVAL="CXX=clang++-8.0"
+        - MATRIX_EVAL="CXX=clang++-8"
 
     - os: osx
       osx_image: xcode10.1
