@@ -60,7 +60,7 @@ The code above produces this output ([try it yourself](https://repl.it/@sharkdp/
 
 ## Installation
 
-```
+```sh
 git clone https://github.com/sharkdp/dbg-macro.git
 cd dbg-macro
 mkdir build && cd build
