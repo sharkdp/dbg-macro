@@ -60,15 +60,13 @@ The code above produces this output ([try it yourself](https://repl.it/@sharkdp/
 
 ## Installation
 
-To make this actually usable, the `dbg.h` header should to be available from all kinds of different
-places and in all kinds of environments. The quick & dirty way is to actually copy the header file
-to `/usr/include` or to clone the repository and symlink `dbg.h` to `/usr/include/dbg.h`.
-``` bash
-git clone https://github.com/sharkdp/dbg-macro
-sudo ln -s $(readlink -f dbg-macro/dbg.h) /usr/include/dbg.h
 ```
-Ideally, if this turns out to be a good idea, we would ship packages for various distributions so
-you don't have to make untracked changes to your filesystem.
+git clone https://github.com/sharkdp/dbg-macro.git
+cd dbg-macro
+mkdir build && cd build
+cmake ..
+sudo make install
+```
 
 ## Customization
 
