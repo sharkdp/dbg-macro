@@ -1,4 +1,4 @@
-#include <dbg_macro/dbg.h>
+#include "test.h"
 
 int main() {
   [](int x) {
