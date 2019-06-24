@@ -1,12 +1,11 @@
-#include <dbg_macro/dbg.h>
+#include "test.h"
 
 int main(int argc, char const* argv[]) {
-  dbg(42);
-  dbg(3.14);
-  dbg(false);
-  dbg(12345678987654321);
-  dbg(static_cast<void*>(nullptr));
+  dbg(1337);
   dbg("string literal");
+
+  assert_eq(pretty_print(1337), "1337");
+  assert_eq(pretty_print("string literal"), "string literal");
 
   return 0;
 }
