@@ -9,3 +9,6 @@ build_script:
   - cmake --build .
 test_script:
   - ctest --output-on-failure -C Debug
+after_test:
+  - .\examples\example_factorial.exe
+  - .\examples\example_temperature.exe
