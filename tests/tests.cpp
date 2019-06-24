@@ -42,6 +42,14 @@ std::ostream& operator<<(std::ostream& out, const user_defined_type& v) {
 enum user_defined_enum { UDE_VALUE13 = 13, UDE_VALUE42 = 42 };
 enum class user_defined_enum_class { VALUE13 = 13, VALUE42 = 42 };
 
+template <typename T, std::size_t N>
+struct user_defined_container {
+  T data[N];
+  const T* begin() const { return data; }
+  const T* end() const { return data + N; }
+  std::size_t size() const { return N; }
+};
+
 int main() {
   dbg("====== primitive types");
 
@@ -55,6 +63,7 @@ int main() {
   int* test_pointer_null = nullptr;
   const int& test_ref_to_int = test_int;
   const char* test_c_string = "hello";
+  const char test_c_chararray[] = "hello";
   const std::string test_string = "hello";
 
   dbg(test_int);
@@ -67,6 +76,7 @@ int main() {
   dbg(test_pointer_null);
   dbg(test_ref_to_int);
   dbg(test_c_string);
+  dbg(test_c_chararray);
   dbg(test_string);
 
   dbg("====== r-values, literals, constants, etc.");
@@ -127,6 +137,12 @@ int main() {
   std::vector<std::vector<std::vector<int>>> vec_of_vec_of_vec_of_ints{
       {{1, 2}, {3, 4, 5}}, {{3}}};
   dbg(vec_of_vec_of_vec_of_ints);
+
+  int dummy_int_array[] = { 11, 22, 33 };
+  dbg(dummy_int_array);
+
+  user_defined_container<int, 3> dummy_udc = { 11, 22, 33 };
+  dbg(dummy_udc);
 
   dbg("====== user-defined types");
 
