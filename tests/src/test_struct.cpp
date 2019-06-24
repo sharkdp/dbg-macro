@@ -17,6 +17,7 @@ namespace dbg_macro {
 
 int main(int argc, char const* argv[]) {
   user_defined_type udt{42};
+
   dbg(udt);
 
   assert_eq(pretty_print(udt), "user_defined_type{42}");
