@@ -8,7 +8,7 @@ before_build:
 build_script:
   - cmake --build .
 test_script:
-  - ctest --output-on-failure -C Debug
+  - ctest --output-on-failure -C %CONFIGURATION%
 after_test:
-  - .\examples\example_factorial.exe
-  - .\examples\example_temperature.exe
+  - .\examples\%CONFIGURATION%\example_factorial.exe
+  - .\examples\%CONFIGURATION%\example_temperature.exe
