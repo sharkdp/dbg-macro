@@ -36,6 +36,7 @@ License (MIT):
 #include <string>
 #include <type_traits>
 #include <vector>
+#include <array>
 
 #if __cplusplus >= 201703L
 #include <optional>
@@ -148,6 +149,11 @@ inline std::string get_type_name(type_tag<unsigned long>) {
 
 inline std::string get_type_name(type_tag<std::string>) {
   return "std::string";
+}
+
+template <typename T, std::size_t N>
+std::string get_type_name(type_tag<std::array<T, N>>) {
+  return "std::array<" + type_name<T>() + ", " + std::to_string(N) + ">";
 }
 
 template <typename T>
