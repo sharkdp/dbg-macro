@@ -273,7 +273,9 @@ pretty_print(std::ostream& stream, Container const& value) {
   const size_t size = value.size();
   const size_t n = std::min(size_t{5}, size);
   size_t i = 0;
-  for (auto it = std::begin(value); it != std::end(value) && i < n; ++it, ++i) {
+  using std::begin;
+  using std::end;
+  for (auto it = begin(value); it != end(value) && i < n; ++it, ++i) {
     pretty_print(stream, *it);
     if (i != n - 1) {
       stream << ", ";
