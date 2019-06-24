@@ -2,41 +2,59 @@
 #include "test.h"
 
 int main(int argc, char const* argv[]) {
-  const std::vector<int> dummy_vec_int{3, 2, 3};
-  dbg(dummy_vec_int);
+  std::vector<int> vector1{};
+  std::vector<int> vector2{1, 2, 3};
 
-  std::vector<int> dummy_vec_int_nonconst{1, 2, 3};
-  dbg(dummy_vec_int_nonconst);
+  std::vector<std::vector<int>> vector3{};
+  std::vector<std::vector<int>> vector4{{}};
+  std::vector<std::vector<int>> vector5{{}, {}};
+  std::vector<std::vector<int>> vector6{{1, 0}, {0, 1}};
 
-  const std::vector<int> dummy_vec_empty{};
-  dbg(dummy_vec_empty);
+  const std::vector<int> vector7{};
+  const std::vector<int> vector8{1, 2, 3};
 
-  std::vector<char> vec_chars{'h', 'e', 'l', 'l', 'o'};
-  dbg(vec_chars);
+  const std::vector<std::vector<int>> vector9{};
+  const std::vector<std::vector<int>> vector10{{}};
+  const std::vector<std::vector<int>> vector11{{}, {}};
+  const std::vector<std::vector<int>> vector12{{1, 0}, {0, 1}};
 
-  std::vector<bool> vec_bools{true, true, false, false, false, true, false};
-  dbg(vec_bools);
+  dbg(vector1);
+  dbg(vector2);
 
-  dbg(std::vector<int>{0, 1, 0, 1});
+  dbg(vector3);
+  dbg(vector4);
+  dbg(vector5);
+  dbg(vector6);
 
-  std::vector<std::vector<int>> vec_of_vec_of_ints{{1, 2}, {3, 4, 5}};
-  dbg(vec_of_vec_of_ints);
+  dbg(vector7);
+  dbg(vector8);
 
-  std::vector<std::vector<std::vector<int>>> vec_of_vec_of_vec_of_ints{
-      {{1, 2}, {3, 4, 5}}, {{3}}};
-  dbg(vec_of_vec_of_vec_of_ints);
+  dbg(vector9);
+  dbg(vector10);
+  dbg(vector11);
+  dbg(vector12);
+
+  dbg(std::vector<int>{});
+  dbg(std::vector<int>{1, 2, 3});
+
+  dbg(std::vector<std::vector<int>>{});
+  dbg(std::vector<std::vector<int>>{{}});
+  dbg(std::vector<std::vector<int>>{{}, {}});
+  dbg(std::vector<std::vector<int>>{{1, 0}, {0, 1}});
 
   assert_eq(pretty_print(std::vector<int>{}), "{}");
   assert_eq(pretty_print(std::vector<int>{1, 2, 3}), "{1, 2, 3}");
-  assert_eq(pretty_print(std::vector<int>{1, 2, 3, 4, 5, 6, 7, 8, 9}),
-            "{1, 2, 3, 4, 5, ... size:9}");
-  assert_eq(pretty_print(vec_of_vec_of_ints), "{{1, 2}, {3, 4, 5}}");
+
+  assert_eq(pretty_print(std::vector<std::vector<int>>{}), "{}");
+  assert_eq(pretty_print(std::vector<std::vector<int>>{{}}), "{{}}");
+  assert_eq(pretty_print(std::vector<std::vector<int>>{{}, {}}), "{{}, {}}");
+  assert_eq(pretty_print(std::vector<std::vector<int>>{{1, 0}, {0, 1}}), "{{1, 0}, {0, 1}}");
 
   assert_eq(dbg_macro::type_name<std::vector<int>>(), "std::vector<int>");
-  assert_eq(dbg_macro::type_name<std::vector<const int*>>(),
-            "std::vector<const int*>");
-  assert_eq(dbg_macro::type_name<std::vector<std::vector<int>>>(),
-            "std::vector<std::vector<int>>");
+  assert_eq(dbg_macro::type_name<std::vector<std::vector<int>>>(), "std::vector<std::vector<int>>");
+
+  assert_eq(dbg_macro::type_name<const std::vector<int>>(), "const std::vector<int>");
+  assert_eq(dbg_macro::type_name<const std::vector<std::vector<int>>>(), "const std::vector<std::vector<int>>");
 
   return 0;
 }
