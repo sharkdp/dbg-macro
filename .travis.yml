@@ -23,6 +23,28 @@ matrix:
       env:
          - MATRIX_EVAL="CXX=g++-8"
 
+    - os: linux
+      dist: xenial
+      addons:
+        apt:
+          sources:
+            - llvm-toolchain-xenial-7.0
+          packages:
+            - clang-7.0
+      env:
+        - MATRIX_EVAL="CXX=clang++-7.0"
+
+    - os: linux
+      dist: xenial
+      addons:
+        apt:
+          sources:
+            - llvm-toolchain-xenial-8.0
+          packages:
+            - clang-8.0
+      env:
+        - MATRIX_EVAL="CXX=clang++-8.0"
+
     - os: osx
       osx_image: xcode10.1
 
