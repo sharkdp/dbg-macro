@@ -1,6 +1,9 @@
 version: '{build}'
-image: Visual Studio 2019
-configuration: Debug
+image:
+  - Visual Studio 2017
+  - Visual Studio 2019
+configuration:
+  - Debug
 before_build:
   - mkdir build
   - cd build
