@@ -180,6 +180,21 @@ template <template <class...> class Op, class... Args>
 using is_detected = typename detail_detector::
     detector<detail_detector::nonesuch, void, Op, Args...>::value_t;
 
+namespace detail {
+
+namespace {
+using std::begin;
+using std::end;
+template <typename T>
+constexpr auto size(const T& c) -> decltype(c.size()) {
+  return c.size();
+}
+template <typename T, std::size_t N>
+constexpr std::size_t size(const T (&)[N]) {
+  return N;
+}
+}  // namespace
+
 template <typename T>
 using detect_begin_t = decltype(begin(std::declval<T>()));
 
@@ -187,7 +202,7 @@ template <typename T>
 using detect_end_t = decltype(end(std::declval<T>()));
 
 template <typename T>
-using detect_size_t = decltype(std::declval<T>().size());
+using detect_size_t = decltype(size(std::declval<T>()));
 
 template <typename T>
 struct has_begin_end_size {
@@ -197,13 +212,15 @@ struct has_begin_end_size {
 };
 
 template <typename T>
-using ostream_operator_t = decltype(std::declval<std::ostream&>() << std::declval<T>());
+using ostream_operator_t =
+    decltype(std::declval<std::ostream&>() << std::declval<T>());
 
 template <typename T>
 struct has_ostream_operator {
   static constexpr bool value = is_detected<ostream_operator_t, T>::value;
 };
 
+}  // namespace detail
 
 // Specializations of "pretty_print"
 
@@ -214,18 +231,19 @@ void pretty_print(std::ostream& stream, const T& value, std::true_type) {
 
 template <typename T>
 void pretty_print(std::ostream&, const T&, std::false_type) {
-  static_assert(has_ostream_operator<const T&>::value,
+  static_assert(detail::has_ostream_operator<const T&>::value,
                 "Type does not support the << ostream operator");
 }
 
 template <typename T>
-typename std::enable_if<!has_begin_end_size<T>::value &&
+typename std::enable_if<!detail::has_begin_end_size<const T&>::value &&
                             !std::is_enum<T>::value,
                         bool>::type
 pretty_print(std::ostream& stream, const T& value) {
   pretty_print(
       stream, value,
-      std::integral_constant<bool, has_ostream_operator<const T&>::value>{});
+      std::integral_constant<bool,
+                             detail::has_ostream_operator<const T&>::value>{});
   return true;
 }
 
@@ -279,12 +297,15 @@ bool pretty_print(std::ostream& stream, const std::optional<T>& value) {
 #endif  // __cplusplus >= 201703L
 
 template <typename Container>
-typename std::enable_if<has_begin_end_size<Container>::value, bool>::type
-pretty_print(std::ostream& stream, Container const& value) {
+typename std::enable_if<detail::has_begin_end_size<const Container&>::value,
+                        bool>::type
+pretty_print(std::ostream& stream, const Container& value) {
   stream << "{";
-  const size_t size = value.size();
+  const size_t size = detail::size(value);
   const size_t n = std::min(size_t{5}, size);
   size_t i = 0;
+  using std::begin;
+  using std::end;
   for (auto it = begin(value); it != end(value) && i < n; ++it, ++i) {
     pretty_print(stream, *it);
     if (i != n - 1) {
