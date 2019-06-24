@@ -1,8 +1,23 @@
 #include "test.h"
 
 int main(int argc, char const* argv[]) {
-  int x = 1;
-  dbg(++x);
-  assert_eq(x, 2);
+  int counter = 0;
+
+  dbg(counter++);
+
+  assert_eq(counter, 1);
+
+  dbg(++counter);
+
+  assert_eq(counter, 2);
+
+  dbg(--counter);
+
+  assert_eq(counter, 1);
+
+  dbg(counter--);
+
+  assert_eq(counter, 0);
+
   return 0;
 }
