@@ -30,11 +30,12 @@ matrix:
       osx_image: xcode10.2
 before_install:
   - eval "${MATRIX_EVAL}"
-script:
+before_script:
   - mkdir build
   - cd build
-  - cmake .. -DCMAKE_BUILD_TYPE=Release -DDBG_MACRO_BUILD_TESTS=ON -DDBG_MACRO_BUILD_EXAMPLES=ON
-  - make -j2
+  - cmake .. -DCMAKE_BUILD_TYPE=Debug -DDBG_MACRO_BUILD_TESTS=ON -DDBG_MACRO_BUILD_EXAMPLES=ON
+script:
+  - cmake --build . -j2
   - ctest --output-on-failure
   - ./examples/example_factorial
   - ./examples/example_temperature
