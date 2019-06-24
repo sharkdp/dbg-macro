@@ -12,7 +12,7 @@ int main(int argc, char const* argv[]) {
 
   int * ptr3 = nullptr;
 
-  const char* c_string = "hello";
+  const char* c_string = "hello world";
 
   dbg(int1);
   dbg(ptr1);
@@ -36,7 +36,7 @@ int main(int argc, char const* argv[]) {
 
   assert_eq(pretty_print(static_cast<void*>(nullptr)), "nullptr");
 
-  assert_eq(pretty_print(c_string), "\"hello\"");
+  assert_eq(pretty_print(c_string), "\"hello world\"");
 
   return 0;
 }

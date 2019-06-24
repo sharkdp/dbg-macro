@@ -1,5 +1,6 @@
 version: '{build}'
 image: Visual Studio 2019
+fast_finish: true
 build_script:
 - pwsh: >-
     mkdir build

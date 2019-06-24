@@ -1,9 +1,11 @@
 #include "test.h"
 
 int main(int argc, char const* argv[]) {
-  const std::string test_string = "hello";
+  const std::string string = "hello world";
 
-  dbg(test_string);
+  dbg(string);
+
+  assert_eq(pretty_print(string), "\"hello world\"");
 
   assert_eq(dbg_macro::type_name<std::string>(), "std::string");
 
