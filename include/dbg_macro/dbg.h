@@ -37,6 +37,7 @@ License (MIT):
 #include <type_traits>
 #include <vector>
 #include <array>
+#include <list>
 
 #if __cplusplus >= 201703L
 #include <optional>
@@ -159,6 +160,11 @@ std::string get_type_name(type_tag<std::array<T, N>>) {
 template <typename T>
 std::string get_type_name(type_tag<std::vector<T, std::allocator<T>>>) {
   return "std::vector<" + type_name<T>() + ">";
+}
+
+template <typename T>
+std::string get_type_name(type_tag<std::list<T, std::allocator<T>>>) {
+  return "std::list<" + type_name<T>() + ">";
 }
 
 // Implementation of 'is_detected' to specialize for container-like types
