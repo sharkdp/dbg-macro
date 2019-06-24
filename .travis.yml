@@ -35,6 +35,6 @@ script:
   - cd build
   - cmake .. -DCMAKE_BUILD_TYPE=Release -DDBG_MACRO_BUILD_TESTS=ON -DDBG_MACRO_BUILD_EXAMPLES=ON
   - make -j2
-  - ctest
+  - ctest --output-on-failure
   - ./examples/example_factorial
   - ./examples/example_temperature
