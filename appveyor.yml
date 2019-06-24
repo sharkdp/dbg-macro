@@ -1,18 +1,11 @@
 version: '{build}'
 image: Visual Studio 2019
-fast_finish: true
+configuration: Debug
+before_build:
+  - mkdir build
+  - cd build
+  - cmake .. -DDBG_MACRO_BUILD_TESTS=ON -DDBG_MACRO_BUILD_EXAMPLES=ON
 build_script:
-- pwsh: >-
-    mkdir build
-
-    cd build
-
-    cmake .. -DDBG_MACRO_BUILD_TESTS=ON -DDBG_MACRO_BUILD_EXAMPLES=ON
-
-    msbuild dbg_macro.sln
-
-    ctest --output-on-failure -C Debug
-
-    .\examples\Debug\example_factorial.exe
-
-    .\examples\Debug\example_temperature.exe
+  - cmake --build .
+test_script:
+  - ctest --output-on-failure -C Debug
