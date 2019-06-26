@@ -349,7 +349,7 @@ class DebugOutput {
         m_line(line),
         m_function_name(function_name),
         m_expression(expression) {
-    const int path_length = m_filepath.length();
+    const std::size_t path_length = m_filepath.length();
     if (path_length > MAX_PATH_LENGTH) {
       m_filepath = ".." + m_filepath.substr(path_length - MAX_PATH_LENGTH,
                                             MAX_PATH_LENGTH);
@@ -395,7 +395,7 @@ class DebugOutput {
   const std::string m_function_name;
   const std::string m_expression;
 
-  static constexpr int MAX_PATH_LENGTH = 20;
+  static constexpr std::size_t MAX_PATH_LENGTH = 20;
 
   static constexpr const char* const ANSI_EMPTY = "";
   static constexpr const char* const ANSI_DEBUG = "\x1b[02m";
