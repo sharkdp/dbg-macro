@@ -185,6 +185,7 @@ namespace detail {
 namespace {
 using std::begin;
 using std::end;
+#if __cplusplus < 201703L
 template <typename T>
 constexpr auto size(const T& c) -> decltype(c.size()) {
   return c.size();
@@ -193,6 +194,9 @@ template <typename T, std::size_t N>
 constexpr std::size_t size(const T (&)[N]) {
   return N;
 }
+#else
+using std::size;
+#endif
 }  // namespace
 
 template <typename T>
