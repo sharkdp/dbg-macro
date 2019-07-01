@@ -368,10 +368,10 @@ class DebugOutput {
 
     std::stringstream output;
     output << ansi(ANSI_DEBUG) << "[" << m_filepath << ":" << m_line << " ("
-              << m_function_name << ")] " << ansi(ANSI_RESET);
+           << m_function_name << ")] " << ansi(ANSI_RESET);
     if (print_expr_and_type) {
       output << ansi(ANSI_EXPRESSION) << m_expression << ansi(ANSI_RESET)
-                << " = ";
+             << " = ";
     }
     output << ansi(ANSI_VALUE) << stream_value.str() << ansi(ANSI_RESET);
     if (print_expr_and_type) {

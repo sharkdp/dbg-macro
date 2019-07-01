@@ -138,10 +138,10 @@ int main() {
       {{1, 2}, {3, 4, 5}}, {{3}}};
   dbg(vec_of_vec_of_vec_of_ints);
 
-  int dummy_int_array[] = { 11, 22, 33 };
+  int dummy_int_array[] = {11, 22, 33};
   dbg(dummy_int_array);
 
-  user_defined_container<int, 3> dummy_udc = { 11, 22, 33 };
+  user_defined_container<int, 3> dummy_udc = {11, 22, 33};
   dbg(dummy_udc);
 
   dbg("====== user-defined types");
