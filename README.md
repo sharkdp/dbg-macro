@@ -55,7 +55,7 @@ The code above produces this output ([try it yourself](https://repl.it/@sharkdp/
  * Adds type information for the printed-out value
  * Specialized pretty-printers for containers, pointers, string literals, enums, `std::optional`, etc.
  * Can be used inside expressions
- * The `dbg.h` header issues a compiler warning when included (so you don't forget to remove)
+ * The `dbg.h` header issues a compiler warning when included (so you don't forget to remove). This can be disabled via the `DBG_MACRO_NO_WARNING` flag.
  * C++11 compatible
 
 ## Installation
