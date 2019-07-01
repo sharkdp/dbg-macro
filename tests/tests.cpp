@@ -141,7 +141,7 @@ int main() {
   int dummy_int_array[] = {11, 22, 33};
   dbg(dummy_int_array);
 
-  user_defined_container<int, 3> dummy_udc = {11, 22, 33};
+  user_defined_container<int, 3> dummy_udc = {{11, 22, 33}};
   dbg(dummy_udc);
 
   dbg("====== user-defined types");
