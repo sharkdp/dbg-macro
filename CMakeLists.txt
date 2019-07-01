@@ -5,8 +5,6 @@ project(dbg_macro)
 string(COMPARE EQUAL ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_SOURCE_DIR} IS_MAIN_PROJECT)
 option(DBG_MACRO_ENABLE_TESTS "Enable tests." ${IS_MAIN_PROJECT})
 
-set(CMAKE_CXX_STANDARD 11)
-
 add_library(${PROJECT_NAME} INTERFACE)
 target_include_directories(${PROJECT_NAME} INTERFACE ".")
 
