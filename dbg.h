@@ -206,13 +206,13 @@ using std::size;
 }  // namespace
 
 template <typename T>
-using detect_begin_t = decltype(begin(std::declval<T>()));
+using detect_begin_t = decltype(detail::begin(std::declval<T>()));
 
 template <typename T>
-using detect_end_t = decltype(end(std::declval<T>()));
+using detect_end_t = decltype(detail::end(std::declval<T>()));
 
 template <typename T>
-using detect_size_t = decltype(size(std::declval<T>()));
+using detect_size_t = decltype(detail::size(std::declval<T>()));
 
 template <typename T>
 struct has_begin_end_size {
