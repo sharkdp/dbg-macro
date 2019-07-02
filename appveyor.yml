@@ -14,6 +14,7 @@ build_script:
   - cmake .. -DCMAKE_CXX_STANDARD="%CPP_STANDARD%" -DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake "-G%GENERATOR%"
   - cmake --build . --config "%CONFIG%"
 test_script:
-  - .\dbg_macro-example.exe
-  - .\dbg_macro-tests.exe
+  - C:\projects\dbg-macro\build\Release\dbg_macro-example.exe
+  - C:\projects\dbg-macro\build\Release\dbg_macro-tests.exe
+  - C:\projects\dbg-macro\build\Release\dbg_macro-tests-macro_disabled.exe
 deploy: off
