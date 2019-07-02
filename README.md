@@ -55,7 +55,7 @@ The code above produces this output ([try it yourself](https://repl.it/@sharkdp/
  * Adds type information for the printed-out value
  * Specialized pretty-printers for containers, pointers, string literals, enums, `std::optional`, etc.
  * Can be used inside expressions
- * The `dbg.h` header issues a compiler warning when included (so you don't forget to remove). This can be disabled via the `DBG_MACRO_NO_WARNING` flag.
+ * The `dbg.h` header issues a compiler warning when included (so you don't forget to remove).
  * C++11 compatible
 
 ## Installation
@@ -69,6 +69,11 @@ sudo ln -s $(readlink -f dbg-macro/dbg.h) /usr/include/dbg.h
 ```
 Ideally, if this turns out to be a good idea, we would ship packages for various distributions so
 you don't have to make untracked changes to your filesystem.
+
+## Configuration
+
+* Set the `DBG_MACRO_DISABLE` flag to disabled the `dbg(…)` macro (i.e. to make it a no-op).
+* Set the `DBG_MACRO_NO_WARNING` flag to disabled the *"'dbg.h' header is included in your code base"* warnings.
 
 ## Customization
 
