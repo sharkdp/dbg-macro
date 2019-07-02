@@ -43,7 +43,6 @@ License (MIT):
 
 #if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
 #include <unistd.h>
-#define DBG_MACRO_ISATTY_ENABLED
 #endif
 
 #if __cplusplus >= 201703L
@@ -51,6 +50,16 @@ License (MIT):
 #endif
 
 namespace dbg_macro {
+
+#if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
+bool isColorizedOutputEnabled() {
+  return isatty(fileno(stderr));
+}
+#else
+bool isColorizedOutputEnabled() {
+  return true;
+}
+#endif
 
 namespace pretty_function {
 
@@ -351,12 +360,7 @@ class DebugOutput {
               int line,
               const char* function_name,
               const char* expression)
-      :
-#ifdef DBG_MACRO_ISATTY_ENABLED
-        m_use_colorized_output(isatty(fileno(stderr))),
-#else
-        m_use_colorized_output(true),
-#endif
+      : m_use_colorized_output(isColorizedOutputEnabled()),
         m_filepath(filepath),
         m_line(line),
         m_function_name(function_name),
