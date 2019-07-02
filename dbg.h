@@ -411,6 +411,12 @@ class DebugOutput {
   static constexpr const char* const ANSI_RESET = "\x1b[0m";
 };
 
+// Identity function to suppress "-Wunused-value" warnings in DBG_MACRO_DISABLE mode
+template <typename T>
+T&& identity(T&& t){
+  return std::forward<T>(t);
+}
+
 }  // namespace dbg_macro
 
 #ifndef DBG_MACRO_DISABLE
@@ -420,7 +426,7 @@ class DebugOutput {
   dbg_macro::DebugOutput(__FILE__, __LINE__, __func__, #__VA_ARGS__) \
       .print(dbg_macro::type_name<decltype(__VA_ARGS__)>(), (__VA_ARGS__))
 #else
-#define dbg(...) __VA_ARGS__
+#define dbg(...) dbg_macro::identity(__VA_ARGS__)
 #endif  // DBG_MACRO_DISABLE
 
 #endif  // DBG_MACRO_DBG_H
