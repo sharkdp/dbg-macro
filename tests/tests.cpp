@@ -220,7 +220,9 @@ int main() {
   assert_eq(type_name<std::vector<std::vector<int>>>(),
             "std::vector<std::vector<int>>");
 
+#ifndef _MSC_VER
   assert_eq(type_name<user_defined_type>(), "user_defined_type");
   assert_eq(type_name<user_defined_enum>(), "user_defined_enum");
   assert_eq(type_name<user_defined_enum_class>(), "user_defined_enum_class");
+#endif
 }
