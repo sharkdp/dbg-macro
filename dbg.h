@@ -411,9 +411,10 @@ class DebugOutput {
   static constexpr const char* const ANSI_RESET = "\x1b[0m";
 };
 
-// Identity function to suppress "-Wunused-value" warnings in DBG_MACRO_DISABLE mode
+// Identity function to suppress "-Wunused-value" warnings in DBG_MACRO_DISABLE
+// mode
 template <typename T>
-T&& identity(T&& t){
+T&& identity(T&& t) {
   return std::forward<T>(t);
 }
 
