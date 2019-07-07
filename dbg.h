@@ -48,6 +48,7 @@ License (MIT):
 
 #if __cplusplus >= 201703L
 #include <optional>
+#include <variant>
 #endif
 
 namespace dbg_macro {
@@ -328,21 +329,6 @@ bool pretty_print(std::ostream& stream, const std::tuple<>& value) {
   return true;
 }
 
-#if __cplusplus >= 201703L
-
-template <typename T>
-bool pretty_print(std::ostream& stream, const std::optional<T>& value) {
-  if (value) {
-    stream << '{' << *value << '}';
-  } else {
-    stream << "nullopt";
-  }
-
-  return true;
-}
-
-#endif  // __cplusplus >= 201703L
-
 template <typename Container>
 typename std::enable_if<detail::has_begin_end_size<const Container&>::value,
                         bool>::type
@@ -383,6 +369,30 @@ inline bool pretty_print(std::ostream& stream, const std::string& value) {
   stream << '"' << value << '"';
   return true;
 }
+
+#if __cplusplus >= 201703L
+
+template <typename T>
+bool pretty_print(std::ostream& stream, const std::optional<T>& value) {
+  if (value) {
+    stream << '{' << *value << '}';
+  } else {
+    stream << "nullopt";
+  }
+
+  return true;
+}
+
+template <typename... Ts>
+bool pretty_print(std::ostream& stream, const std::variant<Ts...>& value) {
+  stream << "{";
+  std::visit([&stream](auto&& arg) { pretty_print(stream, arg); }, value);
+  stream << "}";
+
+  return true;
+}
+
+#endif  // __cplusplus >= 201703L
 
 class DebugOutput {
  public:
