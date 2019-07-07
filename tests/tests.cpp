@@ -193,6 +193,12 @@ int main() {
   assert_eq(pretty_print(std::tuple<int, float>{42, 3.14f}), "{42, 3.14}");
   assert_eq(pretty_print(std::tuple<>{}), "{}");
 
+#if __cplusplus >= 201703L
+  assert_eq(pretty_print(std::make_optional<int>(42)), "{42}");
+  std::optional<int> empty_optional;
+  assert_eq(pretty_print(empty_optional), "nullopt");
+#endif
+
   dbg("====== type_name<T>() tests");
 
   using namespace dbg_macro;
