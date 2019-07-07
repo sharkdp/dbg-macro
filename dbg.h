@@ -36,6 +36,7 @@ License (MIT):
 #include <algorithm>
 #include <ios>
 #include <iostream>
+#include <memory>
 #include <sstream>
 #include <string>
 #include <tuple>
@@ -285,6 +286,20 @@ bool pretty_print(std::ostream& stream, P* const& value) {
   } else {
     stream << value;
   }
+  return true;
+}
+
+template <typename T>
+bool pretty_print(std::ostream& stream, std::unique_ptr<T>& value) {
+  pretty_print(stream, value.get());
+  return true;
+}
+
+template <typename T>
+bool pretty_print(std::ostream& stream, std::shared_ptr<T>& value) {
+  pretty_print(stream, value.get());
+  stream << " (use_count = " << value.use_count() << ")";
+
   return true;
 }
 
