@@ -4,6 +4,7 @@
 #include <list>
 #include <sstream>
 #include <string>
+#include <tuple>
 #include <vector>
 
 #include <dbg.h>
@@ -189,6 +190,9 @@ int main() {
   assert_eq(pretty_print(ude), "42");
   assert_eq(pretty_print(udec), "42");
 
+  assert_eq(pretty_print(std::tuple<int, float>{42, 3.14f}), "{42, 3.14}");
+  assert_eq(pretty_print(std::tuple<>{}), "{}");
+
   dbg("====== type_name<T>() tests");
 
   using namespace dbg_macro;
@@ -221,6 +225,7 @@ int main() {
             "std::vector<std::vector<int>>");
 
 #ifndef _MSC_VER
+  assert_eq(type_name<std::tuple<int, char>>(), "std::tuple<int, char>");
   assert_eq(type_name<user_defined_type>(), "user_defined_type");
   assert_eq(type_name<user_defined_enum>(), "user_defined_enum");
   assert_eq(type_name<user_defined_enum_class>(), "user_defined_enum_class");

@@ -38,6 +38,7 @@ License (MIT):
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <tuple>
 #include <type_traits>
 #include <vector>
 
@@ -295,6 +296,35 @@ bool pretty_print(std::ostream& stream, const char (&value)[N]) {
 template <>
 inline bool pretty_print(std::ostream& stream, const char* const& value) {
   stream << '"' << value << '"';
+  return true;
+}
+
+template <size_t Idx = 0, typename... Ts>
+inline typename std::enable_if<Idx == sizeof...(Ts) - 1>::type
+pretty_print_tuple(std::ostream& stream, const std::tuple<Ts...>& tuple) {
+  stream << std::get<Idx>(tuple);
+}
+
+template <size_t Idx = 0, typename... Ts>
+inline typename std::enable_if<(Idx < sizeof...(Ts) - 1)>::type
+pretty_print_tuple(std::ostream& stream, const std::tuple<Ts...>& tuple) {
+  stream << std::get<Idx>(tuple) << ", ";
+  pretty_print_tuple<Idx + 1, Ts...>(stream, tuple);
+}
+
+template <typename... Ts>
+bool pretty_print(std::ostream& stream, const std::tuple<Ts...>& value) {
+  stream << "{";
+  pretty_print_tuple(stream, value);
+  stream << "}";
+
+  return true;
+}
+
+template <>
+bool pretty_print(std::ostream& stream, const std::tuple<>& value) {
+  stream << "{}";
+
   return true;
 }
 
