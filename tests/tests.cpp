@@ -7,6 +7,11 @@
 #include <tuple>
 #include <vector>
 
+#if __cplusplus >= 201703L
+#include <optional>
+#include <variant>
+#endif
+
 #include <dbg.h>
 
 template <typename L, typename R>
@@ -197,6 +202,11 @@ int main() {
   assert_eq(pretty_print(std::make_optional<int>(42)), "{42}");
   std::optional<int> empty_optional;
   assert_eq(pretty_print(empty_optional), "nullopt");
+
+  std::variant<int, std::string> dummy_variant = "test";
+  assert_eq(pretty_print(dummy_variant), "{\"test\"}");
+  dummy_variant = 42;
+  assert_eq(pretty_print(dummy_variant), "{42}");
 #endif
 
   dbg("====== type_name<T>() tests");
