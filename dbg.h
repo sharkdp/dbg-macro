@@ -289,8 +289,8 @@ bool pretty_print(std::ostream& stream, P* const& value) {
   return true;
 }
 
-template <typename T>
-bool pretty_print(std::ostream& stream, std::unique_ptr<T>& value) {
+template <typename T, typename Deleter>
+bool pretty_print(std::ostream& stream, std::unique_ptr<T, Deleter>& value) {
   pretty_print(stream, value.get());
   return true;
 }

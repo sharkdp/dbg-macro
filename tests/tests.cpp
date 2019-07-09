@@ -199,12 +199,17 @@ int main() {
   assert_eq(pretty_print(std::tuple<int, float>{42, 3.14f}), "{42, 3.14}");
   assert_eq(pretty_print(std::tuple<>{}), "{}");
 
-  auto dummy_shared_ptr = std::shared_ptr<int>{new int(42)};
+  auto dummy_unique_ptr = std::unique_ptr<int>{new int{42}};
+  const void* unique_ptr_address = static_cast<void*>(dummy_unique_ptr.get());
+  std::stringstream s_unique_ptr_expected;
+  s_unique_ptr_expected << unique_ptr_address;
+  assert_eq(s_unique_ptr_expected.str(), pretty_print(dummy_unique_ptr));
+
+  auto dummy_shared_ptr = std::shared_ptr<int>{new int{42}};
   auto dummy_shared_ptr2 = dummy_shared_ptr;
   const void* shared_ptr_address = static_cast<void*>(dummy_shared_ptr.get());
   std::stringstream s_shared_ptr_expected;
   s_shared_ptr_expected << shared_ptr_address << " (use_count = 2)";
-
   assert_eq(s_shared_ptr_expected.str(), pretty_print(dummy_shared_ptr));
 
 #if __cplusplus >= 201703L
