@@ -390,7 +390,9 @@ inline bool pretty_print(std::ostream& stream, const std::string& value) {
 template <typename T>
 bool pretty_print(std::ostream& stream, const std::optional<T>& value) {
   if (value) {
-    stream << '{' << *value << '}';
+    stream << '{';
+    pretty_print(stream, *value);
+    stream << '}';
   } else {
     stream << "nullopt";
   }
