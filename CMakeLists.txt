@@ -10,15 +10,15 @@ target_include_directories(${PROJECT_NAME} INTERFACE ".")
 
 if (DBG_MACRO_ENABLE_TESTS)
     add_executable(${PROJECT_NAME}-example tests/example.cpp)
-    target_compile_options(${PROJECT_NAME}-example PRIVATE -Wall -pedantic -DDBG_MACRO_NO_WARNING)
+    target_compile_options(${PROJECT_NAME}-example PRIVATE -Wall -Werror -pedantic -DDBG_MACRO_NO_WARNING)
     target_link_libraries(${PROJECT_NAME}-example ${PROJECT_NAME})
 
     add_executable(${PROJECT_NAME}-tests tests/tests.cpp)
-    target_compile_options(${PROJECT_NAME}-tests PRIVATE -Wall -pedantic -DDBG_MACRO_NO_WARNING)
+    target_compile_options(${PROJECT_NAME}-tests PRIVATE -Wall -Werror -pedantic -DDBG_MACRO_NO_WARNING)
     target_link_libraries(${PROJECT_NAME}-tests ${PROJECT_NAME})
 
     add_executable(${PROJECT_NAME}-tests-macro_disabled tests/tests.cpp)
-    target_compile_options(${PROJECT_NAME}-tests-macro_disabled PRIVATE -Wall -pedantic -DDBG_MACRO_NO_WARNING -DDBG_MACRO_DISABLE)
+    target_compile_options(${PROJECT_NAME}-tests-macro_disabled PRIVATE -Wall -Werror -pedantic -DDBG_MACRO_NO_WARNING -DDBG_MACRO_DISABLE)
     target_link_libraries(${PROJECT_NAME}-tests-macro_disabled ${PROJECT_NAME})
 
     enable_testing()
