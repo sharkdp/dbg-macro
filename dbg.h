@@ -317,20 +317,20 @@ inline bool pretty_print(std::ostream& stream, const char* const& value) {
 
 template <size_t Idx>
 struct pretty_print_tuple {
-    template <typename... Ts>
-    static void print(std::ostream& stream, const std::tuple<Ts...>& tuple) {
-        pretty_print_tuple<Idx - 1>::print(stream, tuple);
-        stream << ", ";
-        pretty_print(stream, std::get<Idx>(tuple));
-    }
+  template <typename... Ts>
+  static void print(std::ostream& stream, const std::tuple<Ts...>& tuple) {
+    pretty_print_tuple<Idx - 1>::print(stream, tuple);
+    stream << ", ";
+    pretty_print(stream, std::get<Idx>(tuple));
+  }
 };
 
 template <>
 struct pretty_print_tuple<0> {
-    template <typename... Ts>
-    static void print(std::ostream& stream, const std::tuple<Ts...>& tuple) {
-        pretty_print(stream, std::get<0>(tuple));
-    }
+  template <typename... Ts>
+  static void print(std::ostream& stream, const std::tuple<Ts...>& tuple) {
+    pretty_print(stream, std::get<0>(tuple));
+  }
 };
 
 template <typename... Ts>
