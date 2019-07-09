@@ -196,7 +196,7 @@ int main() {
   assert_eq(pretty_print(ude), "42");
   assert_eq(pretty_print(udec), "42");
 
-  assert_eq(pretty_print(std::tuple<int, float>{42, 3.14f}), "{42, 3.14}");
+  assert_eq(pretty_print(std::tuple<int, bool>{42, false}), "{42, false}");
   assert_eq(pretty_print(std::tuple<>{}), "{}");
 
   auto dummy_unique_ptr = std::unique_ptr<int>{new int{42}};

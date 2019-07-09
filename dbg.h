@@ -318,13 +318,14 @@ inline bool pretty_print(std::ostream& stream, const char* const& value) {
 template <size_t Idx = 0, typename... Ts>
 inline typename std::enable_if<Idx == sizeof...(Ts) - 1>::type
 pretty_print_tuple(std::ostream& stream, const std::tuple<Ts...>& tuple) {
-  stream << std::get<Idx>(tuple);
+  pretty_print(stream, std::get<Idx>(tuple));
 }
 
 template <size_t Idx = 0, typename... Ts>
 inline typename std::enable_if<(Idx < sizeof...(Ts) - 1)>::type
 pretty_print_tuple(std::ostream& stream, const std::tuple<Ts...>& tuple) {
-  stream << std::get<Idx>(tuple) << ", ";
+  pretty_print(stream, std::get<Idx>(tuple));
+  stream << ", ";
   pretty_print_tuple<Idx + 1, Ts...>(stream, tuple);
 }
 
