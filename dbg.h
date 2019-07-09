@@ -338,7 +338,7 @@ bool pretty_print(std::ostream& stream, const std::tuple<Ts...>& value) {
 }
 
 template <>
-bool pretty_print(std::ostream& stream, const std::tuple<>& value) {
+bool pretty_print(std::ostream& stream, const std::tuple<>&) {
   stream << "{}";
 
   return true;
