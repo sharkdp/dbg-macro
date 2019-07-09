@@ -213,7 +213,7 @@ int main() {
   assert_eq(s_shared_ptr_expected.str(), pretty_print(dummy_shared_ptr));
 
 #if __cplusplus >= 201703L
-  assert_eq(pretty_print(std::make_optional<int>(42)), "{42}");
+  assert_eq(pretty_print(std::make_optional<bool>(false)), "{false}");
   std::optional<int> empty_optional;
   assert_eq(pretty_print(empty_optional), "nullopt");
 
