@@ -315,24 +315,28 @@ inline bool pretty_print(std::ostream& stream, const char* const& value) {
   return true;
 }
 
-template <size_t Idx = 0, typename... Ts>
-inline typename std::enable_if<Idx == sizeof...(Ts) - 1>::type
-pretty_print_tuple(std::ostream& stream, const std::tuple<Ts...>& tuple) {
-  pretty_print(stream, std::get<Idx>(tuple));
-}
+template <size_t Idx>
+struct pretty_print_tuple {
+    template <typename... Ts>
+    static void print(std::ostream& stream, const std::tuple<Ts...>& tuple) {
+        pretty_print_tuple<Idx - 1>::print(stream, tuple);
+        stream << ", ";
+        pretty_print(stream, std::get<Idx>(tuple));
+    }
+};
 
-template <size_t Idx = 0, typename... Ts>
-inline typename std::enable_if<(Idx < sizeof...(Ts) - 1)>::type
-pretty_print_tuple(std::ostream& stream, const std::tuple<Ts...>& tuple) {
-  pretty_print(stream, std::get<Idx>(tuple));
-  stream << ", ";
-  pretty_print_tuple<Idx + 1, Ts...>(stream, tuple);
-}
+template <>
+struct pretty_print_tuple<0> {
+    template <typename... Ts>
+    static void print(std::ostream& stream, const std::tuple<Ts...>& tuple) {
+        pretty_print(stream, std::get<0>(tuple));
+    }
+};
 
 template <typename... Ts>
 bool pretty_print(std::ostream& stream, const std::tuple<Ts...>& value) {
   stream << "{";
-  pretty_print_tuple(stream, value);
+  pretty_print_tuple<sizeof...(Ts) - 1>::print(stream, value);
   stream << "}";
 
   return true;
