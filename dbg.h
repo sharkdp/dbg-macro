@@ -55,11 +55,11 @@ License (MIT):
 namespace dbg_macro {
 
 #if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
-bool isColorizedOutputEnabled() {
+inline bool isColorizedOutputEnabled() {
   return isatty(fileno(stderr));
 }
 #else
-bool isColorizedOutputEnabled() {
+inline bool isColorizedOutputEnabled() {
   return true;
 }
 #endif
@@ -247,20 +247,20 @@ struct has_ostream_operator {
 // Specializations of "pretty_print"
 
 template <typename T>
-void pretty_print(std::ostream& stream, const T& value, std::true_type) {
+inline void pretty_print(std::ostream& stream, const T& value, std::true_type) {
   stream << value;
 }
 
 template <typename T>
-void pretty_print(std::ostream&, const T&, std::false_type) {
+inline void pretty_print(std::ostream&, const T&, std::false_type) {
   static_assert(detail::has_ostream_operator<const T&>::value,
                 "Type does not support the << ostream operator");
 }
 
 template <typename T>
-typename std::enable_if<!detail::has_begin_end_size<const T&>::value &&
-                            !std::is_enum<T>::value,
-                        bool>::type
+inline typename std::enable_if<!detail::has_begin_end_size<const T&>::value &&
+                                   !std::is_enum<T>::value,
+                               bool>::type
 pretty_print(std::ostream& stream, const T& value) {
   pretty_print(
       stream, value,
@@ -280,7 +280,7 @@ inline bool pretty_print(std::ostream& stream, const char& value) {
 }
 
 template <typename P>
-bool pretty_print(std::ostream& stream, P* const& value) {
+inline bool pretty_print(std::ostream& stream, P* const& value) {
   if (value == nullptr) {
     stream << "nullptr";
   } else {
@@ -290,13 +290,14 @@ bool pretty_print(std::ostream& stream, P* const& value) {
 }
 
 template <typename T, typename Deleter>
-bool pretty_print(std::ostream& stream, std::unique_ptr<T, Deleter>& value) {
+inline bool pretty_print(std::ostream& stream,
+                         std::unique_ptr<T, Deleter>& value) {
   pretty_print(stream, value.get());
   return true;
 }
 
 template <typename T>
-bool pretty_print(std::ostream& stream, std::shared_ptr<T>& value) {
+inline bool pretty_print(std::ostream& stream, std::shared_ptr<T>& value) {
   pretty_print(stream, value.get());
   stream << " (use_count = " << value.use_count() << ")";
 
@@ -304,7 +305,7 @@ bool pretty_print(std::ostream& stream, std::shared_ptr<T>& value) {
 }
 
 template <size_t N>
-bool pretty_print(std::ostream& stream, const char (&value)[N]) {
+inline bool pretty_print(std::ostream& stream, const char (&value)[N]) {
   stream << value;
   return false;
 }
@@ -334,7 +335,7 @@ struct pretty_print_tuple<0> {
 };
 
 template <typename... Ts>
-bool pretty_print(std::ostream& stream, const std::tuple<Ts...>& value) {
+inline bool pretty_print(std::ostream& stream, const std::tuple<Ts...>& value) {
   stream << "{";
   pretty_print_tuple<sizeof...(Ts) - 1>::print(stream, value);
   stream << "}";
@@ -343,16 +344,17 @@ bool pretty_print(std::ostream& stream, const std::tuple<Ts...>& value) {
 }
 
 template <>
-bool pretty_print(std::ostream& stream, const std::tuple<>&) {
+inline bool pretty_print(std::ostream& stream, const std::tuple<>&) {
   stream << "{}";
 
   return true;
 }
 
 template <typename Container>
-typename std::enable_if<detail::has_begin_end_size<const Container&>::value,
-                        bool>::type
-pretty_print(std::ostream& stream, const Container& value) {
+inline
+    typename std::enable_if<detail::has_begin_end_size<const Container&>::value,
+                            bool>::type
+    pretty_print(std::ostream& stream, const Container& value) {
   stream << "{";
   const size_t size = detail::size(value);
   const size_t n = std::min(size_t{5}, size);
@@ -376,9 +378,8 @@ pretty_print(std::ostream& stream, const Container& value) {
 }
 
 template <typename Enum>
-typename std::enable_if<std::is_enum<Enum>::value, bool>::type pretty_print(
-    std::ostream& stream,
-    Enum const& value) {
+inline typename std::enable_if<std::is_enum<Enum>::value, bool>::type
+pretty_print(std::ostream& stream, Enum const& value) {
   using UnderlyingType = typename std::underlying_type<Enum>::type;
   stream << static_cast<UnderlyingType>(value);
 
@@ -393,7 +394,7 @@ inline bool pretty_print(std::ostream& stream, const std::string& value) {
 #if __cplusplus >= 201703L
 
 template <typename T>
-bool pretty_print(std::ostream& stream, const std::optional<T>& value) {
+inline bool pretty_print(std::ostream& stream, const std::optional<T>& value) {
   if (value) {
     stream << '{';
     pretty_print(stream, *value);
@@ -406,7 +407,8 @@ bool pretty_print(std::ostream& stream, const std::optional<T>& value) {
 }
 
 template <typename... Ts>
-bool pretty_print(std::ostream& stream, const std::variant<Ts...>& value) {
+inline bool pretty_print(std::ostream& stream,
+                         const std::variant<Ts...>& value) {
   stream << "{";
   std::visit([&stream](auto&& arg) { pretty_print(stream, arg); }, value);
   stream << "}";
