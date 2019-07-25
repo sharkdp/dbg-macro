@@ -365,7 +365,7 @@ inline
     pretty_print(std::ostream& stream, const Container& value) {
   stream << "{";
   const size_t size = detail::size(value);
-  const size_t n = std::min(size_t{5}, size);
+  const size_t n = std::min(size_t{10}, size);
   size_t i = 0;
   using std::begin;
   using std::end;

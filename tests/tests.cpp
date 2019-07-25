@@ -189,8 +189,9 @@ int main() {
 
   assert_eq(pretty_print(std::vector<int>{}), "{}");
   assert_eq(pretty_print(std::vector<int>{1, 2, 3}), "{1, 2, 3}");
-  assert_eq(pretty_print(std::vector<int>{1, 2, 3, 4, 5, 6, 7, 8, 9}),
-            "{1, 2, 3, 4, 5, ... size:9}");
+  assert_eq(pretty_print(std::vector<int>{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+                                          13, 14}),
+            "{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, ... size:14}");
   assert_eq(pretty_print(vec_of_vec_of_ints), "{{1, 2}, {3, 4, 5}}");
 
   assert_eq(pretty_print(udt), "user_defined_type{42}");
