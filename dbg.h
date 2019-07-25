@@ -34,6 +34,7 @@ License (MIT):
 #endif  // DBG_MACRO_NO_WARNING
 
 #include <algorithm>
+#include <iomanip>
 #include <ios>
 #include <iostream>
 #include <memory>
@@ -275,7 +276,14 @@ inline bool pretty_print(std::ostream& stream, const bool& value) {
 }
 
 inline bool pretty_print(std::ostream& stream, const char& value) {
-  stream << "'" << value << "'";
+  const bool printable = value >= 0x20 && value <= 0x7E;
+
+  if (printable) {
+    stream << "'" << value << "'";
+  } else {
+    stream << "'\\x" << std::setw(2) << std::setfill('0') << std::hex
+           << std::uppercase << (0xFF & value) << "'";
+  }
   return true;
 }
 
