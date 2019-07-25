@@ -124,7 +124,7 @@ int main() {
   const std::vector<int> dummy_vec_empty{};
   dbg(dummy_vec_empty);
 
-  std::vector<char> vec_chars{'h', 'e', 'l', 'l', 'o'};
+  std::vector<char> vec_chars{'h', 'e', 'l', 'l', 'o', '\x00', '\xFE'};
   dbg(vec_chars);
 
   std::vector<bool> vec_bools{true, true, false, false, false, true, false};
@@ -184,6 +184,7 @@ int main() {
   assert_eq(pretty_print(static_cast<void*>(nullptr)), "nullptr");
   assert_eq(pretty_print("string literal"), "string literal");
   assert_eq(pretty_print('X'), "'X'");
+  assert_eq(pretty_print('\x7F'), "'\\x7F'");
   assert_eq(pretty_print(test_c_string), "\"hello\"");
 
   assert_eq(pretty_print(std::vector<int>{}), "{}");
