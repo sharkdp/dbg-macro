@@ -72,8 +72,8 @@ you don't have to make untracked changes to your filesystem.
 
 ## Configuration
 
-* Set the `DBG_MACRO_DISABLE` flag to disabled the `dbg(…)` macro (i.e. to make it a no-op).
-* Set the `DBG_MACRO_NO_WARNING` flag to disabled the *"'dbg.h' header is included in your code base"* warnings.
+* Set the `DBG_MACRO_DISABLE` flag to disable the `dbg(…)` macro (i.e. to make it a no-op).
+* Set the `DBG_MACRO_NO_WARNING` flag to disable the *"'dbg.h' header is included in your code base"* warnings.
 
 ## Customization
 
