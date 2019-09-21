@@ -9,7 +9,7 @@ up everything correctly and just want a quick way to inspect some values at runt
 
 This projects provides a [single header file](dbg.h) with a `dbg(…)`
 macro that can be used in all circumstances where you would typically write
-`printf("…", …)` or `std::cout << … << std::endl;`, but with a few extras.
+`printf("…", …)` or `std::cout << …`, but with a few extras.
 
 ## Examples
 
