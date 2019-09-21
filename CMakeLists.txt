@@ -9,6 +9,10 @@ add_library(${PROJECT_NAME} INTERFACE)
 target_include_directories(${PROJECT_NAME} INTERFACE ".")
 
 if (DBG_MACRO_ENABLE_TESTS)
+    add_executable(${PROJECT_NAME}-perf tests/perf.cpp)
+    target_compile_options(${PROJECT_NAME}-perf PRIVATE -Wall -pedantic -DDBG_MACRO_NO_WARNING)
+    target_link_libraries(${PROJECT_NAME}-perf ${PROJECT_NAME})
+
     add_executable(${PROJECT_NAME}-example tests/example.cpp)
     target_compile_options(${PROJECT_NAME}-example PRIVATE -Wall -pedantic -DDBG_MACRO_NO_WARNING)
     target_link_libraries(${PROJECT_NAME}-example ${PROJECT_NAME})
