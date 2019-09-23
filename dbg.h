@@ -437,10 +437,10 @@ class DebugOutput {
         m_line(line),
         m_function_name(function_name),
         m_expression(expression) {
-    const std::size_t path_length = m_filepath.length();
+    const std::size_t path_length = std::strlen(filepath);
     if (path_length > MAX_PATH_LENGTH) {
-      m_filepath = ".." + m_filepath.substr(path_length - MAX_PATH_LENGTH,
-                                            MAX_PATH_LENGTH);
+      m_filepath_prefix = "..";
+      m_filepath += (path_length - MAX_PATH_LENGTH);
     }
   }
 
@@ -451,8 +451,8 @@ class DebugOutput {
     const bool print_expr_and_type = pretty_print(stream_value, ref);
 
     std::stringstream output;
-    output << ansi(ANSI_DEBUG) << "[" << m_filepath << ":" << m_line << " ("
-           << m_function_name << ")] " << ansi(ANSI_RESET);
+    output << ansi(ANSI_DEBUG) << "[" << m_filepath_prefix << m_filepath << ":"
+           << m_line << " (" << m_function_name << ")] " << ansi(ANSI_RESET);
     if (print_expr_and_type) {
       output << ansi(ANSI_EXPRESSION) << m_expression << ansi(ANSI_RESET)
              << " = ";
@@ -478,9 +478,10 @@ class DebugOutput {
 
   const bool m_use_colorized_output;
 
-  std::string m_filepath;
+  const char* m_filepath_prefix = "";
+  const char* m_filepath;
   const int m_line;
-  const std::string m_function_name;
+  const char* m_function_name;
   const std::string m_expression;
 
   static constexpr std::size_t MAX_PATH_LENGTH = 20;
