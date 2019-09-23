@@ -40,6 +40,7 @@ License (MIT):
 #include <memory>
 #include <sstream>
 #include <string>
+#include <cstring>
 #include <tuple>
 #include <type_traits>
 #include <vector>
