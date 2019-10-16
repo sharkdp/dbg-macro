@@ -239,9 +239,7 @@ using ostream_operator_t =
     decltype(std::declval<std::ostream&>() << std::declval<T>());
 
 template <typename T>
-struct has_ostream_operator {
-  static constexpr bool value = is_detected<ostream_operator_t, T>::value;
-};
+struct has_ostream_operator : is_detected<ostream_operator_t, T> {};
 
 }  // namespace detail
 
@@ -263,10 +261,8 @@ inline typename std::enable_if<!detail::has_begin_end_size<const T&>::value &&
                                    !std::is_enum<T>::value,
                                bool>::type
 pretty_print(std::ostream& stream, const T& value) {
-  pretty_print(
-      stream, value,
-      std::integral_constant<bool,
-                             detail::has_ostream_operator<const T&>::value>{});
+  pretty_print(stream, value,
+               typename detail::has_ostream_operator<const T&>::type{});
   return true;
 }
 
