@@ -61,7 +61,11 @@ inline bool isColorizedOutputEnabled() {
 }
 #else
 inline bool isColorizedOutputEnabled() {
+#ifdef DBG_MACRO_COLORIZED_OUTPUT_WINDOWS
   return true;
+#else
+  return false;
+#endif
 }
 #endif
 
