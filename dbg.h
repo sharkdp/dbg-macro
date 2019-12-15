@@ -562,14 +562,39 @@ T&& identity(T&& t) {
 
 }  // namespace dbg
 
+// Intermediate macro "chooser"
+#define dbg_x(x, A, Func, ...) Func
+
 #ifndef DBG_MACRO_DISABLE
+
+// Empty macro, prints "dbg call reached."
+#define dbg_0()                                            \
+  dbg::DebugOutput(__FILE__, __LINE__, __func__, "") \
+      .print(dbg::type_name<decltype("")>(), ("dbg call reached."))
+
+// The normal macro, prints expression and type
 // We use a variadic macro to support commas inside expressions (e.g.
 // initializer lists):
-#define dbg(...)                                               \
+#define dbg_VA(...)                                                  \
   dbg::DebugOutput(__FILE__, __LINE__, __func__, #__VA_ARGS__) \
       .print(dbg::type_name<decltype(__VA_ARGS__)>(), (__VA_ARGS__))
+
+// Macro to be called and used by user
+// First param must be blank to allow for 0 argument function
+#define dbg(...) dbg_x(, ##__VA_ARGS__, dbg_VA(__VA_ARGS__), dbg_0())
+
 #else
-#define dbg(...) dbg::identity(__VA_ARGS__)
+
+// Empty macro
+#define dbg_0()
+
+// Normal macro, passes value through
+#define dbg_VA(...) dbg::identity(__VA_ARGS__)
+
+// Macro called by user
+// First param must be blank
+#define dbg(...) dbg_x(, ##__VA_ARGS__, dbg_VA(__VA_ARGS__), dbg_0())
+
 #endif  // DBG_MACRO_DISABLE
 
 #endif  // DBG_MACRO_DBG_H
