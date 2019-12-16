@@ -151,6 +151,13 @@ int main() {
   user_defined_container<int, 3> dummy_udc = {{11, 22, 33}};
   dbg(dummy_udc);
 
+#if __cplusplus >= 201703L
+  dbg("====== Sum types");
+  dbg(std::make_optional<bool>(false));
+
+  dbg(std::variant<int, std::string>{"test"});
+#endif
+
   dbg("====== user-defined types");
 
   user_defined_type udt{42};
