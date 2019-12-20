@@ -95,11 +95,15 @@ static constexpr size_t SUFFIX_LENGTH = sizeof(">(void)") - 1;
 
 template <typename T>
 struct print_formatted {
-  static_assert(std::is_integral<T>::value,
-                "Only integral types are supported.");
+  static_assert(std::is_integral<T>::value && std::is_unsigned<T>::value,
+                "Only unsigned integral types are supported.");
 
   print_formatted(T value, int numeric_base)
       : inner(value), base(numeric_base) {}
+
+  operator T() const {
+    return inner;
+  }
 
   const char* prefix() const {
     switch (base) {
