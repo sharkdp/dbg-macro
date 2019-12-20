@@ -225,7 +225,7 @@ int main() {
   assert_eq(pretty_print(dbg::hex(hex_4)), "0x1234567890ABCDEF");
 
   uint32_t oct_1 = 01234567;
-  assert_eq(pretty_print(dbg::oct(oct_1)), "01234567");
+  assert_eq(pretty_print(dbg::oct(oct_1)), "0o1234567");
 
 #if __cplusplus >= 201703L
   assert_eq(pretty_print(std::make_optional<bool>(false)), "{false}");
