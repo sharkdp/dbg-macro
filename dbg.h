@@ -53,7 +53,7 @@ License (MIT):
 #include <variant>
 #endif
 
-namespace dbg_macro {
+namespace dbg {
 
 #if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
 inline bool isColorizedOutputEnabled() {
@@ -73,23 +73,58 @@ namespace pretty_function {
 #if defined(__clang__)
 #define DBG_MACRO_PRETTY_FUNCTION __PRETTY_FUNCTION__
 static constexpr size_t PREFIX_LENGTH =
-    sizeof("const char *dbg_macro::type_name_impl() [T = ") - 1;
+    sizeof("const char *dbg::type_name_impl() [T = ") - 1;
 static constexpr size_t SUFFIX_LENGTH = sizeof("]") - 1;
 #elif defined(__GNUC__) && !defined(__clang__)
 #define DBG_MACRO_PRETTY_FUNCTION __PRETTY_FUNCTION__
 static constexpr size_t PREFIX_LENGTH =
-    sizeof("const char* dbg_macro::type_name_impl() [with T = ") - 1;
+    sizeof("const char* dbg::type_name_impl() [with T = ") - 1;
 static constexpr size_t SUFFIX_LENGTH = sizeof("]") - 1;
 #elif defined(_MSC_VER)
 #define DBG_MACRO_PRETTY_FUNCTION __FUNCSIG__
 static constexpr size_t PREFIX_LENGTH =
-    sizeof("const char *__cdecl dbg_macro::type_name_impl<") - 1;
+    sizeof("const char *__cdecl dbg::type_name_impl<") - 1;
 static constexpr size_t SUFFIX_LENGTH = sizeof(">(void)") - 1;
 #else
 #error "This compiler is currently not supported by dbg_macro."
 #endif
 
 }  // namespace pretty_function
+
+// Formatting helpers
+
+template <typename T>
+struct print_formatted {
+  static_assert(std::is_integral<T>::value,
+                "Only integral types are supported.");
+
+  print_formatted(T value, int numeric_base)
+      : inner(value), base(numeric_base) {}
+
+  const char* prefix() const {
+    switch (base) {
+      case 8:
+        return "0o";
+      case 16:
+        return "0x";
+      default:
+        return "";
+    }
+  }
+
+  T inner;
+  int base;
+};
+
+template <typename T>
+print_formatted<T> hex(T value) {
+  return print_formatted<T>{value, 16};
+}
+
+template <typename T>
+print_formatted<T> oct(T value) {
+  return print_formatted<T>{value, 8};
+}
 
 // Implementation of 'type_name<T>()'
 
@@ -161,6 +196,11 @@ inline std::string get_type_name(type_tag<std::string>) {
 template <typename T>
 std::string get_type_name(type_tag<std::vector<T, std::allocator<T>>>) {
   return "std::vector<" + type_name<T>() + ">";
+}
+
+template <typename T>
+inline std::string get_type_name(type_tag<print_formatted<T>>) {
+  return type_name<T>();
 }
 
 // Implementation of 'is_detected' to specialize for container-like types
@@ -354,6 +394,19 @@ inline bool pretty_print(std::ostream& stream, const std::tuple<>&) {
   return true;
 }
 
+template <typename T>
+inline bool pretty_print(std::ostream& stream,
+                         const print_formatted<T>& value) {
+  stream << value.prefix();
+  stream << std::setw(sizeof(T)) << std::setfill('0')
+         << std::setbase(value.base) << std::uppercase;
+
+  // The '+' sign makes sure that a uint_8 is printed as a number
+  pretty_print(stream, +value.inner);
+
+  return true;
+}
+
 template <typename Container>
 inline
     typename std::enable_if<detail::has_begin_end_size<const Container&>::value,
@@ -496,16 +549,16 @@ T&& identity(T&& t) {
   return std::forward<T>(t);
 }
 
-}  // namespace dbg_macro
+}  // namespace dbg
 
 #ifndef DBG_MACRO_DISABLE
 // We use a variadic macro to support commas inside expressions (e.g.
 // initializer lists):
-#define dbg(...)                                                     \
-  dbg_macro::DebugOutput(__FILE__, __LINE__, __func__, #__VA_ARGS__) \
-      .print(dbg_macro::type_name<decltype(__VA_ARGS__)>(), (__VA_ARGS__))
+#define dbg(...)                                               \
+  dbg::DebugOutput(__FILE__, __LINE__, __func__, #__VA_ARGS__) \
+      .print(dbg::type_name<decltype(__VA_ARGS__)>(), (__VA_ARGS__))
 #else
-#define dbg(...) dbg_macro::identity(__VA_ARGS__)
+#define dbg(...) dbg::identity(__VA_ARGS__)
 #endif  // DBG_MACRO_DISABLE
 
 #endif  // DBG_MACRO_DBG_H
