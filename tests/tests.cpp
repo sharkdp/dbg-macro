@@ -28,7 +28,7 @@ void assert_eq(const L& lhs, const R& rhs) {
 template <typename T>
 std::string pretty_print(T&& value) {
   std::stringstream stream;
-  dbg_macro::pretty_print(stream, std::forward<T>(value));
+  dbg::pretty_print(stream, std::forward<T>(value));
   return stream.str();
 }
 
@@ -214,6 +214,19 @@ int main() {
   s_shared_ptr_expected << shared_ptr_address << " (use_count = 2)";
   assert_eq(s_shared_ptr_expected.str(), pretty_print(dummy_shared_ptr));
 
+  // dbg::hex and dbg::oct
+  uint8_t hex_1 = 0xA7;
+  assert_eq(pretty_print(dbg::hex(hex_1)), "0xA7");
+
+  uint16_t hex_2 = 0xAB12;
+  assert_eq(pretty_print(dbg::hex(hex_2)), "0xAB12");
+
+  uint64_t hex_4 = 0x1234567890ABCDEF;
+  assert_eq(pretty_print(dbg::hex(hex_4)), "0x1234567890ABCDEF");
+
+  uint32_t oct_1 = 01234567;
+  assert_eq(pretty_print(dbg::oct(oct_1)), "01234567");
+
 #if __cplusplus >= 201703L
   assert_eq(pretty_print(std::make_optional<bool>(false)), "{false}");
   std::optional<int> empty_optional;
@@ -227,7 +240,7 @@ int main() {
 
   dbg("====== type_name<T>() tests");
 
-  using namespace dbg_macro;
+  using namespace dbg;
 
   assert_eq(type_name<void>(), "void");
   assert_eq(type_name<int>(), "int");
