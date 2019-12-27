@@ -95,15 +95,13 @@ static constexpr size_t SUFFIX_LENGTH = sizeof(">(void)") - 1;
 
 template <typename T>
 struct print_formatted {
-  static_assert(std::is_integral<T>::value && std::is_unsigned<T>::value,
-                "Only unsigned integral types are supported.");
+  static_assert(std::is_integral<T>::value,
+                "Only integral types are supported.");
 
   print_formatted(T value, int numeric_base)
       : inner(value), base(numeric_base) {}
 
-  operator T() const {
-    return inner;
-  }
+  operator T() const { return inner; }
 
   const char* prefix() const {
     switch (base) {
@@ -401,12 +399,21 @@ inline bool pretty_print(std::ostream& stream, const std::tuple<>&) {
 template <typename T>
 inline bool pretty_print(std::ostream& stream,
                          const print_formatted<T>& value) {
+  if (value.inner < 0) {
+    stream << "-";
+  }
   stream << value.prefix();
   stream << std::setw(sizeof(T)) << std::setfill('0')
          << std::setbase(value.base) << std::uppercase;
 
-  // The '+' sign makes sure that a uint_8 is printed as a number
-  pretty_print(stream, +value.inner);
+  if (value.inner >= 0) {
+    // The '+' sign makes sure that a uint_8 is printed as a number
+    stream << +value.inner;
+  } else {
+    using unsigned_type = typename std::make_unsigned<T>::type;
+
+    stream << +static_cast<unsigned_type>(-value.inner);
+  }
 
   return true;
 }

@@ -224,6 +224,15 @@ int main() {
   uint64_t hex_3 = 0x1234567890ABCDEF;
   assert_eq(pretty_print(dbg::hex(hex_3)), "0x1234567890ABCDEF");
 
+  int8_t hex_4 = -0x80;
+  assert_eq(pretty_print(dbg::hex(hex_4)), "-0x80");
+
+  int8_t hex_5 = 0x7F;
+  assert_eq(pretty_print(dbg::hex(hex_5)), "0x7F");
+
+  int64_t hex_6 = -0x8000000000000000;
+  assert_eq(pretty_print(dbg::hex(hex_6)), "-0x8000000000000000");
+
   uint32_t oct_1 = 01234567;
   assert_eq(pretty_print(dbg::oct(oct_1)), "0o1234567");
 
