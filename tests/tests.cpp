@@ -221,8 +221,8 @@ int main() {
   uint16_t hex_2 = 0xAB12;
   assert_eq(pretty_print(dbg::hex(hex_2)), "0xAB12");
 
-  uint64_t hex_4 = 0x1234567890ABCDEF;
-  assert_eq(pretty_print(dbg::hex(hex_4)), "0x1234567890ABCDEF");
+  uint64_t hex_3 = 0x1234567890ABCDEF;
+  assert_eq(pretty_print(dbg::hex(hex_3)), "0x1234567890ABCDEF");
 
   uint32_t oct_1 = 01234567;
   assert_eq(pretty_print(dbg::oct(oct_1)), "0o1234567");
