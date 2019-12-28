@@ -86,6 +86,10 @@ int main() {
   dbg(test_c_chararray);
   dbg(test_string);
 
+  dbg("====== empty calls");
+
+  dbg();
+
   dbg("====== r-values, literals, constants, etc.");
 
   dbg(42);

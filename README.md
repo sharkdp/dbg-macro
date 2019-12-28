@@ -38,6 +38,8 @@ int main() {
 
   dbg("this line is executed");  // [example.cpp:23 (main)] this line is executed
 
+  dbg();  //[example.cpp:28 (main)] dbg call reached.
+
   factorial(4);
 
   return 0;
