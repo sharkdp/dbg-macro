@@ -572,14 +572,14 @@ T&& identity(T&& t) {
 #ifndef DBG_MACRO_DISABLE
 
 // Empty macro, prints "dbg call reached."
-#define dbg_0()                                            \
+#define dbg_0()                                      \
   dbg::DebugOutput(__FILE__, __LINE__, __func__, "") \
       .print(dbg::type_name<decltype("")>(), ("dbg call reached."))
 
 // The normal macro, prints expression and type
 // We use a variadic macro to support commas inside expressions (e.g.
 // initializer lists):
-#define dbg_VA(...)                                                  \
+#define dbg_VA(...)                                            \
   dbg::DebugOutput(__FILE__, __LINE__, __func__, #__VA_ARGS__) \
       .print(dbg::type_name<decltype(__VA_ARGS__)>(), (__VA_ARGS__))
 
