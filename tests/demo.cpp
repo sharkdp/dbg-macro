@@ -98,6 +98,9 @@ int main() {
   int dummy_int_array[] = {11, 22, 33};
   dbg(dummy_int_array);
 
+  dbg("====== std::tuple and std::pair");
+  dbg(std::pair<std::string, int>{"Hello", 7});
+
   dbg("====== function name tests");
 
   class user_defined_class {

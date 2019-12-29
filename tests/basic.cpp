@@ -74,6 +74,13 @@ TEST_CASE("pretty_print") {
     CHECK(pretty_print(std::tuple<int, bool>{42, false}) == "{42, false}");
   }
 
+  SECTION("std::pair") {
+    CHECK(pretty_print(std::pair<int, bool>{13, true})  == "{13, true}");
+
+    std::pair<std::pair<bool, int>, bool> pair_of_pairs{{false, 17}, true};
+    CHECK(pretty_print(pair_of_pairs)  == "{{false, 17}, true}");
+  }
+
   SECTION("std::unique_ptr") {
     auto dummy_unique_ptr = std::unique_ptr<int>{new int{42}};
     const void* unique_ptr_address = static_cast<void*>(dummy_unique_ptr.get());
