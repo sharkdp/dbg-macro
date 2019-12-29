@@ -99,6 +99,7 @@ int main() {
   dbg(dummy_int_array);
 
   dbg("====== std::tuple and std::pair");
+  dbg(std::tuple<std::string, int, float>{"Hello", 7, 3.14});
   dbg(std::pair<std::string, int>{"Hello", 7});
 
   dbg("====== function name tests");

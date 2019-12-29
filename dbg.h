@@ -275,10 +275,14 @@ template <typename T>
 using detect_size_t = decltype(detail::size(std::declval<T>()));
 
 template <typename T>
-struct has_begin_end_size {
-  static constexpr bool value = is_detected<detect_begin_t, T>::value &&
-                                is_detected<detect_end_t, T>::value &&
-                                is_detected<detect_size_t, T>::value;
+struct is_container {
+  static constexpr bool value =
+      is_detected<detect_begin_t, T>::value &&
+      is_detected<detect_end_t, T>::value &&
+      is_detected<detect_size_t, T>::value &&
+      !std::is_same<std::string,
+                    typename std::remove_cv<
+                        typename std::remove_reference<T>::type>::type>::value;
 };
 
 template <typename T>
@@ -304,7 +308,7 @@ inline void pretty_print(std::ostream&, const T&, std::false_type) {
 }
 
 template <typename T>
-inline typename std::enable_if<!detail::has_begin_end_size<const T&>::value &&
+inline typename std::enable_if<!detail::is_container<const T&>::value &&
                                    !std::is_enum<T>::value,
                                bool>::type
 pretty_print(std::ostream& stream, const T& value) {
@@ -424,10 +428,9 @@ inline bool pretty_print(std::ostream& stream,
 }
 
 template <typename Container>
-inline
-    typename std::enable_if<detail::has_begin_end_size<const Container&>::value,
-                            bool>::type
-    pretty_print(std::ostream& stream, const Container& value) {
+inline typename std::enable_if<detail::is_container<const Container&>::value,
+                               bool>::type
+pretty_print(std::ostream& stream, const Container& value) {
   stream << "{";
   const size_t size = detail::size(value);
   const size_t n = std::min(size_t{10}, size);
