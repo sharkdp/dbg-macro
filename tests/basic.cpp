@@ -206,7 +206,9 @@ TEST_CASE("type_name") {
 
 #ifndef _MSC_VER
   SECTION("std::tuple") {
+    CHECK(type_name<std::tuple<>>() == "std::tuple<>");
     CHECK(type_name<std::tuple<int, char>>() == "std::tuple<int, char>");
+    CHECK(type_name<std::tuple<std::string, char>>() == "std::tuple<std::string, char>");
   }
 
   SECTION("user-defined types") {
