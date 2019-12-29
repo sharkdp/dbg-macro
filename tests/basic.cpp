@@ -63,6 +63,13 @@ TEST_CASE("pretty_print") {
           "{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, ... size:14}");
   }
 
+  SECTION("std::string") {
+    std::string x = "foo";
+    std::string y = "bar";
+    CHECK(pretty_print(x) == "\"foo\"");
+    CHECK(pretty_print(std::make_pair(x, y)) == "{\"foo\", \"bar\"}");
+  }
+
   SECTION("nested containers") {
     std::vector<std::vector<int>> vec_of_vec_of_ints{{1, 2}, {3, 4, 5}};
 
