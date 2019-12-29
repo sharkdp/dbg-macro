@@ -18,13 +18,13 @@ if (DBG_MACRO_ENABLE_TESTS)
     # unit tests with dbg(...) enabled
     add_executable(${PROJECT_NAME}-tests tests/main.cpp tests/basic.cpp)
     target_compile_options(${PROJECT_NAME}-tests PRIVATE -Wall -pedantic -DDBG_MACRO_NO_WARNING)
-    target_link_libraries(${PROJECT_NAME}-tests Catch2::Catch2)
+    target_link_libraries(${PROJECT_NAME}-tests ${PROJECT_NAME} Catch2::Catch2)
     catch_discover_tests(${PROJECT_NAME}-tests)
 
     # unit tests with dbg(...) disabled
     add_executable(${PROJECT_NAME}-tests-macro_disabled tests/main.cpp tests/basic.cpp)
     target_compile_options(${PROJECT_NAME}-tests-macro_disabled PRIVATE -Wall -pedantic -DDBG_MACRO_NO_WARNING -DDBG_MACRO_DISABLE)
-    target_link_libraries(${PROJECT_NAME}-tests-macro_disabled Catch2::Catch2)
+    target_link_libraries(${PROJECT_NAME}-tests-macro_disabled ${PROJECT_NAME} Catch2::Catch2)
     catch_discover_tests(${PROJECT_NAME}-tests-macro_disabled)
 
     # dbg(…) example file
