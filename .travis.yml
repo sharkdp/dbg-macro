@@ -52,5 +52,6 @@ script:
   - cmake -DCMAKE_CXX_STANDARD=${CPP_STANDARD} ..
   - make
   - ./dbg_macro-example
+  - ./dbg_macro-demo
   - ./dbg_macro-tests
-  - make test
+  - ./dbg_macro-tests-macro_disabled

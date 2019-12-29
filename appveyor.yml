@@ -16,6 +16,7 @@ build_script:
   - cmake --build . --config "%CONFIG%"
 test_script:
   - C:\projects\dbg-macro\build\Release\dbg_macro-example.exe
+  - C:\projects\dbg-macro\build\Release\dbg_macro-demo.exe
   - C:\projects\dbg-macro\build\Release\dbg_macro-tests.exe
   - C:\projects\dbg-macro\build\Release\dbg_macro-tests-macro_disabled.exe
 deploy: off
