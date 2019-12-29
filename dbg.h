@@ -200,6 +200,11 @@ std::string get_type_name(type_tag<std::vector<T, std::allocator<T>>>) {
   return "std::vector<" + type_name<T>() + ">";
 }
 
+template <typename T1, typename T2>
+std::string get_type_name(type_tag<std::pair<T1, T2>>) {
+  return "std::pair<" + type_name<T1>() + ", " + type_name<T2>() + ">";
+}
+
 template <typename T>
 inline std::string get_type_name(type_tag<print_formatted<T>>) {
   return type_name<T>();
@@ -456,6 +461,16 @@ pretty_print(std::ostream& stream, Enum const& value) {
 
 inline bool pretty_print(std::ostream& stream, const std::string& value) {
   stream << '"' << value << '"';
+  return true;
+}
+
+template <typename T1, typename T2>
+inline bool pretty_print(std::ostream& stream, const std::pair<T1, T2>& value) {
+  stream << "{";
+  pretty_print(stream, value.first);
+  stream << ", ";
+  pretty_print(stream, value.second);
+  stream << "}";
   return true;
 }
 
