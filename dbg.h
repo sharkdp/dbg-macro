@@ -205,6 +205,24 @@ std::string get_type_name(type_tag<std::pair<T1, T2>>) {
   return "std::pair<" + type_name<T1>() + ", " + type_name<T2>() + ">";
 }
 
+template <typename... T>
+std::string type_list_to_string() {
+  std::string result;
+  auto unused = {(result += type_name<T>() + ", ", 0)..., 0};
+  static_cast<void>(unused);
+
+  if (sizeof...(T) > 0) {
+    result.pop_back();
+    result.pop_back();
+  }
+  return result;
+}
+
+template <typename... T>
+std::string get_type_name(type_tag<std::tuple<T...>>) {
+  return "std::tuple<" + type_list_to_string<T...>() + ">";
+}
+
 template <typename T>
 inline std::string get_type_name(type_tag<print_formatted<T>>) {
   return type_name<T>();
