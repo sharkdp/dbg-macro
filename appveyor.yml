@@ -7,6 +7,7 @@ environment:
       CPP_STANDARD: 17
 
 install:
+  - git submodule -q update --init --recursive
   - call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
   - cmake --version
 build_script:
