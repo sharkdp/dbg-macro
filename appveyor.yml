@@ -9,9 +9,9 @@ install:
   - call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
   - cmake --version
 build_script:
-  - cmd: mkdir build && cd build
-  - cmd: cmake .. -DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake
-  - cmd: cmake --build . --config "%CONFIG%"
+  - mkdir build && cd build
+  - cmake .. -DCMAKE_CXX_STANDARD=17 -DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake
+  - cmake --build . --config "%CONFIG%"
 test_script:
   - C:\projects\dbg-macro\build\Release\dbg_macro-example.exe
   - C:\projects\dbg-macro\build\Release\dbg_macro-demo.exe
