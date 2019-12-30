@@ -277,7 +277,7 @@ namespace detail {
 namespace {
 using std::begin;
 using std::end;
-#if DBG_MACRO_CXX_STANDARD >= 17
+#if DBG_MACRO_CXX_STANDARD < 17
 template <typename T>
 constexpr auto size(const T& c) -> decltype(c.size()) {
   return c.size();
