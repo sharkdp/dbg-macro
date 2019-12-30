@@ -67,8 +67,22 @@ to `/usr/include` or to clone the repository and symlink `dbg.h` to `/usr/includ
 git clone https://github.com/sharkdp/dbg-macro
 sudo ln -s $(readlink -f dbg-macro/dbg.h) /usr/include/dbg.h
 ```
-Ideally, if this turns out to be a good idea, we would ship packages for various distributions so
-you don't have to make untracked changes to your filesystem.
+If you don't want to make untracked changes to your filesystem, check below if there is a package for
+your OS or package manager.
+
+### On Arch Linux
+
+You can install [`dbg-macro` from the AUR](https://aur.archlinux.org/packages/dbg-macro/):
+``` bash
+yay -S dbg-macro
+```
+
+### With vcpkg
+
+You can install the [`dbg-macro` port](https://github.com/microsoft/vcpkg/tree/master/ports/dbg-macro) via:
+``` bash
+vcpkg install dbg-macro
+```
 
 ## Configuration
 
