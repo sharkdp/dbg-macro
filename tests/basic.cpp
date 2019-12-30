@@ -8,7 +8,7 @@
 #include <tuple>
 #include <vector>
 
-#if __cplusplus >= 201703L
+#if DBG_MACRO_CXX_STANDARD >= 17
 #include <optional>
 #include <variant>
 #endif
@@ -105,7 +105,7 @@ TEST_CASE("pretty_print") {
     CHECK(s_shared_ptr_expected.str() == pretty_print(dummy_shared_ptr));
   }
 
-#if __cplusplus >= 201703L
+#if DBG_MACRO_CXX_STANDARD >= 17
   SECTION("std::optional") {
     CHECK(pretty_print(std::make_optional<bool>(false)) == "{false}");
     std::optional<int> empty_optional;

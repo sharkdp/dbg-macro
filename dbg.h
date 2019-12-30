@@ -48,7 +48,15 @@ License (MIT):
 #include <unistd.h>
 #endif
 
-#if __cplusplus >= 201703L
+#if __cplusplus >= 201703L || defined(_MSC_VER)
+#define DBG_MACRO_CXX_STANDARD 17
+#elif __cplusplus >= 201402L
+#define DBG_MACRO_CXX_STANDARD 14
+#else
+#define DBG_MACRO_CXX_STANDARD 11
+#endif
+
+#if DBG_MACRO_CXX_STANDARD >= 17
 #include <optional>
 #include <variant>
 #endif
@@ -269,7 +277,7 @@ namespace detail {
 namespace {
 using std::begin;
 using std::end;
-#if __cplusplus < 201703L
+#if DBG_MACRO_CXX_STANDARD >= 17
 template <typename T>
 constexpr auto size(const T& c) -> decltype(c.size()) {
   return c.size();
@@ -495,7 +503,7 @@ inline bool pretty_print(std::ostream& stream, const std::pair<T1, T2>& value) {
   return true;
 }
 
-#if __cplusplus >= 201703L
+#if DBG_MACRO_CXX_STANDARD >= 17
 
 template <typename T>
 inline bool pretty_print(std::ostream& stream, const std::optional<T>& value) {
@@ -520,7 +528,7 @@ inline bool pretty_print(std::ostream& stream,
   return true;
 }
 
-#endif  // __cplusplus >= 201703L
+#endif
 
 class DebugOutput {
  public:
