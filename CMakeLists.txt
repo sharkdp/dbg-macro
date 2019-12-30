@@ -2,11 +2,17 @@ cmake_minimum_required(VERSION 3.1)
 
 project(dbg_macro)
 
+include(GNUInstallDirs)
+
 string(COMPARE EQUAL ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_SOURCE_DIR} IS_MAIN_PROJECT)
 option(DBG_MACRO_ENABLE_TESTS "Enable tests." ${IS_MAIN_PROJECT})
 
 add_library(${PROJECT_NAME} INTERFACE)
-target_include_directories(${PROJECT_NAME} INTERFACE ".")
+target_include_directories(${PROJECT_NAME}
+  INTERFACE
+    $<BUILD_INTERFACE:${${PROJECT_NAME}_SOURCE_DIR}>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+)
 
 if (DBG_MACRO_ENABLE_TESTS)
     add_subdirectory(tests/Catch2)
@@ -38,3 +44,5 @@ if (DBG_MACRO_ENABLE_TESTS)
     target_link_libraries(${PROJECT_NAME}-demo ${PROJECT_NAME})
     add_test(${PROJECT_NAME}-demo ${PROJECT_NAME}-demo)
 endif()
+
+install(FILES "dbg.h" DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
