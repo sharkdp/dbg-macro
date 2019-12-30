@@ -2,8 +2,7 @@ image: Visual Studio 2017
 
 environment:
   matrix:
-    - GENERATOR: "Visual Studio 15 Win64"
-      CONFIG: Release
+    - CONFIG: Release
       CPP_STANDARD: 17
 
 install:
@@ -12,7 +11,7 @@ install:
   - cmake --version
 build_script:
   - mkdir build && cd build
-  - cmake .. "-DCMAKE_CXX_STANDARD=%CPP_STANDARD%" -DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake "-G%GENERATOR%"
+  - cmake .. "-DCMAKE_CXX_STANDARD=%CPP_STANDARD%" -DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake
   - cmake --build . --config "%CONFIG%"
 test_script:
   - C:\projects\dbg-macro\build\Release\dbg_macro-example.exe
