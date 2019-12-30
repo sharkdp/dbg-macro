@@ -235,7 +235,7 @@ TEST_CASE("dbg::hex and dbg::oct") {
   int8_t hex_5 = 0x7F;
   CHECK(pretty_print(dbg::hex(hex_5)) == "0x7F");
 
-  int64_t hex_6 = -0x8000000000000000;
+  int64_t hex_6 = std::numeric_limits<int64_t>::lowest();
   CHECK(pretty_print(dbg::hex(hex_6)) == "-0x8000000000000000");
 
   uint32_t oct_1 = 01234567;

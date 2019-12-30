@@ -19,7 +19,7 @@ int main() {
   dbg("====== primitive types");
 
   int test_int = 42;
-  const float test_float = 3.14;
+  const float test_float = 3.14f;
   const bool test_bool = false;
   const char test_char = 'X';
   const uint64_t test_uint64_t = 12345678987654321;
@@ -99,7 +99,7 @@ int main() {
   dbg(dummy_int_array);
 
   dbg("====== std::tuple and std::pair");
-  dbg(std::tuple<std::string, int, float>{"Hello", 7, 3.14});
+  dbg(std::tuple<std::string, int, float>{"Hello", 7, 3.14f});
   dbg(std::pair<std::string, int>{"Hello", 7});
 
   dbg("====== function name tests");
