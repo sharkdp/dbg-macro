@@ -3,7 +3,6 @@ image: Visual Studio 2017
 environment:
   matrix:
     - CONFIG: Release
-      CPP_STANDARD: 17
 
 install:
   - git submodule -q update --init --recursive
@@ -11,7 +10,7 @@ install:
   - cmake --version
 build_script:
   - cmd: mkdir build && cd build
-  - cmd: cmake .. "-DCMAKE_CXX_STANDARD=%CPP_STANDARD%" -DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake
+  - cmd: cmake .. "-DCMAKE_CXX_STANDARD=17" -DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake
   - cmd: cmake --build . --config "%CONFIG%"
 test_script:
   - C:\projects\dbg-macro\build\Release\dbg_macro-example.exe
