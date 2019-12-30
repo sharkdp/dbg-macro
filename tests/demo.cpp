@@ -8,7 +8,7 @@
 #include <tuple>
 #include <vector>
 
-#if __cplusplus >= 201703L
+#if DBG_MACRO_DBG_CXX_STANDARD >= 17
 #include <optional>
 #include <variant>
 #endif
@@ -102,7 +102,7 @@ int main() {
   dbg(std::tuple<std::string, int, float>{"Hello", 7, 3.14f});
   dbg(std::pair<std::string, int>{"Hello", 7});
 
-#if __cplusplus >= 201703L
+#if DBG_MACRO_DBG_CXX_STANDARD >= 17
   dbg("====== Sum types");
   dbg(std::make_optional<bool>(false));
 

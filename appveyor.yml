@@ -10,7 +10,7 @@ install:
   - cmake --version
 build_script:
   - cmd: mkdir build && cd build
-  - cmd: cmake .. "-DCMAKE_CXX_STANDARD=17" -DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake
+  - cmd: cmake .. -DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake
   - cmd: cmake --build . --config "%CONFIG%"
 test_script:
   - C:\projects\dbg-macro\build\Release\dbg_macro-example.exe
