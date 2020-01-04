@@ -123,6 +123,8 @@ struct print_formatted {
         return "0o";
       case 16:
         return "0x";
+      case 2:
+        return "0b";
       default:
         return "";
     }
@@ -140,6 +142,11 @@ print_formatted<T> hex(T value) {
 template <typename T>
 print_formatted<T> oct(T value) {
   return print_formatted<T>{value, 8};
+}
+
+template <typename T>
+print_formatted<T> bin(T value) {
+  return print_formatted<T>{value, 2};
 }
 
 // Implementation of 'type_name<T>()'
@@ -446,6 +453,18 @@ inline bool pretty_print(std::ostream& stream, const std::tuple<>&) {
   return true;
 }
 
+// Converts decimal integer to binary string
+std::string decimalToBinary(unsigned n) {
+  std::string toRet;
+  while (n != 0) {
+    toRet.push_back(n % 2 + '0');
+    n /= 2;
+  }
+
+  std::reverse(toRet.begin(), toRet.end());
+  return toRet;
+}
+
 template <typename T>
 inline bool pretty_print(std::ostream& stream,
                          const print_formatted<T>& value) {
@@ -453,16 +472,23 @@ inline bool pretty_print(std::ostream& stream,
     stream << "-";
   }
   stream << value.prefix();
-  stream << std::setw(sizeof(T)) << std::setfill('0')
-         << std::setbase(value.base) << std::uppercase;
 
-  if (value.inner >= 0) {
-    // The '+' sign makes sure that a uint_8 is printed as a number
-    stream << +value.inner;
+  // Print using setbase
+  if (value.base != 2) {
+    stream << std::setw(sizeof(T)) << std::setfill('0')
+           << std::setbase(value.base) << std::uppercase;
+
+    if (value.inner >= 0) {
+      // The '+' sign makes sure that a uint_8 is printed as a number
+      stream << +value.inner;
+    } else {
+      using unsigned_type = typename std::make_unsigned<T>::type;
+      stream << +static_cast<unsigned_type>(-value.inner);
+    }
+
+    // Print for binary
   } else {
-    using unsigned_type = typename std::make_unsigned<T>::type;
-
-    stream << +static_cast<unsigned_type>(-value.inner);
+    stream << decimalToBinary(std::abs(value.inner));
   }
 
   return true;
