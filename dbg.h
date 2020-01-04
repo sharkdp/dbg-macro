@@ -473,7 +473,12 @@ inline bool pretty_print(std::ostream& stream,
 
     // Print for binary
   } else {
-    stream << decimalToBinary(std::abs(value.inner));
+    if (value.inner < 0) {
+      using unsigned_type = typename std::make_unsigned<T>::type;
+      stream << decimalToBinary(static_cast<unsigned_type>(-value.inner));
+    } else {
+      stream << decimalToBinary(value.inner);
+    }
   }
 
   return true;
