@@ -456,10 +456,10 @@ inline bool pretty_print(std::ostream& stream, const std::tuple<>&) {
 // Converts decimal integer to binary string
 std::string decimalToBinary(unsigned n) {
   std::string toRet;
-  while (n != 0) {
+  do {
     toRet.push_back(n % 2 + '0');
     n /= 2;
-  }
+  } while (n != 0);
 
   std::reverse(toRet.begin(), toRet.end());
   return toRet;
