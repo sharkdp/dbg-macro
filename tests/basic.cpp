@@ -219,7 +219,7 @@ TEST_CASE("type_name") {
 #endif
 }
 
-TEST_CASE("dbg::hex and dbg::oct") {
+TEST_CASE("dbg::hex, dbg::oct, and dbg::bin") {
   uint8_t hex_1 = 0xA7;
   CHECK(pretty_print(dbg::hex(hex_1)) == "0xA7");
 
@@ -240,6 +240,9 @@ TEST_CASE("dbg::hex and dbg::oct") {
 
   uint32_t oct_1 = 01234567;
   CHECK(pretty_print(dbg::oct(oct_1)) == "0o1234567");
+
+  uint8_t bin_1 = 0b1011;
+  CHECK(pretty_print(dbg::bin(bin_1)) == "0b1011");
 
   CHECK(dbg(dbg::hex(hex_2)) == hex_2);
   CHECK(dbg(dbg::hex(hex_2)) + 1 == hex_2 + 1);
