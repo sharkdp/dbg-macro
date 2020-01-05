@@ -326,6 +326,15 @@ struct has_ostream_operator : is_detected<ostream_operator_t, T> {};
 
 }  // namespace detail
 
+// Helper to dbg(…)-print types
+template <typename T>
+struct print_type {};
+
+template <typename T>
+print_type<T> type() {
+  return print_type<T>{};
+}
+
 // Specializations of "pretty_print"
 
 template <typename T>
@@ -457,6 +466,12 @@ inline bool pretty_print(std::ostream& stream,
   }
 
   return true;
+}
+
+template <typename T>
+inline bool pretty_print(std::ostream& stream, const print_type<T>&) {
+  stream << type_name<T>();
+  return false;
 }
 
 template <typename Container>

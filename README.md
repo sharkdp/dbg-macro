@@ -100,6 +100,20 @@ const uint32_t secret = 12648430;
 dbg(dbg::hex(secret));
 ```
 
+### Printing type names
+
+`dbg(…)` already prints the type for each value in parenthesis (see screenshot above). But
+sometimes you just want to print a type (maybe because you don't have a value for that type).
+In this case, you can use the `dbg::type<T>()` helper to pretty-print a given type `T`.
+For example:
+```c++
+template <typename T>
+void my_function_template() {
+  using MyDependentType = typename std::remove_reference<T>::type&&;
+  dbg(dbg::type<MyDependentType>());
+}
+```
+
 ### Customization
 
 If you want `dbg(…)` to work for your custom datatype, you can simply overload `operator<<` for

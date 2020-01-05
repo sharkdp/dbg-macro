@@ -121,4 +121,8 @@ int main() {
     dbg("called from within a lambda!");
     return x;
   }(42);
+
+  dbg("====== type names without a value");
+  using IsSame = std::is_same<uint8_t, char>::type;
+  dbg(dbg::type<IsSame>());
 }
