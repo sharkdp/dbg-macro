@@ -29,6 +29,12 @@ License (MIT):
 #ifndef DBG_MACRO_DBG_H
 #define DBG_MACRO_DBG_H
 
+#if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
+#define DBG_MACRO_UNIX
+#elif defined(_MSC_VER)
+#define DBG_MACRO_WINDOWS
+#endif
+
 #ifndef DBG_MACRO_NO_WARNING
 #pragma message("WARNING: the 'dbg.h' header is included in your code base")
 #endif  // DBG_MACRO_NO_WARNING
@@ -44,7 +50,7 @@ License (MIT):
 #include <type_traits>
 #include <vector>
 
-#if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
+#ifdef DBG_MACRO_UNIX
 #include <unistd.h>
 #endif
 
@@ -63,7 +69,7 @@ License (MIT):
 
 namespace dbg {
 
-#if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
+#ifdef DBG_MACRO_UNIX
 inline bool isColorizedOutputEnabled() {
   return isatty(fileno(stderr));
 }
@@ -603,6 +609,19 @@ template <typename T>
 T&& identity(T&& t) {
   return std::forward<T>(t);
 }
+
+// Helper to "set a breakpoint" / jump to the debugger
+#if defined(__i386__) || defined(__x86_64__)
+__attribute__((always_inline)) inline void breakpoint() {
+  asm volatile("int $0x03");
+}
+#elif defined(DBG_MACRO_WINDOWS)
+__forceinline void breakpoint() {
+  __debugbreak();
+}
+#else
+// dbg::breakpoint() is not yet supported on this platform
+#endif
 
 }  // namespace dbg
 
