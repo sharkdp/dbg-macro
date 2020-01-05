@@ -89,7 +89,18 @@ vcpkg install dbg-macro
 * Set the `DBG_MACRO_DISABLE` flag to disable the `dbg(…)` macro (i.e. to make it a no-op).
 * Set the `DBG_MACRO_NO_WARNING` flag to disable the *"'dbg.h' header is included in your code base"* warnings.
 
-## Customization
+## Advanced features
+
+### Hexadecimal and octal format
+
+If you want to format integers in hexadecimal or octal representation, you can simply
+wrap them in `dbg::hex(…)` or `dbg::oct(…)`:
+```c++
+const uint32_t secret = 12648430;
+dbg(dbg::hex(secret));
+```
+
+### Customization
 
 If you want `dbg(…)` to work for your custom datatype, you can simply overload `operator<<` for
 `std::ostream&`:
@@ -109,17 +120,6 @@ namespace dbg {
         return "truth value";
     }
 }
-```
-
-## Advanced features
-
-### Hexadecimal and octal format
-
-If you want to format integers in hexadecimal or octal representation, you can simply
-wrap them in `dbg::hex(…)` or `dbg::oct(…)`:
-```c++
-const uint32_t secret = 12648430;
-dbg(dbg::hex(secret));
 ```
 
 ## Acknowledgement
