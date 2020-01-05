@@ -113,6 +113,15 @@ namespace dbg {
 
 ## Advanced features
 
+### `dbg::hex()` and `dbg::oct()`
+
+If you want to format integers in hexadecimal or octal representation, you can simply
+wrap them in `dbg::hex(…)` or `dbg::oct(…)`:
+```c++
+const uint32_t secret = 12648430;
+dbg(dbg::hex(secret));
+```
+
 ### `dbg::breakpoint()`
 
 You can use
