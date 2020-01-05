@@ -4,12 +4,12 @@
 
 *A macro for `printf`-style debugging fans.*
 
-Debuggers are great. But sometimes you just don't have the time and nerve to set
+Debuggers are great. But sometimes you just don't have the time or patience to set
 up everything correctly and just want a quick way to inspect some values at runtime.
 
 This projects provides a [single header file](dbg.h) with a `dbg(…)`
 macro that can be used in all circumstances where you would typically write
-`printf("…", …)` or `std::cout << …`, but with a few extras.
+`printf("…", …)` or `std::cout << …`. But it comes with a few extras.
 
 ## Examples
 
@@ -54,13 +54,13 @@ The code above produces this output ([try it yourself](https://repl.it/@sharkdp/
  * Prints file name, line number, function name and the original expression
  * Adds type information for the printed-out value
  * Specialized pretty-printers for containers, pointers, string literals, enums, `std::optional`, etc.
- * Can be used inside expressions
- * The `dbg.h` header issues a compiler warning when included (so you don't forget to remove).
- * C++11 compatible
+ * Can be used inside expressions (passing through the original value)
+ * The `dbg.h` header issues a compiler warning when included (so you don't forget to remove it).
+ * Compatible and tested with C++11, C++14 and C++17.
 
 ## Installation
 
-To make this actually usable, the `dbg.h` header should to be available from all kinds of different
+To make this practical, the `dbg.h` header should to be readily available from all kinds of different
 places and in all kinds of environments. The quick & dirty way is to actually copy the header file
 to `/usr/include` or to clone the repository and symlink `dbg.h` to `/usr/include/dbg.h`.
 ``` bash
@@ -68,7 +68,7 @@ git clone https://github.com/sharkdp/dbg-macro
 sudo ln -s $(readlink -f dbg-macro/dbg.h) /usr/include/dbg.h
 ```
 If you don't want to make untracked changes to your filesystem, check below if there is a package for
-your OS or package manager.
+your operating system or package manager.
 
 ### On Arch Linux
 
