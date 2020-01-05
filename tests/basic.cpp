@@ -204,7 +204,7 @@ TEST_CASE("type_name") {
           "std::vector<std::vector<int>>");
   }
 
-#ifndef _MSC_VER
+#if !defined(DBG_MACRO_WINDOWS)
   SECTION("std::tuple") {
     CHECK(type_name<std::tuple<>>() == "std::tuple<>");
     CHECK(type_name<std::tuple<int, char>>() == "std::tuple<int, char>");

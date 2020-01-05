@@ -111,6 +111,17 @@ namespace dbg {
 }
 ```
 
+## Advanced features
+
+### `dbg::breakpoint()`
+
+You can use
+```c++
+dbg::breakpoint();
+```
+anywhere in your code to manually "set a breakpoint". This will cause a debugged program
+to yield to the debugger.
+
 ## Acknowledgement
 
 This project is inspired by Rusts [`dbg!(…)` macro](https://doc.rust-lang.org/std/macro.dbg.html).
