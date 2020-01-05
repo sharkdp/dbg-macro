@@ -113,7 +113,7 @@ namespace dbg {
 
 ## Advanced features
 
-### `dbg::hex()` and `dbg::oct()`
+### Hexadecimal and octal format
 
 If you want to format integers in hexadecimal or octal representation, you can simply
 wrap them in `dbg::hex(…)` or `dbg::oct(…)`:
@@ -121,15 +121,6 @@ wrap them in `dbg::hex(…)` or `dbg::oct(…)`:
 const uint32_t secret = 12648430;
 dbg(dbg::hex(secret));
 ```
-
-### `dbg::breakpoint()`
-
-You can use
-```c++
-dbg::breakpoint();
-```
-anywhere in your code to manually "set a breakpoint". This will cause a debugged program
-to yield to the debugger.
 
 ## Acknowledgement
 

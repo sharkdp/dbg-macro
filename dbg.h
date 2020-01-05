@@ -610,19 +610,6 @@ T&& identity(T&& t) {
   return std::forward<T>(t);
 }
 
-// Helper to "set a breakpoint" / jump to the debugger
-#if defined(__i386__) || defined(__x86_64__)
-__attribute__((always_inline)) inline void breakpoint() {
-  asm volatile("int $0x03");
-}
-#elif defined(DBG_MACRO_WINDOWS)
-__forceinline void breakpoint() {
-  __debugbreak();
-}
-#else
-// dbg::breakpoint() is not yet supported on this platform
-#endif
-
 }  // namespace dbg
 
 #ifndef DBG_MACRO_DISABLE
