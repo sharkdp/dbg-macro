@@ -136,6 +136,30 @@ namespace dbg {
 }
 ```
 
+## Development
+
+If you want to contribute to `dbg-macro`, here is how you can build the tests and demos:
+
+Make sure that the submodule(s) are up to date:
+```bash
+git submodule update --init
+```
+
+Then, use the typical `cmake` workflow. Usage of `-DCMAKE_CXX_STANDARD=17` is optional,
+but recommended in order to have the largest set of features enabled:
+```bash
+mkdir build
+cd build
+cmake .. -DCMAKE_CXX_STANDARD=17
+make
+```
+
+To run the tests, simply call:
+```bash
+make test
+```
+You can find the unit tests in `tests/basic.cpp`.
+
 ## Acknowledgement
 
 This project is inspired by Rusts [`dbg!(…)` macro](https://doc.rust-lang.org/std/macro.dbg.html).
