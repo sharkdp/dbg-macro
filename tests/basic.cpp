@@ -244,6 +244,15 @@ TEST_CASE("dbg::hex, dbg::oct, and dbg::bin") {
   uint8_t bin_1 = 0b1011;
   CHECK(pretty_print(dbg::bin(bin_1)) == "0b1011");
 
+  int8_t bin_2 = -0b10101;
+  CHECK(pretty_print(dbg::bin(bin_2)) == "-0b10101");
+
+  int16_t bin_3 = 0b101110101;
+  CHECK(pretty_print(dbg::bin(bin_3)) == "0b101110101");
+
+  int32_t bin_4 = 0b0;
+  CHECK(pretty_print(dbg::bin(bin_4)) == "0b0");
+
   CHECK(dbg(dbg::hex(hex_2)) == hex_2);
   CHECK(dbg(dbg::hex(hex_2)) + 1 == hex_2 + 1);
 }

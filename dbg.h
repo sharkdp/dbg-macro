@@ -439,14 +439,14 @@ inline bool pretty_print(std::ostream& stream, const std::tuple<>&) {
 }
 
 // Converts decimal integer to binary string
-std::string decimalToBinary(unsigned n) {
+template <typename T>
+std::string decimalToBinary(T n) {
   std::string toRet;
   do {
-    toRet.push_back(n % 2 + '0');
+    toRet.insert(toRet.begin(), n % 2 + '0');
     n /= 2;
   } while (n != 0);
 
-  std::reverse(toRet.begin(), toRet.end());
   return toRet;
 }
 
