@@ -441,11 +441,14 @@ inline bool pretty_print(std::ostream& stream, const std::tuple<>&) {
 // Converts decimal integer to binary string
 template <typename T>
 std::string decimalToBinary(T n) {
+  const auto length = 8 * sizeof(T);
   std::string toRet;
-  do {
-    toRet.insert(toRet.begin(), n % 2 + '0');
-    n /= 2;
-  } while (n != 0);
+  toRet.resize(length);
+
+  for (int i = 0; i < length; ++i) {
+    const auto bit_at_index_i = (n >> i) & 1;
+    toRet[length - 1 - i] = bit_at_index_i + '0';
+  }
 
   return toRet;
 }
