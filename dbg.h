@@ -456,11 +456,11 @@ inline bool pretty_print(std::ostream& stream, const std::tuple<>&) {
 // Converts decimal integer to binary string
 template <typename T>
 std::string decimalToBinary(T n) {
-  const auto length = 8 * sizeof(T);
+  const size_t length = 8 * sizeof(T);
   std::string toRet;
   toRet.resize(length);
 
-  for (int i = 0; i < length; ++i) {
+  for (size_t i = 0; i < length; ++i) {
     const auto bit_at_index_i = (n >> i) & 1;
     toRet[length - 1 - i] = bit_at_index_i + '0';
   }
