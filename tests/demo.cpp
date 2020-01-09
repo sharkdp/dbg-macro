@@ -98,6 +98,10 @@ int main() {
   int dummy_int_array[] = {11, 22, 33};
   dbg(dummy_int_array);
 
+  dbg("====== integer formatting");
+  dbg(dbg::hex(42));
+  dbg(dbg::bin(0x00ff00ff));
+
   dbg("====== std::tuple and std::pair");
   dbg(std::tuple<std::string, int, float>{"Hello", 7, 3.14f});
   dbg(std::pair<std::string, int>{"Hello", 7});
