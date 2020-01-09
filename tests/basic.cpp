@@ -82,10 +82,10 @@ TEST_CASE("pretty_print") {
   }
 
   SECTION("std::pair") {
-    CHECK(pretty_print(std::pair<int, bool>{13, true})  == "{13, true}");
+    CHECK(pretty_print(std::pair<int, bool>{13, true}) == "{13, true}");
 
     std::pair<std::pair<bool, int>, bool> pair_of_pairs{{false, 17}, true};
-    CHECK(pretty_print(pair_of_pairs)  == "{{false, 17}, true}");
+    CHECK(pretty_print(pair_of_pairs) == "{{false, 17}, true}");
   }
 
   SECTION("std::unique_ptr") {
@@ -208,7 +208,8 @@ TEST_CASE("type_name") {
   SECTION("std::tuple") {
     CHECK(type_name<std::tuple<>>() == "std::tuple<>");
     CHECK(type_name<std::tuple<int, char>>() == "std::tuple<int, char>");
-    CHECK(type_name<std::tuple<std::string, char>>() == "std::tuple<std::string, char>");
+    CHECK(type_name<std::tuple<std::string, char>>() ==
+          "std::tuple<std::string, char>");
   }
 
   SECTION("user-defined types") {
@@ -235,8 +236,17 @@ TEST_CASE("dbg::hex, dbg::oct, and dbg::bin") {
   int8_t hex_5 = 0x7F;
   CHECK(pretty_print(dbg::hex(hex_5)) == "0x7F");
 
-  int64_t hex_6 = std::numeric_limits<int64_t>::lowest();
-  CHECK(pretty_print(dbg::hex(hex_6)) == "-0x8000000000000000");
+  int8_t hex_6 = -0x1a;
+  CHECK(pretty_print(dbg::hex(hex_6)) == "-0x1A");
+
+  CHECK(pretty_print(dbg::hex(std::numeric_limits<int64_t>::lowest())) ==
+        "-0x8000000000000000");
+  CHECK(pretty_print(dbg::hex(std::numeric_limits<int64_t>::max())) ==
+        "0x7FFFFFFFFFFFFFFF");
+
+  CHECK(pretty_print(dbg::hex(std::numeric_limits<int8_t>::lowest())) ==
+        "-0x80");
+  CHECK(pretty_print(dbg::hex(std::numeric_limits<int8_t>::max())) == "0x7F");
 
   uint32_t oct_1 = 01234567;
   CHECK(pretty_print(dbg::oct(oct_1)) == "0o1234567");
@@ -252,6 +262,13 @@ TEST_CASE("dbg::hex, dbg::oct, and dbg::bin") {
 
   int32_t bin_4 = 0;
   CHECK(pretty_print(dbg::bin(bin_4)) == "0b00000000000000000000000000000000");
+
+  CHECK(pretty_print(dbg::bin(std::numeric_limits<int8_t>::lowest())) ==
+        "-0b10000000");
+  CHECK(pretty_print(dbg::bin(std::numeric_limits<int8_t>::max())) ==
+        "0b01111111");
+
+  dbg(dbg::bin(std::numeric_limits<int32_t>::lowest()));
 
   CHECK(dbg(dbg::hex(hex_2)) == hex_2);
   CHECK(dbg(dbg::hex(hex_2)) + 1 == hex_2 + 1);

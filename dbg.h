@@ -486,15 +486,15 @@ inline bool pretty_print(std::ostream& stream,
       stream << +value.inner;
     } else {
       using unsigned_type = typename std::make_unsigned<T>::type;
-      stream << +static_cast<unsigned_type>(-value.inner);
+      stream << +(static_cast<unsigned_type>(~value.inner) + 1);
     }
   } else {
     // Print for binary
-    if (value.inner < 0) {
-      using unsigned_type = typename std::make_unsigned<T>::type;
-      stream << decimalToBinary(static_cast<unsigned_type>(-value.inner));
-    } else {
+    if (value.inner >= 0) {
       stream << decimalToBinary(value.inner);
+    } else {
+      using unsigned_type = typename std::make_unsigned<T>::type;
+      stream << decimalToBinary<unsigned_type>(static_cast<unsigned_type>(~value.inner) + 1);
     }
   }
 
