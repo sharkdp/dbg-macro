@@ -102,6 +102,10 @@ int main() {
   dbg(dbg::hex(42));
   dbg(dbg::bin(0x00ff00ff));
 
+  int8_t negative_five = -5;
+  dbg(dbg::bin(negative_five));
+  dbg(dbg::bin(static_cast<uint8_t>(negative_five))); // two's complement:
+
   dbg("====== std::tuple and std::pair");
   dbg(std::tuple<std::string, int, float>{"Hello", 7, 3.14f});
   dbg(std::pair<std::string, int>{"Hello", 7});
