@@ -486,7 +486,7 @@ inline bool pretty_print(std::ostream& stream,
       stream << +value.inner;
     } else {
       using unsigned_type = typename std::make_unsigned<T>::type;
-      stream << +(static_cast<unsigned_type>(~value.inner) + 1);
+      stream << +(static_cast<unsigned_type>(-(value.inner + 1)) + 1);
     }
   } else {
     // Print for binary
@@ -494,7 +494,8 @@ inline bool pretty_print(std::ostream& stream,
       stream << decimalToBinary(value.inner);
     } else {
       using unsigned_type = typename std::make_unsigned<T>::type;
-      stream << decimalToBinary<unsigned_type>(static_cast<unsigned_type>(~value.inner) + 1);
+      stream << decimalToBinary<unsigned_type>(
+          static_cast<unsigned_type>(-(value.inner + 1)) + 1);
     }
   }
 
