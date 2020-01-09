@@ -91,10 +91,10 @@ vcpkg install dbg-macro
 
 ## Advanced features
 
-### Hexadecimal and octal format
+### Hexadecimal, octal and binary format
 
-If you want to format integers in hexadecimal or octal representation, you can simply
-wrap them in `dbg::hex(…)` or `dbg::oct(…)`:
+If you want to format integers in hexadecimal, octal or binary representation, you can
+simply wrap them in `dbg::hex(…)`, `dbg::oct(…)` or `dbg::bin(…)`:
 ```c++
 const uint32_t secret = 12648430;
 dbg(dbg::hex(secret));
