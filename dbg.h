@@ -83,6 +83,11 @@ inline bool isColorizedOutputEnabled() {
 
 struct time {};
 
+/**
+ * The global stream object which is used to control the formatting of floating point numbers.
+ */
+static std::stringstream g_floating_point_format{};
+
 namespace pretty_function {
 
 // Compiler-agnostic version of __PRETTY_FUNCTION__ and constants to
@@ -361,7 +366,8 @@ inline void pretty_print(std::ostream&, const T&, std::false_type) {
 
 template <typename T>
 inline typename std::enable_if<!detail::is_container<const T&>::value &&
-                                   !std::is_enum<T>::value,
+                                   !std::is_enum<T>::value &&
+                                   !std::is_floating_point<T>::value,
                                bool>::type
 pretty_print(std::ostream& stream, const T& value) {
   pretty_print(stream, value,
@@ -421,6 +427,16 @@ template <>
 inline bool pretty_print(std::ostream& stream, const char* const& value) {
   stream << '"' << value << '"';
   return true;
+}
+
+template <typename T>
+inline typename std::enable_if<std::is_floating_point<T>::value,bool>::type
+pretty_print(std::ostream& stream, const T& value){
+    std::stringstream sl;
+    sl.copyfmt(g_floating_point_format);
+    sl << value;
+    stream << sl.str();
+    return true;
 }
 
 template <size_t Idx>
