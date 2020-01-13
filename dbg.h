@@ -51,6 +51,7 @@ License (MIT):
 #include <tuple>
 #include <type_traits>
 #include <vector>
+#include <complex>
 
 #ifdef DBG_MACRO_UNIX
 #include <unistd.h>
@@ -432,6 +433,16 @@ inline bool pretty_print(std::ostream& stream, const char* const& value) {
 template <typename T>
 inline typename std::enable_if<std::is_floating_point<T>::value,bool>::type
 pretty_print(std::ostream& stream, const T& value){
+    std::stringstream sl;
+    sl.copyfmt(g_floating_point_format);
+    sl << value;
+    stream << sl.str();
+    return true;
+}
+
+template <typename T>
+inline typename std::enable_if<std::is_floating_point<T>::value,bool>::type
+pretty_print(std::ostream& stream, const std::complex<T>& value){
     std::stringstream sl;
     sl.copyfmt(g_floating_point_format);
     sl << value;
