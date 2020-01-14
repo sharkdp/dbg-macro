@@ -107,23 +107,21 @@ int main() {
   dbg(dbg::bin(static_cast<uint8_t>(negative_five))); // two's complement:
 
   dbg("====== floating point formatting");
-  {
-      const double x = 0.123456789012345678;
-      const std::complex<double> z{123,x};
+  const double x = 0.123456789012345678;
+  const std::complex<double> z{123, x};
 
-      dbg::g_floating_point_format << std::setprecision(10);
-      dbg(x);
-      dbg::g_floating_point_format << std::setprecision(20);
-      dbg(x);
-      dbg::g_floating_point_format << std::setprecision(12) << std::scientific;
-      dbg(x);
-      dbg(z);
+  dbg::g_floating_point_format << std::setprecision(10);
+  dbg(x);
+  dbg::g_floating_point_format << std::setprecision(20);
+  dbg(x);
+  dbg::g_floating_point_format << std::setprecision(12) << std::scientific;
+  dbg(x);
+  dbg(z);
 
-      dbg("default formatting:");
-      dbg::g_floating_point_format = decltype(dbg::g_floating_point_format){};
-      dbg(x); 
-      dbg(z); 
-  }
+  dbg("default formatting:");
+  dbg::g_floating_point_format = decltype(dbg::g_floating_point_format){};
+  dbg(x);
+  dbg(z);
 
   dbg("====== std::tuple and std::pair");
   dbg(std::tuple<std::string, int, float>{"Hello", 7, 3.14f});

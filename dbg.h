@@ -85,7 +85,8 @@ inline bool isColorizedOutputEnabled() {
 struct time {};
 
 /**
- * The global stream object which is used to control the formatting of floating point numbers.
+ * The global stream object which is used to control the formatting of floating
+ * point numbers.
  */
 static std::stringstream g_floating_point_format{};
 
@@ -431,23 +432,23 @@ inline bool pretty_print(std::ostream& stream, const char* const& value) {
 }
 
 template <typename T>
-inline typename std::enable_if<std::is_floating_point<T>::value,bool>::type
-pretty_print(std::ostream& stream, const T& value){
-    std::stringstream sl;
-    sl.copyfmt(g_floating_point_format);
-    sl << value;
-    stream << sl.str();
-    return true;
+inline typename std::enable_if<std::is_floating_point<T>::value, bool>::type
+pretty_print(std::ostream& stream, const T& value) {
+  std::stringstream sl;
+  sl.copyfmt(g_floating_point_format);
+  sl << value;
+  stream << sl.str();
+  return true;
 }
 
 template <typename T>
-inline typename std::enable_if<std::is_floating_point<T>::value,bool>::type
-pretty_print(std::ostream& stream, const std::complex<T>& value){
-    std::stringstream sl;
-    sl.copyfmt(g_floating_point_format);
-    sl << value;
-    stream << sl.str();
-    return true;
+inline typename std::enable_if<std::is_floating_point<T>::value, bool>::type
+pretty_print(std::ostream& stream, const std::complex<T>& value) {
+  std::stringstream sl;
+  sl.copyfmt(g_floating_point_format);
+  sl << value;
+  stream << sl.str();
+  return true;
 }
 
 template <size_t Idx>
