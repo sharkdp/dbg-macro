@@ -446,7 +446,7 @@ inline typename std::enable_if<std::is_floating_point<T>::value, bool>::type
 pretty_print(std::ostream& stream, const std::complex<T>& value) {
   std::stringstream sl;
   sl.copyfmt(g_floating_point_format);
-  sl << value;
+  sl << "(" << value.real() << ", " << value.imag() << ")";
   stream << sl.str();
   return true;
 }
