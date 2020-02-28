@@ -114,6 +114,13 @@ void my_function_template() {
 }
 ```
 
+### Printing current timestamp at the precision of microsecond
+
+To print current time with dbg, you can simply write:
+```c++
+dbg(dbg::time());
+```
+
 ### Customization
 
 If you want `dbg(…)` to work for your custom datatype, you can simply overload `operator<<` for

@@ -133,4 +133,8 @@ int main() {
   dbg("====== type names without a value");
   using IsSame = std::is_same<uint8_t, char>::type;
   dbg(dbg::type<IsSame>());
+
+  dbg("====== timestamp");
+  dbg(dbg::time());
+
 }
