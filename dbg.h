@@ -49,6 +49,8 @@ License (MIT):
 #include <tuple>
 #include <type_traits>
 #include <vector>
+#include <ctime>
+#include <chrono>
 
 #ifdef DBG_MACRO_UNIX
 #include <unistd.h>
@@ -78,6 +80,8 @@ inline bool isColorizedOutputEnabled() {
   return true;
 }
 #endif
+
+struct time {};
 
 namespace pretty_function {
 
@@ -451,6 +455,16 @@ inline bool pretty_print(std::ostream& stream, const std::tuple<>&) {
   stream << "{}";
 
   return true;
+}
+
+template <>
+inline bool pretty_print(std::ostream& stream, const time&) {
+  const auto ms =  std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count() % 1000000;
+  const auto hms = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+  const std::tm* tm = std::localtime(&hms);
+  stream << std::put_time(tm, "%H:%M:%S") << '.'
+         << ms ;
+  return false;
 }
 
 // Converts decimal integer to binary string

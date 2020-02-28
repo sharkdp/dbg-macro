@@ -273,3 +273,7 @@ TEST_CASE("dbg::hex, dbg::oct, and dbg::bin") {
   CHECK(dbg(dbg::hex(hex_2)) == hex_2);
   CHECK(dbg(dbg::hex(hex_2)) + 1 == hex_2 + 1);
 }
+
+TEST_CASE("check timestamp") {
+  dbg(dbg::time());
+}
