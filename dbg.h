@@ -466,7 +466,8 @@ inline bool pretty_print(std::ostream& stream, const time&) {
       duration_cast<microseconds>(now.time_since_epoch()).count() % 1000000;
   const auto hms = system_clock::to_time_t(now);
   const std::tm* tm = std::localtime(&hms);
-  stream << std::put_time(tm, "%H:%M:%S") << '.' << us;
+  stream << "current time: " << std::put_time(tm, "%H:%M:%S") << '.'
+         << std::setw(6) << std::setfill('0') << us;
 
   return false;
 }
