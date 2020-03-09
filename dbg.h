@@ -40,6 +40,8 @@ License (MIT):
 #endif  // DBG_MACRO_NO_WARNING
 
 #include <algorithm>
+#include <chrono>
+#include <ctime>
 #include <iomanip>
 #include <ios>
 #include <iostream>
@@ -49,8 +51,6 @@ License (MIT):
 #include <tuple>
 #include <type_traits>
 #include <vector>
-#include <ctime>
-#include <chrono>
 
 #ifdef DBG_MACRO_UNIX
 #include <unistd.h>
@@ -459,11 +459,15 @@ inline bool pretty_print(std::ostream& stream, const std::tuple<>&) {
 
 template <>
 inline bool pretty_print(std::ostream& stream, const time&) {
-  const auto ms =  std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count() % 1000000;
-  const auto hms = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+  using namespace std::chrono;
+
+  const auto now = high_resolution_clock::now();
+  const auto us =
+      duration_cast<microseconds>(now.time_since_epoch()).count() % 1000000;
+  const auto hms = system_clock::to_time_t(now);
   const std::tm* tm = std::localtime(&hms);
-  stream << std::put_time(tm, "%H:%M:%S") << '.'
-         << ms ;
+  stream << std::put_time(tm, "%H:%M:%S") << '.' << us;
+
   return false;
 }
 
