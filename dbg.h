@@ -461,7 +461,7 @@ template <>
 inline bool pretty_print(std::ostream& stream, const time&) {
   using namespace std::chrono;
 
-  const auto now = high_resolution_clock::now();
+  const auto now = system_clock::now();
   const auto us =
       duration_cast<microseconds>(now.time_since_epoch()).count() % 1000000;
   const auto hms = system_clock::to_time_t(now);
