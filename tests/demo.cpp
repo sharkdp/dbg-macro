@@ -104,7 +104,7 @@ int main() {
 
   int8_t negative_five = -5;
   dbg(dbg::bin(negative_five));
-  dbg(dbg::bin(static_cast<uint8_t>(negative_five))); // two's complement:
+  dbg(dbg::bin(static_cast<uint8_t>(negative_five)));
 
   dbg("====== std::tuple and std::pair");
   dbg(std::tuple<std::string, int, float>{"Hello", 7, 3.14f});
@@ -121,6 +121,7 @@ int main() {
 
   class user_defined_class {
    public:
+    user_defined_class() {}
     void some_method(int x) { dbg(x); }
   };
   user_defined_class{}.some_method(42);
@@ -132,9 +133,20 @@ int main() {
 
   dbg("====== type names without a value");
   using IsSame = std::is_same<uint8_t, char>::type;
+
+  struct user_defined_trivial_type {
+    int32_t a;
+    bool b;
+  };
+
   dbg(dbg::type<IsSame>());
+  dbg(dbg::type<int32_t>());
+  dbg(dbg::type<const int32_t>());
+  dbg(dbg::type<int32_t*>());
+  dbg(dbg::type<int32_t&>());
+  dbg(dbg::type<user_defined_trivial_type>());
+  dbg(dbg::type<user_defined_class>());
 
   dbg("====== timestamp");
   dbg(dbg::time());
-
 }
