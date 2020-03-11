@@ -524,6 +524,24 @@ inline bool pretty_print(std::ostream& stream,
 template <typename T>
 inline bool pretty_print(std::ostream& stream, const print_type<T>&) {
   stream << type_name<T>();
+
+  stream << " [sizeof: " << sizeof(T) << " byte, ";
+
+  stream << "trivial: ";
+  if (std::is_trivial<T>::value) {
+    stream << "yes";
+  } else {
+    stream << "no";
+  }
+
+  stream << ", standard layout: ";
+  if (std::is_standard_layout<T>::value) {
+    stream << "yes";
+  } else {
+    stream << "no";
+  }
+  stream << "]";
+
   return false;
 }
 
