@@ -654,20 +654,21 @@ class DebugOutput {
   }
 
   template <typename... T>
-  auto print(std::initializer_list<expr_t> exprs, T&&... values)
-      -> last_t<T...> {
+  auto print(std::initializer_list<expr_t> exprs,
+             std::initializer_list<std::string> types,
+             T&&... values) -> last_t<T...> {
     if (exprs.size() != sizeof...(values)) {
       std::cerr
           << m_location << ansi(ANSI_WARN)
           << "The number of arguments mismatch, please check unprotected comma"
           << ansi(ANSI_RESET) << std::endl;
     }
-    return print_impl(exprs.begin(), std::forward<T>(values)...);
+    return print_impl(exprs.begin(), types.begin(), std::forward<T>(values)...);
   }
 
  private:
   template <typename T>
-  T&& print_impl(const expr_t* expr, T&& value) {
+  T&& print_impl(const expr_t* expr, const std::string* type, T&& value) {
     const T& ref = value;
     std::stringstream stream_value;
     const bool print_expr_and_type = pretty_print(stream_value, ref);
@@ -679,8 +680,7 @@ class DebugOutput {
     }
     output << ansi(ANSI_VALUE) << stream_value.str() << ansi(ANSI_RESET);
     if (print_expr_and_type) {
-      output << " (" << ansi(ANSI_TYPE) << type_name<T>() << ansi(ANSI_RESET)
-             << ")";
+      output << " (" << ansi(ANSI_TYPE) << *type << ansi(ANSI_RESET) << ")";
     }
     output << std::endl;
     std::cerr << output.str();
@@ -689,10 +689,12 @@ class DebugOutput {
   }
 
   template <typename T, typename... U>
-  auto print_impl(const expr_t* exprs, T&& value, U&&... rest)
-      -> last_t<T, U...> {
-    print_impl(exprs, std::forward<T>(value));
-    return print_impl(exprs + 1, std::forward<U>(rest)...);
+  auto print_impl(const expr_t* exprs,
+                  const std::string* types,
+                  T&& value,
+                  U&&... rest) -> last_t<T, U...> {
+    print_impl(exprs, types, std::forward<T>(value));
+    return print_impl(exprs + 1, types + 1, std::forward<U>(rest)...);
   }
 
   const char* ansi(const char* code) const {
@@ -785,9 +787,12 @@ auto identity(T&&, U&&... u) -> last_t<U...> {
 #define DBG_STRINGIFY_IMPL(x) #x
 #define DBG_STRINGIFY(x) DBG_STRINGIFY_IMPL(x)
 
-#define dbg(...)                                 \
-  dbg::DebugOutput(__FILE__, __LINE__, __func__) \
-      .print({DBG_MAP(DBG_STRINGIFY, __VA_ARGS__)}, __VA_ARGS__)
+#define DBG_TYPE_NAME(x) dbg::type_name<decltype(x)>()
+
+#define dbg(...)                                    \
+  dbg::DebugOutput(__FILE__, __LINE__, __func__)    \
+      .print({DBG_MAP(DBG_STRINGIFY, __VA_ARGS__)}, \
+             {DBG_MAP(DBG_TYPE_NAME, __VA_ARGS__)}, __VA_ARGS__)
 #else
 #define dbg(...) dbg::identity(__VA_ARGS__)
 #endif  // DBG_MACRO_DISABLE
