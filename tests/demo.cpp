@@ -84,7 +84,7 @@ int main() {
   std::vector<bool> vec_bools{true, true, false, false, false, true, false};
   dbg(vec_bools);
 
-  dbg(std::vector<int>{0, 1, 0, 1});
+  dbg((std::vector<int>{0, 1, 0, 1}));
 
   const std::array<int, 2> dummy_array{{0, 4}};
   dbg(dummy_array);
@@ -111,14 +111,14 @@ int main() {
   dbg(dbg::bin(static_cast<uint8_t>(negative_five)));
 
   dbg("====== std::tuple and std::pair");
-  dbg(std::tuple<std::string, int, float>{"Hello", 7, 3.14f});
-  dbg(std::pair<std::string, int>{"Hello", 7});
+  dbg((std::tuple<std::string, int, float>{"Hello", 7, 3.14f}));
+  dbg((std::pair<std::string, int>{"Hello", 7}));
 
 #if DBG_MACRO_CXX_STANDARD >= 17
   dbg("====== Sum types");
   dbg(std::make_optional<bool>(false));
 
-  dbg(std::variant<int, std::string>{"test"});
+  dbg((std::variant<int, std::string>{"test"}));
 #endif
 
   dbg("====== function name tests");

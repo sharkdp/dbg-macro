@@ -734,40 +734,60 @@ auto identity(T&&, U&&... u) -> last_t<U...> {
 
 #ifndef DBG_MACRO_DISABLE
 
-#define DBG_FOREACH_1(fn, x) fn(x)
-#define DBG_FOREACH_2(fn, x, ...) fn(x), DBG_FOREACH_1(fn, __VA_ARGS__)
-#define DBG_FOREACH_3(fn, x, ...) fn(x), DBG_FOREACH_2(fn, __VA_ARGS__)
-#define DBG_FOREACH_4(fn, x, ...) fn(x), DBG_FOREACH_3(fn, __VA_ARGS__)
-#define DBG_FOREACH_5(fn, x, ...) fn(x), DBG_FOREACH_4(fn, __VA_ARGS__)
-#define DBG_FOREACH_6(fn, x, ...) fn(x), DBG_FOREACH_5(fn, __VA_ARGS__)
-#define DBG_FOREACH_7(fn, x, ...) fn(x), DBG_FOREACH_6(fn, __VA_ARGS__)
-#define DBG_FOREACH_8(fn, x, ...) fn(x), DBG_FOREACH_7(fn, __VA_ARGS__)
-#define DBG_FOREACH_9(fn, x, ...) fn(x), DBG_FOREACH_8(fn, __VA_ARGS__)
-#define DBG_FOREACH_10(fn, x, ...) fn(x), DBG_FOREACH_9(fn, __VA_ARGS__)
-#define DBG_FOREACH_11(fn, x, ...) fn(x), DBG_FOREACH_10(fn, __VA_ARGS__)
-#define DBG_FOREACH_12(fn, x, ...) fn(x), DBG_FOREACH_11(fn, __VA_ARGS__)
-#define DBG_FOREACH_13(fn, x, ...) fn(x), DBG_FOREACH_12(fn, __VA_ARGS__)
-#define DBG_FOREACH_14(fn, x, ...) fn(x), DBG_FOREACH_13(fn, __VA_ARGS__)
-#define DBG_FOREACH_15(fn, x, ...) fn(x), DBG_FOREACH_14(fn, __VA_ARGS__)
-#define DBG_FOREACH_16(fn, x, ...) fn(x), DBG_FOREACH_15(fn, __VA_ARGS__)
-#define DBG_FOREACH_N(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, \
-                      _14, _15, _16, N, ...)                                  \
-  N
+// Force expanding argument with commas for MSVC, ref:
+// https://stackoverflow.com/questions/35210637/macro-expansion-argument-with-commas
+// Note that "args" should be a tuple with parentheses, such as "(e1, e2, ...)".
+#define DBG_IDENTITY(x) x
+#define DBG_CALL(fn, args) DBG_IDENTITY(fn args)
 
-#define DBG_FOREACH(fn, ...)                                                 \
-  DBG_FOREACH_N(__VA_ARGS__, DBG_FOREACH_16, DBG_FOREACH_15, DBG_FOREACH_14, \
-                DBG_FOREACH_13, DBG_FOREACH_12, DBG_FOREACH_11,              \
-                DBG_FOREACH_10, DBG_FOREACH_9, DBG_FOREACH_8, DBG_FOREACH_7, \
-                DBG_FOREACH_6, DBG_FOREACH_5, DBG_FOREACH_4, DBG_FOREACH_3,  \
-                DBG_FOREACH_2, DBG_FOREACH_1, unused)                        \
-  (fn, __VA_ARGS__)
+#define DBG_CAT_IMPL(_1, _2) _1##_2
+#define DBG_CAT(_1, _2) DBG_CAT_IMPL(_1, _2)
+
+#define DBG_16TH_IMPL(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, \
+                      _14, _15, _16, ...)                                     \
+  _16
+#define DBG_16TH(args) DBG_CALL(DBG_16TH_IMPL, args)
+#define DBG_NARG(...) \
+  DBG_16TH((__VA_ARGS__, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0))
+
+// DBG_VARIADIC_CALL(fn, data, e1, e2, ...) => fn_N(data, (e1, e2, ...))
+#define DBG_VARIADIC_CALL(fn, data, ...) \
+  DBG_CAT(fn##_, DBG_NARG(__VA_ARGS__))(data, (__VA_ARGS__))
+
+// (e1, e2, e3, ...) => e1
+#define DBG_HEAD_IMPL(_1, ...) _1
+#define DBG_HEAD(args) DBG_CALL(DBG_HEAD_IMPL, args)
+
+// (e1, e2, e3, ...) => (e2, e3, ...)
+#define DBG_TAIL_IMPL(_1, ...) (__VA_ARGS__)
+#define DBG_TAIL(args) DBG_CALL(DBG_TAIL_IMPL, args)
+
+#define DBG_MAP_1(fn, args) DBG_CALL(fn, args)
+#define DBG_MAP_2(fn, args) fn(DBG_HEAD(args)), DBG_MAP_1(fn, DBG_TAIL(args))
+#define DBG_MAP_3(fn, args) fn(DBG_HEAD(args)), DBG_MAP_2(fn, DBG_TAIL(args))
+#define DBG_MAP_4(fn, args) fn(DBG_HEAD(args)), DBG_MAP_3(fn, DBG_TAIL(args))
+#define DBG_MAP_5(fn, args) fn(DBG_HEAD(args)), DBG_MAP_4(fn, DBG_TAIL(args))
+#define DBG_MAP_6(fn, args) fn(DBG_HEAD(args)), DBG_MAP_5(fn, DBG_TAIL(args))
+#define DBG_MAP_7(fn, args) fn(DBG_HEAD(args)), DBG_MAP_6(fn, DBG_TAIL(args))
+#define DBG_MAP_8(fn, args) fn(DBG_HEAD(args)), DBG_MAP_7(fn, DBG_TAIL(args))
+#define DBG_MAP_9(fn, args) fn(DBG_HEAD(args)), DBG_MAP_8(fn, DBG_TAIL(args))
+#define DBG_MAP_10(fn, args) fn(DBG_HEAD(args)), DBG_MAP_9(fn, DBG_TAIL(args))
+#define DBG_MAP_11(fn, args) fn(DBG_HEAD(args)), DBG_MAP_10(fn, DBG_TAIL(args))
+#define DBG_MAP_12(fn, args) fn(DBG_HEAD(args)), DBG_MAP_11(fn, DBG_TAIL(args))
+#define DBG_MAP_13(fn, args) fn(DBG_HEAD(args)), DBG_MAP_12(fn, DBG_TAIL(args))
+#define DBG_MAP_14(fn, args) fn(DBG_HEAD(args)), DBG_MAP_13(fn, DBG_TAIL(args))
+#define DBG_MAP_15(fn, args) fn(DBG_HEAD(args)), DBG_MAP_14(fn, DBG_TAIL(args))
+#define DBG_MAP_16(fn, args) fn(DBG_HEAD(args)), DBG_MAP_15(fn, DBG_TAIL(args))
+
+// DBG_MAP(fn, e1, e2, e3, ...) => fn(e1), fn(e2), fn(e3), ...
+#define DBG_MAP(fn, ...) DBG_VARIADIC_CALL(DBG_MAP, fn, __VA_ARGS__)
 
 #define DBG_STRINGIFY_IMPL(x) #x
 #define DBG_STRINGIFY(x) DBG_STRINGIFY_IMPL(x)
 
 #define dbg(...)                                 \
   dbg::DebugOutput(__FILE__, __LINE__, __func__) \
-      .print({DBG_FOREACH(DBG_STRINGIFY, __VA_ARGS__)}, __VA_ARGS__)
+      .print({DBG_MAP(DBG_STRINGIFY, __VA_ARGS__)}, __VA_ARGS__)
 #else
 #define dbg(...) dbg::identity(__VA_ARGS__)
 #endif  // DBG_MACRO_DISABLE
