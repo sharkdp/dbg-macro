@@ -622,40 +622,65 @@ inline bool pretty_print(std::ostream& stream,
 
 #endif
 
+template <typename T, typename... U>
+struct last {
+  using type = typename last<U...>::type;
+};
+
+template <typename T>
+struct last<T> {
+  using type = T;
+};
+
+template <typename... T>
+using last_t = typename last<T...>::type;
+
 class DebugOutput {
  public:
-  DebugOutput(const char* filepath,
-              int line,
-              const char* function_name,
-              const char* expression)
-      : m_use_colorized_output(isColorizedOutputEnabled()),
-        m_filepath(filepath),
-        m_line(line),
-        m_function_name(function_name),
-        m_expression(expression) {
-    const std::size_t path_length = m_filepath.length();
+  // Helper alias to avoid obscure type `const char* const*` in signature.
+  using expr_t = const char*;
+
+  DebugOutput(const char* filepath, int line, const char* function_name)
+      : m_use_colorized_output(isColorizedOutputEnabled()) {
+    std::string path = filepath;
+    const std::size_t path_length = path.length();
     if (path_length > MAX_PATH_LENGTH) {
-      m_filepath = ".." + m_filepath.substr(path_length - MAX_PATH_LENGTH,
-                                            MAX_PATH_LENGTH);
+      path = ".." + path.substr(path_length - MAX_PATH_LENGTH, MAX_PATH_LENGTH);
     }
+    std::stringstream ss;
+    ss << ansi(ANSI_DEBUG) << "[" << path << ":" << line << " ("
+       << function_name << ")] " << ansi(ANSI_RESET);
+    m_location = ss.str();
   }
 
+  template <typename... T>
+  auto print(std::initializer_list<expr_t> exprs, T&&... values)
+      -> last_t<T...> {
+    if (exprs.size() != sizeof...(values)) {
+      std::cerr
+          << m_location << ansi(ANSI_WARN)
+          << "The number of arguments mismatch, please check unprotected comma"
+          << ansi(ANSI_RESET) << std::endl;
+    }
+    return print_impl(exprs.begin(), std::forward<T>(values)...);
+  }
+
+ private:
   template <typename T>
-  T&& print(const std::string& type, T&& value) const {
+  T&& print_impl(const expr_t* expr, T&& value) {
     const T& ref = value;
     std::stringstream stream_value;
     const bool print_expr_and_type = pretty_print(stream_value, ref);
 
     std::stringstream output;
-    output << ansi(ANSI_DEBUG) << "[" << m_filepath << ":" << m_line << " ("
-           << m_function_name << ")] " << ansi(ANSI_RESET);
+    output << m_location;
     if (print_expr_and_type) {
-      output << ansi(ANSI_EXPRESSION) << m_expression << ansi(ANSI_RESET)
-             << " = ";
+      output << ansi(ANSI_EXPRESSION) << *expr << ansi(ANSI_RESET) << " = ";
     }
     output << ansi(ANSI_VALUE) << stream_value.str() << ansi(ANSI_RESET);
     if (print_expr_and_type) {
-      output << " (" << ansi(ANSI_TYPE) << type << ansi(ANSI_RESET) << ")";
+      output << " (" << ansi(ANSI_TYPE) << type_name<T>() << ansi(ANSI_RESET)
+             << ")";
     }
     output << std::endl;
     std::cerr << output.str();
@@ -663,7 +688,13 @@ class DebugOutput {
     return std::forward<T>(value);
   }
 
- private:
+  template <typename T, typename... U>
+  auto print_impl(const expr_t* exprs, T&& value, U&&... rest)
+      -> last_t<T, U...> {
+    print_impl(exprs, std::forward<T>(value));
+    return print_impl(exprs + 1, std::forward<U>(rest)...);
+  }
+
   const char* ansi(const char* code) const {
     if (m_use_colorized_output) {
       return code;
@@ -674,15 +705,13 @@ class DebugOutput {
 
   const bool m_use_colorized_output;
 
-  std::string m_filepath;
-  const int m_line;
-  const std::string m_function_name;
-  const std::string m_expression;
+  std::string m_location;
 
   static constexpr std::size_t MAX_PATH_LENGTH = 20;
 
   static constexpr const char* const ANSI_EMPTY = "";
   static constexpr const char* const ANSI_DEBUG = "\x1b[02m";
+  static constexpr const char* const ANSI_WARN = "\x1b[33m";
   static constexpr const char* const ANSI_EXPRESSION = "\x1b[36m";
   static constexpr const char* const ANSI_VALUE = "\x1b[01m";
   static constexpr const char* const ANSI_TYPE = "\x1b[32m";
@@ -696,14 +725,49 @@ T&& identity(T&& t) {
   return std::forward<T>(t);
 }
 
+template <typename T, typename... U>
+auto identity(T&&, U&&... u) -> last_t<U...> {
+  return identity(std::forward<U>(u)...);
+}
+
 }  // namespace dbg
 
 #ifndef DBG_MACRO_DISABLE
-// We use a variadic macro to support commas inside expressions (e.g.
-// initializer lists):
-#define dbg(...)                                               \
-  dbg::DebugOutput(__FILE__, __LINE__, __func__, #__VA_ARGS__) \
-      .print(dbg::type_name<decltype(__VA_ARGS__)>(), (__VA_ARGS__))
+
+#define DBG_FOREACH_1(fn, x) fn(x)
+#define DBG_FOREACH_2(fn, x, ...) fn(x), DBG_FOREACH_1(fn, __VA_ARGS__)
+#define DBG_FOREACH_3(fn, x, ...) fn(x), DBG_FOREACH_2(fn, __VA_ARGS__)
+#define DBG_FOREACH_4(fn, x, ...) fn(x), DBG_FOREACH_3(fn, __VA_ARGS__)
+#define DBG_FOREACH_5(fn, x, ...) fn(x), DBG_FOREACH_4(fn, __VA_ARGS__)
+#define DBG_FOREACH_6(fn, x, ...) fn(x), DBG_FOREACH_5(fn, __VA_ARGS__)
+#define DBG_FOREACH_7(fn, x, ...) fn(x), DBG_FOREACH_6(fn, __VA_ARGS__)
+#define DBG_FOREACH_8(fn, x, ...) fn(x), DBG_FOREACH_7(fn, __VA_ARGS__)
+#define DBG_FOREACH_9(fn, x, ...) fn(x), DBG_FOREACH_8(fn, __VA_ARGS__)
+#define DBG_FOREACH_10(fn, x, ...) fn(x), DBG_FOREACH_9(fn, __VA_ARGS__)
+#define DBG_FOREACH_11(fn, x, ...) fn(x), DBG_FOREACH_10(fn, __VA_ARGS__)
+#define DBG_FOREACH_12(fn, x, ...) fn(x), DBG_FOREACH_11(fn, __VA_ARGS__)
+#define DBG_FOREACH_13(fn, x, ...) fn(x), DBG_FOREACH_12(fn, __VA_ARGS__)
+#define DBG_FOREACH_14(fn, x, ...) fn(x), DBG_FOREACH_13(fn, __VA_ARGS__)
+#define DBG_FOREACH_15(fn, x, ...) fn(x), DBG_FOREACH_14(fn, __VA_ARGS__)
+#define DBG_FOREACH_16(fn, x, ...) fn(x), DBG_FOREACH_15(fn, __VA_ARGS__)
+#define DBG_FOREACH_N(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, \
+                      _14, _15, _16, N, ...)                                  \
+  N
+
+#define DBG_FOREACH(fn, ...)                                                 \
+  DBG_FOREACH_N(__VA_ARGS__, DBG_FOREACH_16, DBG_FOREACH_15, DBG_FOREACH_14, \
+                DBG_FOREACH_13, DBG_FOREACH_12, DBG_FOREACH_11,              \
+                DBG_FOREACH_10, DBG_FOREACH_9, DBG_FOREACH_8, DBG_FOREACH_7, \
+                DBG_FOREACH_6, DBG_FOREACH_5, DBG_FOREACH_4, DBG_FOREACH_3,  \
+                DBG_FOREACH_2, DBG_FOREACH_1, unused)                        \
+  (fn, __VA_ARGS__)
+
+#define DBG_STRINGIFY_IMPL(x) #x
+#define DBG_STRINGIFY(x) DBG_STRINGIFY_IMPL(x)
+
+#define dbg(...)                                 \
+  dbg::DebugOutput(__FILE__, __LINE__, __func__) \
+      .print({DBG_FOREACH(DBG_STRINGIFY, __VA_ARGS__)}, __VA_ARGS__)
 #else
 #define dbg(...) dbg::identity(__VA_ARGS__)
 #endif  // DBG_MACRO_DISABLE
