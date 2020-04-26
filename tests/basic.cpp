@@ -39,6 +39,36 @@ TEST_CASE("side effects") {
   CHECK(x == 2);
 }
 
+TEST_CASE("multiple arguments") {
+  SECTION("output format") {
+    // The output of dbg(x, y) should be same as dbg(x); dbg(y).
+    std::stringstream ss;
+    const auto orig_buf = std::cerr.rdbuf(ss.rdbuf());
+    // Put multiple statements in the same line to get exactly same output.
+    // clang-format off
+    dbg(42); dbg("test"); dbg(42, "test");
+    // clang-format on
+    std::cerr.rdbuf(orig_buf);
+
+    std::string lines[4];
+    for (int i = 0; i < 4; i++) {
+      std::getline(ss, lines[i]);
+    }
+    CHECK(lines[0] == lines[2]);  // output for 42
+    CHECK(lines[1] == lines[3]);  // output for "test"
+  }
+
+  SECTION("expression") {
+    // It should return the last expression.
+    int x = dbg(1, 2, 1 + 2);
+    CHECK(x == 3);
+
+    // Wrap unprotected commas with parenthesis.
+    x = dbg(1, (std::vector<int>{2, 3, 4}), 5);
+    CHECK(x == 5);
+  }
+}
+
 TEST_CASE("pretty_print") {
   SECTION("primitive types") {
     CHECK(pretty_print(3) == "3");

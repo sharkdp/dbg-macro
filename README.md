@@ -91,6 +91,17 @@ vcpkg install dbg-macro
 
 ## Advanced features
 
+### Multiple arguments
+
+Passing multiple arguments to the `dbg()` macro would just work. The output of
+`dbg(x, y)` is same as `dbg(x); dbg(y)`. If there are unprotected commas,
+please wrap them with parenthesis.
+
+```c++
+dbg(42, "hello world");
+dbg(1, (std::vector<int>{2, 3, 4}), 5);
+```
+
 ### Hexadecimal, octal and binary format
 
 If you want to format integers in hexadecimal, octal or binary representation, you can

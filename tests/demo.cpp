@@ -63,6 +63,10 @@ int main() {
   dbg(9 + 33);
   dbg(test_string + " world");
 
+  dbg("====== multiple arguments");
+
+  dbg(test_int, (std::vector<int>{2, 3, 4}), test_string);
+
   dbg("====== containers");
 
   const std::vector<int> dummy_vec_int{3, 2, 3};
