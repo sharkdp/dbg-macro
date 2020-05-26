@@ -93,13 +93,15 @@ vcpkg install dbg-macro
 
 ### Multiple arguments
 
-Passing multiple arguments to the `dbg()` macro would just work. The output of
-`dbg(x, y)` is same as `dbg(x); dbg(y)`. If there are unprotected commas,
-please wrap them with parenthesis.
+You can pass multiple arguments to the `dbg(…)` macro. The output of
+`dbg(x, y, z)` is same as `dbg(x); dbg(y); dbg(z);`:
+``` c++
+dbg(42, "hello world", false);
+```
 
+Note that you have to wrap "unprotected commas" in parentheses:
 ```c++
-dbg(42, "hello world");
-dbg(1, (std::vector<int>{2, 3, 4}), 5);
+dbg("a vector:", (std::vector<int>{2, 3, 4}));
 ```
 
 ### Hexadecimal, octal and binary format
