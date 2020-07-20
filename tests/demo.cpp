@@ -11,6 +11,7 @@
 #if DBG_MACRO_CXX_STANDARD >= 17
 #include <optional>
 #include <variant>
+#include <string_view>
 #endif
 
 #include <dbg.h>
@@ -117,8 +118,10 @@ int main() {
 #if DBG_MACRO_CXX_STANDARD >= 17
   dbg("====== Sum types");
   dbg(std::make_optional<bool>(false));
-
   dbg((std::variant<int, std::string>{"test"}));
+
+  dbg("======= std::string_view");
+  dbg(std::string_view{"test"});
 #endif
 
   dbg("====== function name tests");
