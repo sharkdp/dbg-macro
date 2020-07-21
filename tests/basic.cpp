@@ -103,7 +103,7 @@ TEST_CASE("pretty_print") {
 
   #if DBG_MACRO_CXX_STANDARD >= 17
     SECTION("std::string_view") {
-    std::string_view x{"foo"};
+    std::string_view x{"foooo", 3}; // should only print 3 characters
     std::string_view y{"bar"};
     CHECK(pretty_print(x) == "\"foo\"");
     CHECK(pretty_print(std::make_pair(x, y)) == "{\"foo\", \"bar\"}");
