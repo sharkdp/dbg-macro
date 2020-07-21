@@ -562,7 +562,7 @@ inline bool pretty_print(std::ostream& stream, const std::string& value) {
 #if DBG_MACRO_CXX_STANDARD >= 17
 
 inline bool pretty_print(std::ostream& stream, const std::string_view& value) {
-  stream << '"' << value << '"';
+  stream << '"' << value.data() << '"';
   return true;
 }
 
