@@ -10,8 +10,8 @@
 
 #if DBG_MACRO_CXX_STANDARD >= 17
 #include <optional>
-#include <variant>
 #include <string_view>
+#include <variant>
 #endif
 
 #include <dbg.h>
