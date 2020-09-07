@@ -60,7 +60,7 @@ The code above produces this output ([try it yourself](https://repl.it/@sharkdp/
 
 ## Installation
 
-To make this practical, the `dbg.h` header should to be readily available from all kinds of different
+To make this practical, the `dbg.h` header should be readily available from all kinds of different
 places and in all kinds of environments. The quick & dirty way is to actually copy the header file
 to `/usr/include` or to clone the repository and symlink `dbg.h` to `/usr/include/dbg.h`.
 ``` bash
