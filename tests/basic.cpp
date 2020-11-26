@@ -14,6 +14,10 @@
 #include <variant>
 #endif
 
+#if defined(_MSC_VER) && !defined(NOMAXMIN)
+#  define NOMAXMIN
+#endif // defined(_MSC_VER) && !defined(NOMAXMIN)
+
 #include <dbg.h>
 
 #include <catch2/catch.hpp>
