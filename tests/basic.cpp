@@ -101,8 +101,8 @@ TEST_CASE("pretty_print") {
   SECTION("std::string") {
     std::string x = "foo";
     std::string y = "bar";
-    CHECK(pretty_print(x) == "\"foo\"");
-    CHECK(pretty_print(std::make_pair(x, y)) == "{\"foo\", \"bar\"}");
+    CHECK(std::string(pretty_print(x)) == "\"foo\"");
+    CHECK(std::string(pretty_print(std::make_pair(x, y))) == "{\"foo\", \"bar\"}");
   }
 
 #if DBG_MACRO_CXX_STANDARD >= 17
