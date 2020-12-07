@@ -79,10 +79,17 @@ License (MIT):
 #  endif
 #endif  // !DBG_MACRO_CXX_STANDARD
 
-#if DBG_MACRO_CXX_STANDARD >= 17
+#if defined(__cpp_lib_string_view)
+# include <string_view>
+#endif  // defined(__cpp_lib_string_view)
+
+#if defined(__cpp_lib_optional)
 #  include <optional>
+#endif  // defined(__cpp_lib_optional)
+
+#if defined(__cpp_lib_variant)
 #  include <variant>
-#endif
+#endif  // defined(__cpp_lib_variant)
 
 namespace dbg {
 
@@ -635,12 +642,14 @@ inline bool pretty_print(std::ostream& stream,
   return true;
 }
 
+#endif
+
+#if defined(__cpp_lib_string_view)
 inline bool pretty_print(std::ostream& stream, const std::string_view& value) {
   stream << '"' << value.substr() << '"';
   return true;
 }
-
-#endif
+#endif  // defined(__cpp_lib_string_view)
 
 template <typename T, typename... U>
 struct last {
