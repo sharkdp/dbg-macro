@@ -636,7 +636,7 @@ inline bool pretty_print(std::ostream& stream,
 }
 
 inline bool pretty_print(std::ostream& stream, const std::string_view& value) {
-  stream << '"' << value << '"';
+  stream << '"' << value.substr() << '"';
   return true;
 }
 
