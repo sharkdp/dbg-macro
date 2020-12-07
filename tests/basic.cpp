@@ -149,20 +149,22 @@ TEST_CASE("pretty_print") {
     CHECK(s_shared_ptr_expected.str() == pretty_print(dummy_shared_ptr));
   }
 
-#if DBG_MACRO_CXX_STANDARD >= 17
+#if defined(__cpp_lib_optional)
   SECTION("std::optional") {
     CHECK(pretty_print(std::make_optional<bool>(false)) == "{false}");
     std::optional<int> empty_optional;
     CHECK(pretty_print(empty_optional) == "nullopt");
   }
+#endif  // defined(__cpp_lib_optional)
 
+#if defined(__cpp_lib_variant)
   SECTION("std::variant") {
     std::variant<int, std::string> dummy_variant = "test";
     CHECK(pretty_print(dummy_variant) == "{\"test\"}");
     dummy_variant = 42;
     CHECK(pretty_print(dummy_variant) == "{42}");
   }
-#endif
+#endif  // defined(__cpp_lib_variant)
 }
 
 struct user_defined_type {
