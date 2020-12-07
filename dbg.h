@@ -70,7 +70,7 @@ License (MIT):
 #endif  // DBG_MACRO_WINDOWS
 
 #ifndef DBG_MACRO_CXX_STANDARD
-#  if __cplusplus >= 201703L || (defined(_MSC_VER) && defined(__cpp_lib_optional) && defined(__cpp_lib_variant))
+#  if __cplusplus >= 201703L || (defined(_MSC_VER) && defined(__cpp_lib_optional) && defined(__cpp_lib_variant) && defined(__cpp_lib_string_view))
 #    define DBG_MACRO_CXX_STANDARD 17
 #  elif __cplusplus >= 201402L
 #    define DBG_MACRO_CXX_STANDARD 14
@@ -617,8 +617,7 @@ inline bool pretty_print(std::ostream& stream, const std::pair<T1, T2>& value) {
   return true;
 }
 
-#if DBG_MACRO_CXX_STANDARD >= 17
-
+#if defined(__cpp_lib_optional)
 template <typename T>
 inline bool pretty_print(std::ostream& stream, const std::optional<T>& value) {
   if (value) {
@@ -631,7 +630,9 @@ inline bool pretty_print(std::ostream& stream, const std::optional<T>& value) {
 
   return true;
 }
+#endif  // defined(__cpp_lib_optional)
 
+#if defined(__cpp_lib_variant)
 template <typename... Ts>
 inline bool pretty_print(std::ostream& stream,
                          const std::variant<Ts...>& value) {
@@ -641,11 +642,10 @@ inline bool pretty_print(std::ostream& stream,
 
   return true;
 }
-
-#endif
+#endif  // defined(__cpp_lib_variant)
 
 #if defined(__cpp_lib_string_view)
-inline bool pretty_print(std::ostream& stream, const std::string_view& value) {
+inline bool pretty_print(std::ostream& stream, std::string_view value) {
   stream << '"' << value.substr() << '"';
   return true;
 }
