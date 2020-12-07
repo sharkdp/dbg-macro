@@ -8,11 +8,17 @@
 #include <tuple>
 #include <vector>
 
-#if DBG_MACRO_CXX_STANDARD >= 17
-#include <optional>
-#include <string_view>
-#include <variant>
-#endif
+#if defined(__cpp_lib_optional)
+#  include <optional>
+#endif  // defined(__cpp_lib_optional)
+
+#if defined(__cpp_lib_string_view)
+#  include <string_view>
+#endif  // defined(__cpp_lib_string_view)
+
+#if defined(__cpp_lib_variant)
+#  include <variant>
+#endif  // defined(__cpp_lib_variant)
 
 #if defined(_MSC_VER) && !defined(NOMAXMIN)
 #  define NOMAXMIN
