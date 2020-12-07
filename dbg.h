@@ -635,6 +635,11 @@ inline bool pretty_print(std::ostream& stream,
   return true;
 }
 
+inline bool pretty_print(std::ostream& stream, const std::string_view& value) {
+  stream << '"' << value << '"';
+  return true;
+}
+
 #endif
 
 template <typename T, typename... U>

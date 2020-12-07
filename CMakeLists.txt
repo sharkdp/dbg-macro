@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.1)
 
 project(dbg_macro)
 
+add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/Zc:__cplusplus;>")
+
 include(GNUInstallDirs)
 
 string(COMPARE EQUAL ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_SOURCE_DIR} IS_MAIN_PROJECT)
@@ -15,8 +17,11 @@ target_include_directories(${PROJECT_NAME}
 )
 
 if (DBG_MACRO_ENABLE_TESTS)
-    add_subdirectory(tests/Catch2)
-    list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/tests/Catch2/contrib)
+    find_package(Catch2 CONFIG)
+    if(NOT Catch2_FOUND)
+        add_subdirectory(tests/Catch2)
+        list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/tests/Catch2/contrib)
+    endif()
 
     include(CTest)
     include(Catch)
