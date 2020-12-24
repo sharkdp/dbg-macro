@@ -8,21 +8,11 @@
 #include <tuple>
 #include <vector>
 
-#if defined(__cpp_lib_optional)
-#  include <optional>
-#endif  // defined(__cpp_lib_optional)
-
-#if defined(__cpp_lib_string_view)
-#  include <string_view>
-#endif  // defined(__cpp_lib_string_view)
-
-#if defined(__cpp_lib_variant)
-#  include <variant>
-#endif  // defined(__cpp_lib_variant)
-
-#if defined(_MSC_VER) && !defined(NOMAXMIN)
-#  define NOMAXMIN
-#endif // defined(_MSC_VER) && !defined(NOMAXMIN)
+#if DBG_MACRO_CXX_STANDARD >= 17
+#include <optional>
+#include <string_view>
+#include <variant>
+#endif
 
 #include <dbg.h>
 
@@ -107,8 +97,8 @@ TEST_CASE("pretty_print") {
   SECTION("std::string") {
     std::string x = "foo";
     std::string y = "bar";
-    CHECK(std::string(pretty_print(x)) == "\"foo\"");
-    CHECK(std::string(pretty_print(std::make_pair(x, y))) == "{\"foo\", \"bar\"}");
+    CHECK(pretty_print(x) == "\"foo\"");
+    CHECK(pretty_print(std::make_pair(x, y)) == "{\"foo\", \"bar\"}");
   }
 
 #if DBG_MACRO_CXX_STANDARD >= 17
@@ -155,22 +145,20 @@ TEST_CASE("pretty_print") {
     CHECK(s_shared_ptr_expected.str() == pretty_print(dummy_shared_ptr));
   }
 
-#if defined(__cpp_lib_optional)
+#if DBG_MACRO_CXX_STANDARD >= 17
   SECTION("std::optional") {
     CHECK(pretty_print(std::make_optional<bool>(false)) == "{false}");
     std::optional<int> empty_optional;
     CHECK(pretty_print(empty_optional) == "nullopt");
   }
-#endif  // defined(__cpp_lib_optional)
 
-#if defined(__cpp_lib_variant)
   SECTION("std::variant") {
     std::variant<int, std::string> dummy_variant = "test";
     CHECK(pretty_print(dummy_variant) == "{\"test\"}");
     dummy_variant = 42;
     CHECK(pretty_print(dummy_variant) == "{42}");
   }
-#endif  // defined(__cpp_lib_variant)
+#endif
 }
 
 struct user_defined_type {

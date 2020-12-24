@@ -30,16 +30,10 @@ License (MIT):
 #define DBG_MACRO_DBG_H
 
 #if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
-#  define DBG_MACRO_UNIX
+#define DBG_MACRO_UNIX
+#elif defined(_MSC_VER)
+#define DBG_MACRO_WINDOWS
 #endif
-
-#ifndef DBG_MACRO_WINDOWS
-#  if defined(_MSC_VER)
-#    define DBG_MACRO_WINDOWS 1
-#  else
-#    define DBG_MACRO_WINDOWS 0
-#  endif // !defined(_MSC_VER)
-#endif // !DBG_MACRO_WINDOWS
 
 #ifndef DBG_MACRO_NO_WARNING
 #pragma message("WARNING: the 'dbg.h' header is included in your code base")
@@ -59,37 +53,21 @@ License (MIT):
 #include <vector>
 
 #ifdef DBG_MACRO_UNIX
-#  include <unistd.h>
+#include <unistd.h>
 #endif
 
-#if DBG_MACRO_WINDOWS
-#  ifndef NOMINMAX
-#    define NOMINMAX
-#  endif  // !NOMINMAX
-#  include <Windows.h>
-#endif  // DBG_MACRO_WINDOWS
+#if __cplusplus >= 201703L || defined(_MSC_VER)
+#define DBG_MACRO_CXX_STANDARD 17
+#elif __cplusplus >= 201402L
+#define DBG_MACRO_CXX_STANDARD 14
+#else
+#define DBG_MACRO_CXX_STANDARD 11
+#endif
 
-#ifndef DBG_MACRO_CXX_STANDARD
-#  if __cplusplus >= 201703L || (defined(_MSC_VER) && defined(__cpp_lib_optional) && defined(__cpp_lib_variant) && defined(__cpp_lib_string_view))
-#    define DBG_MACRO_CXX_STANDARD 17
-#  elif __cplusplus >= 201402L
-#    define DBG_MACRO_CXX_STANDARD 14
-#  else
-#    define DBG_MACRO_CXX_STANDARD 11
-#  endif
-#endif  // !DBG_MACRO_CXX_STANDARD
-
-#if defined(__cpp_lib_string_view)
-# include <string_view>
-#endif  // defined(__cpp_lib_string_view)
-
-#if defined(__cpp_lib_optional)
-#  include <optional>
-#endif  // defined(__cpp_lib_optional)
-
-#if defined(__cpp_lib_variant)
-#  include <variant>
-#endif  // defined(__cpp_lib_variant)
+#if DBG_MACRO_CXX_STANDARD >= 17
+#include <optional>
+#include <variant>
+#endif
 
 namespace dbg {
 
@@ -567,6 +545,66 @@ inline bool pretty_print(std::ostream& stream, const print_type<T>&) {
   return false;
 }
 
+template <typename Enum>
+inline typename std::enable_if<std::is_enum<Enum>::value, bool>::type
+pretty_print(std::ostream& stream, Enum const& value) {
+  using UnderlyingType = typename std::underlying_type<Enum>::type;
+  stream << static_cast<UnderlyingType>(value);
+
+  return true;
+}
+
+inline bool pretty_print(std::ostream& stream, const std::string& value) {
+  stream << '"' << value << '"';
+  return true;
+}
+
+#if DBG_MACRO_CXX_STANDARD >= 17
+
+inline bool pretty_print(std::ostream& stream, const std::string_view& value) {
+  stream << '"' << std::string(value) << '"';
+  return true;
+}
+
+#endif
+
+template <typename T1, typename T2>
+inline bool pretty_print(std::ostream& stream, const std::pair<T1, T2>& value) {
+  stream << "{";
+  pretty_print(stream, value.first);
+  stream << ", ";
+  pretty_print(stream, value.second);
+  stream << "}";
+  return true;
+}
+
+#if DBG_MACRO_CXX_STANDARD >= 17
+
+template <typename T>
+inline bool pretty_print(std::ostream& stream, const std::optional<T>& value) {
+  if (value) {
+    stream << '{';
+    pretty_print(stream, *value);
+    stream << '}';
+  } else {
+    stream << "nullopt";
+  }
+
+  return true;
+}
+
+template <typename... Ts>
+inline bool pretty_print(std::ostream& stream,
+                         const std::variant<Ts...>& value) {
+  stream << "{";
+  std::visit([&stream](auto&& arg) { pretty_print(stream, arg); }, value);
+  stream << "}";
+
+  return true;
+}
+
+#endif
+
 template <typename Container>
 inline typename std::enable_if<detail::is_container<const Container&>::value,
                                bool>::type
@@ -592,64 +630,6 @@ pretty_print(std::ostream& stream, const Container& value) {
   stream << "}";
   return true;
 }
-
-template <typename Enum>
-inline typename std::enable_if<std::is_enum<Enum>::value, bool>::type
-pretty_print(std::ostream& stream, Enum const& value) {
-  using UnderlyingType = typename std::underlying_type<Enum>::type;
-  stream << static_cast<UnderlyingType>(value);
-
-  return true;
-}
-
-inline bool pretty_print(std::ostream& stream, const std::string& value) {
-  stream << '"' << value << '"';
-  return true;
-}
-
-template <typename T1, typename T2>
-inline bool pretty_print(std::ostream& stream, const std::pair<T1, T2>& value) {
-  stream << "{";
-  pretty_print(stream, value.first);
-  stream << ", ";
-  pretty_print(stream, value.second);
-  stream << "}";
-  return true;
-}
-
-#if defined(__cpp_lib_optional)
-template <typename T>
-inline bool pretty_print(std::ostream& stream, const std::optional<T>& value) {
-  if (value) {
-    stream << '{';
-    pretty_print(stream, *value);
-    stream << '}';
-  } else {
-    stream << "nullopt";
-  }
-
-  return true;
-}
-#endif  // defined(__cpp_lib_optional)
-
-#if defined(__cpp_lib_variant)
-template <typename... Ts>
-inline bool pretty_print(std::ostream& stream,
-                         const std::variant<Ts...>& value) {
-  stream << "{";
-  std::visit([&stream](auto&& arg) { pretty_print(stream, arg); }, value);
-  stream << "}";
-
-  return true;
-}
-#endif  // defined(__cpp_lib_variant)
-
-#if defined(__cpp_lib_string_view)
-inline bool pretty_print(std::ostream& stream, std::string_view value) {
-  stream << '"' << value.substr() << '"';
-  return true;
-}
-#endif  // defined(__cpp_lib_string_view)
 
 template <typename T, typename... U>
 struct last {
@@ -682,50 +662,15 @@ class DebugOutput {
     m_location = ss.str();
   }
 
- private:
-#if DBG_MACRO_WINDOWS
-  struct ConsoleTextAttribute
-  {
-     ConsoleTextAttribute()
-         : handle(GetStdHandle(STD_OUTPUT_HANDLE))
-     {
-         CONSOLE_SCREEN_BUFFER_INFO info;
-         GetConsoleScreenBufferInfo(handle, &info);
-         attributes = info.wAttributes;
-     }
-    ~ConsoleTextAttribute()
-    {
-      if (handle != INVALID_HANDLE_VALUE)
-      {
-        SetConsoleTextAttribute(handle, attributes);
-      }
-    }
-    HANDLE handle = INVALID_HANDLE_VALUE;
-    WORD attributes;
-  };
-#endif // DBG_MACRO_WINDOWS
-
- public:
   template <typename... T>
   auto print(std::initializer_list<expr_t> exprs,
              std::initializer_list<std::string> types,
              T&&... values) -> last_t<T...> {
     if (exprs.size() != sizeof...(values)) {
-#if DBG_MACRO_WINDOWS
-      ConsoleTextAttribute consoleTextAttributeGuard;
-      SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY);
-      std::cerr << m_location;
-      SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_GREEN);
-      std::cerr
-          << ansi(ANSI_WARN)
-          << "The number of arguments mismatch, please check unprotected comma"
-          << ansi(ANSI_RESET) << std::endl;
-#else
       std::cerr
           << m_location << ansi(ANSI_WARN)
           << "The number of arguments mismatch, please check unprotected comma"
           << ansi(ANSI_RESET) << std::endl;
-#endif // DBG_MACRO_WINDOWS
     }
     return print_impl(exprs.begin(), types.begin(), std::forward<T>(values)...);
   }
@@ -737,24 +682,6 @@ class DebugOutput {
     std::stringstream stream_value;
     const bool print_expr_and_type = pretty_print(stream_value, ref);
 
-#if DBG_MACRO_WINDOWS
-    ConsoleTextAttribute consoleTextAttributeGuard;
-    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY);
-    std::cerr << m_location;
-    if (print_expr_and_type) {
-      SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_GREEN | FOREGROUND_BLUE);
-      std::cerr << ansi(ANSI_EXPRESSION) << *expr << ansi(ANSI_RESET);
-      SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
-      std::cerr << " = ";
-    }
-    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
-    std::cerr << ansi(ANSI_VALUE) << stream_value.str() << ansi(ANSI_RESET);
-    if (print_expr_and_type) {
-      SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_GREEN);
-      std::cerr << " (" << ansi(ANSI_TYPE) << *type << ansi(ANSI_RESET) << ")";
-    }
-    std::cerr << std::endl;
-#else
     std::stringstream output;
     output << m_location;
     if (print_expr_and_type) {
@@ -766,7 +693,6 @@ class DebugOutput {
     }
     output << std::endl;
     std::cerr << output.str();
-#endif // DBG_MACRO_WINDOWS
 
     return std::forward<T>(value);
   }
@@ -782,11 +708,7 @@ class DebugOutput {
 
   const char* ansi(const char* code) const {
     if (m_use_colorized_output) {
-#if DBG_MACRO_WINDOWS
-      return ANSI_EMPTY;
-#else
       return code;
-#endif // DBG_MACRO_WINDOWS
     } else {
       return ANSI_EMPTY;
     }
