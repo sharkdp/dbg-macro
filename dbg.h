@@ -335,6 +335,7 @@ using detect_end_t = decltype(detail::end(std::declval<T>()));
 template <typename T>
 using detect_size_t = decltype(detail::size(std::declval<T>()));
 
+#if DBG_MACRO_CXX_STANDARD < 17
 template <typename T>
 struct is_container {
   static constexpr bool value =
@@ -345,6 +346,21 @@ struct is_container {
                     typename std::remove_cv<
                         typename std::remove_reference<T>::type>::type>::value;
 };
+#else
+template <typename T>
+struct is_container {
+  static constexpr bool value =
+      is_detected<detect_begin_t, T>::value &&
+      is_detected<detect_end_t, T>::value &&
+      is_detected<detect_size_t, T>::value &&
+      !std::is_same<std::string,
+                    typename std::remove_cv<
+                        typename std::remove_reference<T>::type>::type>::value &&
+      !std::is_same<std::string_view,
+                    typename std::remove_cv<
+                        typename std::remove_reference<T>::type>::type>::value;
+};
+#endif
 
 template <typename T>
 using ostream_operator_t =
