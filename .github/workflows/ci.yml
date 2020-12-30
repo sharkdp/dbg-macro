@@ -47,10 +47,10 @@ jobs:
       shell: bash
       run: cmake --build . --config $BUILD_TYPE
 
-    - name: "Run ls (TODO: remove)"
+    - name: "Copy executables"
       working-directory: ${{runner.workspace}}/build
       shell: bash
-      run: ls -R
+      run: cp ${{matrix.job.build_type}}/*.exe .
 
     - name: Run example
       working-directory: ${{runner.workspace}}/build
