@@ -1,13 +1,32 @@
 name: CI
 
-on: [push]
+on: [push, pull_request]
 
 env:
   BUILD_TYPE: RelWithDebInfo
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        job:
+          # Ubuntu 20.04
+          - { os: ubuntu-20.04, cpp_standard: "11", build_type: "Debug" }
+          - { os: ubuntu-20.04, cpp_standard: "14", build_type: "Debug" }
+          - { os: ubuntu-20.04, cpp_standard: "17", build_type: "Debug" }
+          - { os: ubuntu-20.04, cpp_standard: "17", build_type: "RelWithDebInfo" }
+          # MacOS
+          - { os: macos-latest, cpp_standard: "11", build_type: "Debug" }
+          - { os: macos-latest, cpp_standard: "14", build_type: "Debug" }
+          - { os: macos-latest, cpp_standard: "17", build_type: "Debug" }
+          # Windows
+          - { os: windows-2019, cpp_standard: "11", build_type: "Debug" }
+          - { os: windows-2019, cpp_standard: "14", build_type: "Debug" }
+          - { os: windows-2019, cpp_standard: "17", build_type: "Debug" }
+          - { os: windows-2019, cpp_standard: "17", build_type: "RelWithDebInfo" }
+
+    runs-on: ${{ matrix.job.os }}
 
     steps:
     - uses: actions/checkout@v2
@@ -20,7 +39,11 @@ jobs:
     - name: Configure CMake
       shell: bash
       working-directory: ${{runner.workspace}}/build
-      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+      run: |
+        cmake \
+          $GITHUB_WORKSPACE \
+          -DCMAKE_CXX_STANDARD=${{ build.matrix.cpp_standard }} \
+          -DCMAKE_BUILD_TYPE=${{ build.matrix.build_type }}
 
     - name: Build
       working-directory: ${{runner.workspace}}/build
@@ -30,4 +53,8 @@ jobs:
     - name: Test
       working-directory: ${{runner.workspace}}/build
       shell: bash
-      run: ctest -C $BUILD_TYPE
+      run: |
+        ./dbg_macro-example
+        ./dbg_macro-demo
+        ./dbg_macro-tests
+        ./dbg_macro-tests-macro_disabled
