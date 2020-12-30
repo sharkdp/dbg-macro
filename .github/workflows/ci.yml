@@ -2,9 +2,6 @@ name: CI
 
 on: [push, pull_request]
 
-env:
-  BUILD_TYPE: RelWithDebInfo
-
 jobs:
   build:
     strategy:
@@ -42,13 +39,18 @@ jobs:
       run: |
         cmake \
           $GITHUB_WORKSPACE \
-          -DCMAKE_CXX_STANDARD=${{ matrix.job.cpp_standard }} \
-          -DCMAKE_BUILD_TYPE=${{ matrix.job.build_type }}
+          -DCMAKE_CXX_STANDARD=${{matrix.job.cpp_standard}} \
+          -DCMAKE_BUILD_TYPE=${{matrix.job.build_type}}
 
     - name: Build
       working-directory: ${{runner.workspace}}/build
       shell: bash
       run: cmake --build . --config $BUILD_TYPE
+
+    - name: "Run ls (TODO: remove)"
+      working-directory: ${{runner.workspace}}/build
+      shell: bash
+      run: ls -R
 
     - name: Run example
       working-directory: ${{runner.workspace}}/build
