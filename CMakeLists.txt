@@ -27,6 +27,8 @@ if (DBG_MACRO_ENABLE_TESTS)
         set(WARNING_FLAGS "-Wall" "-pedantic")
     endif()
 
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+
     # unit tests with dbg(...) enabled
     add_executable(${PROJECT_NAME}-tests tests/main.cpp tests/basic.cpp)
     target_compile_options(${PROJECT_NAME}-tests PRIVATE ${WARNING_FLAGS} -DDBG_MACRO_NO_WARNING)
