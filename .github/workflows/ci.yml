@@ -42,8 +42,8 @@ jobs:
       run: |
         cmake \
           $GITHUB_WORKSPACE \
-          -DCMAKE_CXX_STANDARD=${{ build.matrix.cpp_standard }} \
-          -DCMAKE_BUILD_TYPE=${{ build.matrix.build_type }}
+          -DCMAKE_CXX_STANDARD=${{ matrix.job.cpp_standard }} \
+          -DCMAKE_BUILD_TYPE=${{ matrix.job.build_type }}
 
     - name: Build
       working-directory: ${{runner.workspace}}/build
