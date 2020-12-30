@@ -9,19 +9,19 @@ jobs:
       matrix:
         job:
           # Ubuntu 20.04
-          - { os: ubuntu-20.04, cpp_standard: "11", exe: "",     build_type: "Debug" }
-          - { os: ubuntu-20.04, cpp_standard: "14", exe: "",     build_type: "Debug" }
-          - { os: ubuntu-20.04, cpp_standard: "17", exe: "",     build_type: "Debug" }
-          - { os: ubuntu-20.04, cpp_standard: "17", exe: "",     build_type: "RelWithDebInfo" }
+          - { os: ubuntu-20.04, cpp_standard: "11", build_type: "Debug" }
+          - { os: ubuntu-20.04, cpp_standard: "14", build_type: "Debug" }
+          - { os: ubuntu-20.04, cpp_standard: "17", build_type: "Debug" }
+          - { os: ubuntu-20.04, cpp_standard: "17", build_type: "RelWithDebInfo" }
           # MacOS
-          - { os: macos-latest, cpp_standard: "11", exe: "",     build_type: "Debug" }
-          - { os: macos-latest, cpp_standard: "14", exe: "",     build_type: "Debug" }
-          - { os: macos-latest, cpp_standard: "17", exe: "",     build_type: "Debug" }
+          - { os: macos-latest, cpp_standard: "11", build_type: "Debug" }
+          - { os: macos-latest, cpp_standard: "14", build_type: "Debug" }
+          - { os: macos-latest, cpp_standard: "17", build_type: "Debug" }
           # Windows
-          - { os: windows-2019, cpp_standard: "11", exe: ".exe", build_type: "Debug" }
-          - { os: windows-2019, cpp_standard: "14", exe: ".exe", build_type: "Debug" }
-          - { os: windows-2019, cpp_standard: "17", exe: ".exe", build_type: "Debug" }
-          - { os: windows-2019, cpp_standard: "17", exe: ".exe", build_type: "RelWithDebInfo" }
+          - { os: windows-2019, cpp_standard: "11", build_type: "Debug" }
+          - { os: windows-2019, cpp_standard: "14", build_type: "Debug" }
+          - { os: windows-2019, cpp_standard: "17", build_type: "Debug" }
+          - { os: windows-2019, cpp_standard: "17", build_type: "RelWithDebInfo" }
 
     runs-on: ${{ matrix.job.os }}
 
@@ -40,7 +40,8 @@ jobs:
         cmake \
           $GITHUB_WORKSPACE \
           -DCMAKE_CXX_STANDARD=${{matrix.job.cpp_standard}} \
-          -DCMAKE_BUILD_TYPE=${{matrix.job.build_type}}
+          -DCMAKE_BUILD_TYPE=${{matrix.job.build_type}} \
+          -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=${{runner.workspace}}/build
 
     - name: Build
       working-directory: ${{runner.workspace}}/build
@@ -55,19 +56,19 @@ jobs:
     - name: Run example
       working-directory: ${{runner.workspace}}/build
       shell: bash
-      run: ./dbg_macro-example${{matrix.job.exe}}
+      run: ./dbg_macro-example
 
     - name: Run demo
       working-directory: ${{runner.workspace}}/build
       shell: bash
-      run: ./dbg_macro-demo${{matrix.job.exe}}
+      run: ./dbg_macro-demo
 
     - name: Run tests
       working-directory: ${{runner.workspace}}/build
       shell: bash
-      run: ./dbg_macro-tests${{matrix.job.exe}}
+      run: ./dbg_macro-tests
 
     - name: Run tests (macro disabled)
       working-directory: ${{runner.workspace}}/build
       shell: bash
-      run: ./dbg_macro-tests-macro_disabled${{matrix.job.exe}}
+      run: ./dbg_macro-tests-macro_disabled
