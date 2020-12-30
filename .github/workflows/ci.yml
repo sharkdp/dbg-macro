@@ -50,7 +50,7 @@ jobs:
     - name: "Copy executables"
       working-directory: ${{runner.workspace}}/build
       shell: bash
-      run: cp ${{matrix.job.build_type}}/*.exe .
+      run: cp Debug/*.exe . || true
 
     - name: Run example
       working-directory: ${{runner.workspace}}/build
