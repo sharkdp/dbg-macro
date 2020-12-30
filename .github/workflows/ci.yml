@@ -40,8 +40,7 @@ jobs:
         cmake \
           $GITHUB_WORKSPACE \
           -DCMAKE_CXX_STANDARD=${{matrix.job.cpp_standard}} \
-          -DCMAKE_BUILD_TYPE=${{matrix.job.build_type}} \
-          -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=${{runner.workspace}}/build
+          -DCMAKE_BUILD_TYPE=${{matrix.job.build_type}}
 
     - name: Build
       working-directory: ${{runner.workspace}}/build
