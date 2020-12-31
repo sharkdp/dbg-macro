@@ -54,7 +54,7 @@ jobs:
       if: runner.os == 'Windows'
       working-directory: ${{runner.workspace}}/build
       shell: bash
-      run: cp Debug/*.exe . || true
+      run: cp ${{matrix.job.build_type}}/*.exe .
 
     - name: Run example
       working-directory: ${{runner.workspace}}/build
