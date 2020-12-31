@@ -56,7 +56,7 @@ License (MIT):
 #include <unistd.h>
 #endif
 
-#if __cplusplus >= 201703L || defined(_MSC_VER)
+#if __cplusplus >= 201703L
 #define DBG_MACRO_CXX_STANDARD 17
 #elif __cplusplus >= 201402L
 #define DBG_MACRO_CXX_STANDARD 14
