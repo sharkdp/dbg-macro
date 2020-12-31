@@ -9,19 +9,21 @@ jobs:
       matrix:
         job:
           # Ubuntu 20.04
-          - { os: ubuntu-20.04, cpp_standard: "11", build_type: "Debug" }
-          - { os: ubuntu-20.04, cpp_standard: "14", build_type: "Debug" }
-          - { os: ubuntu-20.04, cpp_standard: "17", build_type: "Debug" }
-          - { os: ubuntu-20.04, cpp_standard: "17", build_type: "RelWithDebInfo" }
+          - { os: ubuntu-20.04, compiler: "g++",     cpp_standard: "11", build_type: "Debug" }
+          - { os: ubuntu-20.04, compiler: "g++",     cpp_standard: "14", build_type: "Debug" }
+          - { os: ubuntu-20.04, compiler: "g++",     cpp_standard: "17", build_type: "Debug" }
+          - { os: ubuntu-20.04, compiler: "g++",     cpp_standard: "17", build_type: "RelWithDebInfo" }
+          - { os: ubuntu-20.04, compiler: "clang++", cpp_standard: "11", build_type: "Debug" }
+          - { os: ubuntu-20.04, compiler: "clang++", cpp_standard: "14", build_type: "Debug" }
+          - { os: ubuntu-20.04, compiler: "clang++", cpp_standard: "17", build_type: "Debug" }
+          - { os: ubuntu-20.04, compiler: "clang++", cpp_standard: "17", build_type: "RelWithDebInfo" }
           # MacOS
-          - { os: macos-latest, cpp_standard: "11", build_type: "Debug" }
-          - { os: macos-latest, cpp_standard: "14", build_type: "Debug" }
-          - { os: macos-latest, cpp_standard: "17", build_type: "Debug" }
+          - { os: macos-latest, compiler: "g++",     cpp_standard: "17", build_type: "Debug" }
           # Windows
-          - { os: windows-2019, cpp_standard: "11", build_type: "Debug" }
-          - { os: windows-2019, cpp_standard: "14", build_type: "Debug" }
-          - { os: windows-2019, cpp_standard: "17", build_type: "Debug" }
-          - { os: windows-2019, cpp_standard: "17", build_type: "RelWithDebInfo" }
+          - { os: windows-2019, compiler: "cl",      cpp_standard: "11", build_type: "Debug" }
+          - { os: windows-2019, compiler: "cl",      cpp_standard: "14", build_type: "Debug" }
+          - { os: windows-2019, compiler: "cl",      cpp_standard: "17", build_type: "Debug" }
+          - { os: windows-2019, compiler: "cl",      cpp_standard: "17", build_type: "RelWithDebInfo" }
 
     runs-on: ${{ matrix.job.os }}
 
@@ -39,15 +41,17 @@ jobs:
       run: |
         cmake \
           $GITHUB_WORKSPACE \
+          -DCMAKE_CXX_COMPILER=${{matrix.job.compiler}} \
           -DCMAKE_CXX_STANDARD=${{matrix.job.cpp_standard}} \
           -DCMAKE_BUILD_TYPE=${{matrix.job.build_type}}
 
     - name: Build
       working-directory: ${{runner.workspace}}/build
       shell: bash
-      run: cmake --build . --config $BUILD_TYPE
+      run: cmake --build . --config ${{matrix.job.build_type}}
 
     - name: "Copy executables"
+      if: runner.os == 'Windows'
       working-directory: ${{runner.workspace}}/build
       shell: bash
       run: cp Debug/*.exe . || true
