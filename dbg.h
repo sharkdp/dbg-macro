@@ -236,7 +236,11 @@ std::string type_list_to_string() {
   auto unused = {(result += type_name<T>() + ", ", 0)..., 0};
   static_cast<void>(unused);
 
+#if DBG_MACRO_CXX_STANDARD >= 17
+  if constexpr (sizeof...(T) > 0) {
+#else
   if (sizeof...(T) > 0) {
+#endif
     result.pop_back();
     result.pop_back();
   }
