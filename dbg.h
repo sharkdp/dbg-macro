@@ -41,6 +41,13 @@ License (MIT):
 #  endif // !defined(_MSC_VER)
 #endif // !DBG_MACRO_WINDOWS
 
+#if DBG_MACRO_WINDOWS
+#  ifndef NOMINMAX
+#    define NOMINMAX
+#  endif  // !NOMINMAX
+#  include <Windows.h>
+#endif  // DBG_MACRO_WINDOWS
+
 #ifndef DBG_MACRO_NO_WARNING
 #pragma message("WARNING: the 'dbg.h' header is included in your code base")
 #endif  // DBG_MACRO_NO_WARNING
@@ -59,32 +66,20 @@ License (MIT):
 #include <vector>
 
 #ifdef DBG_MACRO_UNIX
-#  include <unistd.h>
+#include <unistd.h>
 #endif
 
-#if DBG_MACRO_WINDOWS
-#  ifndef NOMINMAX
-#    define NOMINMAX
-#  endif  // !NOMINMAX
-#  include <Windows.h>
-#endif  // DBG_MACRO_WINDOWS
-
-#ifndef DBG_MACRO_CXX_STANDARD
-#if __cplusplus >= 201703L ||                            \
-    (defined(_MSC_VER) && defined(__cpp_lib_optional) && \
-     defined(__cpp_lib_variant) && defined(__cpp_lib_string_view))
-#    define DBG_MACRO_CXX_STANDARD 17
-#  elif __cplusplus >= 201402L
-#    define DBG_MACRO_CXX_STANDARD 14
-#  else
-#    define DBG_MACRO_CXX_STANDARD 11
-#  endif
-#endif  // !DBG_MACRO_CXX_STANDARD
+#if __cplusplus >= 201703L || (defined(_MSC_VER) && defined(__cpp_lib_optional) && defined(__cpp_lib_variant))
+#  define DBG_MACRO_CXX_STANDARD 17
+#elif __cplusplus >= 201402L
+#  define DBG_MACRO_CXX_STANDARD 14
+#else
+#  define DBG_MACRO_CXX_STANDARD 11
+#endif
 
 #if DBG_MACRO_CXX_STANDARD >= 17
-#  include <optional>
-#  include <variant>
-#  include <string_view>
+#include <optional>
+#include <variant>
 #endif
 
 namespace dbg {
@@ -335,7 +330,6 @@ using detect_end_t = decltype(detail::end(std::declval<T>()));
 template <typename T>
 using detect_size_t = decltype(detail::size(std::declval<T>()));
 
-#if DBG_MACRO_CXX_STANDARD < 17
 template <typename T>
 struct is_container {
   static constexpr bool value =
@@ -346,21 +340,6 @@ struct is_container {
                     typename std::remove_cv<
                         typename std::remove_reference<T>::type>::type>::value;
 };
-#else
-template <typename T>
-struct is_container {
-  static constexpr bool value =
-      is_detected<detect_begin_t, T>::value &&
-      is_detected<detect_end_t, T>::value &&
-      is_detected<detect_size_t, T>::value &&
-      !std::is_same<std::string,
-                    typename std::remove_cv<
-                        typename std::remove_reference<T>::type>::type>::value &&
-      !std::is_same<std::string_view,
-                    typename std::remove_cv<
-                        typename std::remove_reference<T>::type>::type>::value;
-};
-#endif
 
 template <typename T>
 using ostream_operator_t =
@@ -579,32 +558,6 @@ inline bool pretty_print(std::ostream& stream, const print_type<T>&) {
   return false;
 }
 
-template <typename Container>
-inline typename std::enable_if<detail::is_container<const Container&>::value,
-                               bool>::type
-pretty_print(std::ostream& stream, const Container& value) {
-  stream << "{";
-  const size_t size = detail::size(value);
-  const size_t n = std::min(size_t{10}, size);
-  size_t i = 0;
-  using std::begin;
-  using std::end;
-  for (auto it = begin(value); it != end(value) && i < n; ++it, ++i) {
-    pretty_print(stream, *it);
-    if (i != n - 1) {
-      stream << ", ";
-    }
-  }
-
-  if (size > n) {
-    stream << ", ...";
-    stream << " size:" << size;
-  }
-
-  stream << "}";
-  return true;
-}
-
 template <typename Enum>
 inline typename std::enable_if<std::is_enum<Enum>::value, bool>::type
 pretty_print(std::ostream& stream, Enum const& value) {
@@ -618,6 +571,15 @@ inline bool pretty_print(std::ostream& stream, const std::string& value) {
   stream << '"' << value << '"';
   return true;
 }
+
+#if DBG_MACRO_CXX_STANDARD >= 17
+
+inline bool pretty_print(std::ostream& stream, const std::string_view& value) {
+  stream << '"' << std::string(value) << '"';
+  return true;
+}
+
+#endif
 
 template <typename T1, typename T2>
 inline bool pretty_print(std::ostream& stream, const std::pair<T1, T2>& value) {
@@ -644,11 +606,6 @@ inline bool pretty_print(std::ostream& stream, const std::optional<T>& value) {
   return true;
 }
 
-inline bool pretty_print(std::ostream& stream, const std::string_view& value) {
-  stream << '"' << value.substr() << '"';
-  return true;
-}
-
 template <typename... Ts>
 inline bool pretty_print(std::ostream& stream,
                          const std::variant<Ts...>& value) {
@@ -660,6 +617,32 @@ inline bool pretty_print(std::ostream& stream,
 }
 
 #endif
+
+template <typename Container>
+inline typename std::enable_if<detail::is_container<const Container&>::value,
+                               bool>::type
+pretty_print(std::ostream& stream, const Container& value) {
+  stream << "{";
+  const size_t size = detail::size(value);
+  const size_t n = std::min(size_t{10}, size);
+  size_t i = 0;
+  using std::begin;
+  using std::end;
+  for (auto it = begin(value); it != end(value) && i < n; ++it, ++i) {
+    pretty_print(stream, *it);
+    if (i != n - 1) {
+      stream << ", ";
+    }
+  }
+
+  if (size > n) {
+    stream << ", ...";
+    stream << " size:" << size;
+  }
+
+  stream << "}";
+  return true;
+}
 
 template <typename T, typename... U>
 struct last {
