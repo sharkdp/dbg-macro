@@ -25,6 +25,32 @@ std::string pretty_print(T&& value) {
   return stream.str();
 }
 
+#define dbg_def(def)                             \
+  dbg::DebugOutput(__FILE__, __LINE__, __func__) \
+      .print({#def}, {"definition"}, def)
+
+TEST_CASE("Environment information") {
+#if defined(__GNUC__)
+  dbg_def(__GNUC__);
+#endif
+
+#if defined(_MSC_VER)
+  dbg_def(_MSC_VER);
+#endif
+
+#if defined(__clang__)
+  dbg_def(__clang__);
+#endif
+
+#if defined(__clang_version__)
+  dbg_def(__clang_version__);
+#endif
+
+#if defined(__cplusplus)
+  dbg_def(__cplusplus);
+#endif
+}
+
 TEST_CASE("using dbg(..) inside expressions") {
   const int test_int = 42;
   const auto new_int = dbg(test_int) + dbg(2);
