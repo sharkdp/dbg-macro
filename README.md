@@ -1,6 +1,6 @@
 # `dbg(…)`
 
-[![Build Status](https://travis-ci.org/sharkdp/dbg-macro.svg?branch=master)](https://travis-ci.org/sharkdp/dbg-macro) [![Build status](https://ci.appveyor.com/api/projects/status/vmo9rw4te2wifkul/branch/master?svg=true)](https://ci.appveyor.com/project/sharkdp/dbg-macro) [![Try it online](https://img.shields.io/badge/try-online-f34b7d.svg)](https://repl.it/@sharkdp/dbg-macro-demo) [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](dbg.h)
+[![Build status](https://github.com/sharkdp/dbg-macro/workflows/CI/badge.svg)](https://github.com/sharkdp/dbg-macro/actions) [![Try it online](https://img.shields.io/badge/try-online-f34b7d.svg)](https://repl.it/@sharkdp/dbg-macro-demo) [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](dbg.h)
 
 *A macro for `printf`-style debugging fans.*
 
@@ -34,7 +34,7 @@ int main() {
   const int b = dbg(3 * a) + 1;  // [example.cpp:18 (main)] 3 * a = 6 (int)
 
   std::vector<int> numbers{b, 13, 42};
-  dbg(numbers);  // [example.cpp:21 (main)] numbers = {7, 13, 42} (size: 3) (std::vector<int>)
+  dbg(numbers);  // [example.cpp:21 (main)] numbers = {7, 13, 42} (std::vector<int>)
 
   dbg("this line is executed");  // [example.cpp:23 (main)] this line is executed
 
