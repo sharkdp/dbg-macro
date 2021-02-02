@@ -778,12 +778,8 @@ class DebugOutput {
   }
 
   const char* ansi(const char* code) const {
-    if (m_use_colorized_output) {
-#if DBG_MACRO_WINDOWS
-      return ANSI_EMPTY;
-#else
+    if (m_use_colorized_output && !DBG_MACRO_WINDOWS) {
       return code;
-#endif // DBG_MACRO_WINDOWS
     } else {
       return ANSI_EMPTY;
     }
