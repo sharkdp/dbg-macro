@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.1)
 project(dbg_macro)
 
 add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/Zc:__cplusplus;>")
+add_compile_definitions("$<$<CXX_COMPILER_ID:MSVC>:_CRT_SECURE_NO_WARNINGS;>")
 
 include(GNUInstallDirs)
 

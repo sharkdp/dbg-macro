@@ -90,7 +90,7 @@ inline bool isColorizedOutputEnabled() {
 }
 #else
 inline bool isColorizedOutputEnabled() {
-  return true;
+  return true && DBG_MACRO_WINDOWS; // Define -DDBG_MACRO_WINDOWS=0 to disable on Windows.
 }
 #endif
 
@@ -352,6 +352,29 @@ using ostream_operator_t =
 template <typename T>
 struct has_ostream_operator : is_detected<ostream_operator_t, T> {};
 
+#if DBG_MACRO_WINDOWS
+enum struct ConsoleTextAttribute : WORD {
+  ANSI_EMPTY = 0U,
+  ANSI_DEBUG = FOREGROUND_INTENSITY,
+  ANSI_WARN = FOREGROUND_RED | FOREGROUND_GREEN,
+  ANSI_EXPRESSION = FOREGROUND_GREEN | FOREGROUND_BLUE,
+  ANSI_VALUE = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE,
+  ANSI_TYPE = FOREGROUND_GREEN,
+  ANSI_RESET = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE
+};
+
+inline std::ostream& operator<<(std::ostream& stream, ConsoleTextAttribute attribute) {
+  SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),
+                          static_cast<WORD>(attribute));
+  return stream;
+}
+#endif  // DBG_MACRO_WINDOWS
+
+#if DBG_MACRO_WINDOWS
+using ansi_type = ConsoleTextAttribute;
+#else
+using ansi_type = const char*;
+#endif  // DBG_MACRO_WINDOWS
 }  // namespace detail
 
 // Helper to dbg(…)-print types
@@ -674,55 +697,21 @@ class DebugOutput {
       path = ".." + path.substr(path_length - MAX_PATH_LENGTH, MAX_PATH_LENGTH);
     }
     std::stringstream ss;
-    ss << ansi(ANSI_DEBUG) << "[" << path << ":" << line << " ("
-       << function_name << ")] " << ansi(ANSI_RESET);
+    ss << "[" << path << ":" << line << " ("
+       << function_name << ")] ";
     m_location = ss.str();
   }
 
- private:
-#if DBG_MACRO_WINDOWS
-  struct ConsoleTextAttribute
-  {
-     ConsoleTextAttribute()
-         : handle(GetStdHandle(STD_OUTPUT_HANDLE))
-     {
-         CONSOLE_SCREEN_BUFFER_INFO info;
-         GetConsoleScreenBufferInfo(handle, &info);
-         attributes = info.wAttributes;
-     }
-    ~ConsoleTextAttribute()
-    {
-      if (handle != INVALID_HANDLE_VALUE)
-      {
-        SetConsoleTextAttribute(handle, attributes);
-      }
-    }
-    HANDLE handle = INVALID_HANDLE_VALUE;
-    WORD attributes;
-  };
-#endif // DBG_MACRO_WINDOWS
-
- public:
   template <typename... T>
   auto print(std::initializer_list<expr_t> exprs,
              std::initializer_list<std::string> types,
              T&&... values) -> last_t<T...> {
     if (exprs.size() != sizeof...(values)) {
-#if DBG_MACRO_WINDOWS
-      ConsoleTextAttribute consoleTextAttributeGuard;
-      SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY);
-      std::cerr << m_location;
-      SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_GREEN);
+      using namespace detail;
       std::cerr
-          << ansi(ANSI_WARN)
+          << ansi(ANSI_DEBUG) << m_location << ansi(ANSI_WARN)
           << "The number of arguments mismatch, please check unprotected comma"
           << ansi(ANSI_RESET) << std::endl;
-#else
-      std::cerr
-          << m_location << ansi(ANSI_WARN)
-          << "The number of arguments mismatch, please check unprotected comma"
-          << ansi(ANSI_RESET) << std::endl;
-#endif // DBG_MACRO_WINDOWS
     }
     return print_impl(exprs.begin(), types.begin(), std::forward<T>(values)...);
   }
@@ -730,41 +719,21 @@ class DebugOutput {
  private:
   template <typename T>
   T&& print_impl(const expr_t* expr, const std::string* type, T&& value) {
+    using namespace detail;
     const T& ref = value;
     std::stringstream stream_value;
     const bool print_expr_and_type = pretty_print(stream_value, ref);
 
-#if DBG_MACRO_WINDOWS
-    ConsoleTextAttribute consoleTextAttributeGuard;
-    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY);
-    std::cerr << m_location;
+    std::cerr << ansi(ANSI_DEBUG) << m_location;
     if (print_expr_and_type) {
-      SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_GREEN | FOREGROUND_BLUE);
-      std::cerr << ansi(ANSI_EXPRESSION) << *expr << ansi(ANSI_RESET);
-      SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
-      std::cerr << " = ";
+      std::cerr << ansi(ANSI_EXPRESSION) << *expr << ansi(ANSI_RESET) << " = ";
     }
-    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
     std::cerr << ansi(ANSI_VALUE) << stream_value.str() << ansi(ANSI_RESET);
     if (print_expr_and_type) {
-      SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_GREEN);
       std::cerr << " (" << ansi(ANSI_TYPE) << *type << ansi(ANSI_RESET) << ")";
     }
     std::cerr << std::endl;
-#else
-    std::stringstream output;
-    output << m_location;
-    if (print_expr_and_type) {
-      output << ansi(ANSI_EXPRESSION) << *expr << ansi(ANSI_RESET) << " = ";
-    }
-    output << ansi(ANSI_VALUE) << stream_value.str() << ansi(ANSI_RESET);
-    if (print_expr_and_type) {
-      output << " (" << ansi(ANSI_TYPE) << *type << ansi(ANSI_RESET) << ")";
-    }
-    output << std::endl;
-    std::cerr << output.str();
-#endif // DBG_MACRO_WINDOWS
-
+    
     return std::forward<T>(value);
   }
 
@@ -777,8 +746,8 @@ class DebugOutput {
     return print_impl(exprs + 1, types + 1, std::forward<U>(rest)...);
   }
 
-  const char* ansi(const char* code) const {
-    if (m_use_colorized_output && !DBG_MACRO_WINDOWS) {
+  detail::ansi_type ansi(detail::ansi_type code) const {
+    if (m_use_colorized_output) {
       return code;
     } else {
       return ANSI_EMPTY;
@@ -791,6 +760,22 @@ class DebugOutput {
 
   static constexpr std::size_t MAX_PATH_LENGTH = 20;
 
+#if DBG_MACRO_WINDOWS
+  static constexpr detail::ConsoleTextAttribute ANSI_EMPTY =
+      detail::ConsoleTextAttribute::ANSI_EMPTY;
+  static constexpr detail::ConsoleTextAttribute ANSI_DEBUG =
+      detail::ConsoleTextAttribute::ANSI_DEBUG;
+  static constexpr detail::ConsoleTextAttribute ANSI_WARN =
+      detail::ConsoleTextAttribute::ANSI_WARN;
+  static constexpr detail::ConsoleTextAttribute ANSI_EXPRESSION =
+      detail::ConsoleTextAttribute::ANSI_EXPRESSION;
+  static constexpr detail::ConsoleTextAttribute ANSI_VALUE =
+      detail::ConsoleTextAttribute::ANSI_VALUE;
+  static constexpr detail::ConsoleTextAttribute ANSI_TYPE =
+      detail::ConsoleTextAttribute::ANSI_TYPE;
+  static constexpr detail::ConsoleTextAttribute ANSI_RESET =
+      detail::ConsoleTextAttribute::ANSI_RESET;
+#else
   static constexpr const char* const ANSI_EMPTY = "";
   static constexpr const char* const ANSI_DEBUG = "\x1b[02m";
   static constexpr const char* const ANSI_WARN = "\x1b[33m";
@@ -798,6 +783,7 @@ class DebugOutput {
   static constexpr const char* const ANSI_VALUE = "\x1b[01m";
   static constexpr const char* const ANSI_TYPE = "\x1b[32m";
   static constexpr const char* const ANSI_RESET = "\x1b[0m";
+#endif  // DBG_MACRO_WINDOWS
 };
 
 // Identity function to suppress "-Wunused-value" warnings in DBG_MACRO_DISABLE
