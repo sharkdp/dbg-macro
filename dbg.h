@@ -82,6 +82,10 @@ License (MIT):
 #include <variant>
 #endif
 
+#ifndef DBG_ANSI_TYPE
+#define DBG_ANSI_TYPE const char*
+#endif  // !DBG_ANSI_TYPE
+
 namespace dbg {
 
 #ifdef DBG_MACRO_UNIX
@@ -351,30 +355,6 @@ using ostream_operator_t =
 
 template <typename T>
 struct has_ostream_operator : is_detected<ostream_operator_t, T> {};
-
-#if DBG_MACRO_WINDOWS
-enum struct ConsoleTextAttribute : WORD {
-  ANSI_EMPTY = 0U,
-  ANSI_DEBUG = FOREGROUND_INTENSITY,
-  ANSI_WARN = FOREGROUND_RED | FOREGROUND_GREEN,
-  ANSI_EXPRESSION = FOREGROUND_GREEN | FOREGROUND_BLUE,
-  ANSI_VALUE = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE,
-  ANSI_TYPE = FOREGROUND_GREEN,
-  ANSI_RESET = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE
-};
-
-inline std::ostream& operator<<(std::ostream& stream, ConsoleTextAttribute attribute) {
-  SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),
-                          static_cast<WORD>(attribute));
-  return stream;
-}
-#endif  // DBG_MACRO_WINDOWS
-
-#if DBG_MACRO_WINDOWS
-using ansi_type = ConsoleTextAttribute;
-#else
-using ansi_type = const char*;
-#endif  // DBG_MACRO_WINDOWS
 }  // namespace detail
 
 // Helper to dbg(…)-print types
@@ -746,7 +726,7 @@ class DebugOutput {
     return print_impl(exprs + 1, types + 1, std::forward<U>(rest)...);
   }
 
-  detail::ansi_type ansi(detail::ansi_type code) const {
+  DBG_ANSI_TYPE ansi(DBG_ANSI_TYPE code) const {
     if (m_use_colorized_output) {
       return code;
     } else {
@@ -760,22 +740,6 @@ class DebugOutput {
 
   static constexpr std::size_t MAX_PATH_LENGTH = 20;
 
-#if DBG_MACRO_WINDOWS
-  static constexpr detail::ConsoleTextAttribute ANSI_EMPTY =
-      detail::ConsoleTextAttribute::ANSI_EMPTY;
-  static constexpr detail::ConsoleTextAttribute ANSI_DEBUG =
-      detail::ConsoleTextAttribute::ANSI_DEBUG;
-  static constexpr detail::ConsoleTextAttribute ANSI_WARN =
-      detail::ConsoleTextAttribute::ANSI_WARN;
-  static constexpr detail::ConsoleTextAttribute ANSI_EXPRESSION =
-      detail::ConsoleTextAttribute::ANSI_EXPRESSION;
-  static constexpr detail::ConsoleTextAttribute ANSI_VALUE =
-      detail::ConsoleTextAttribute::ANSI_VALUE;
-  static constexpr detail::ConsoleTextAttribute ANSI_TYPE =
-      detail::ConsoleTextAttribute::ANSI_TYPE;
-  static constexpr detail::ConsoleTextAttribute ANSI_RESET =
-      detail::ConsoleTextAttribute::ANSI_RESET;
-#else
   static constexpr const char* const ANSI_EMPTY = "";
   static constexpr const char* const ANSI_DEBUG = "\x1b[02m";
   static constexpr const char* const ANSI_WARN = "\x1b[33m";
@@ -783,7 +747,6 @@ class DebugOutput {
   static constexpr const char* const ANSI_VALUE = "\x1b[01m";
   static constexpr const char* const ANSI_TYPE = "\x1b[32m";
   static constexpr const char* const ANSI_RESET = "\x1b[0m";
-#endif  // DBG_MACRO_WINDOWS
 };
 
 // Identity function to suppress "-Wunused-value" warnings in DBG_MACRO_DISABLE
