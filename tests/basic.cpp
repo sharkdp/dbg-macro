@@ -14,6 +14,7 @@
 #include <variant>
 #endif
 
+#if _WIN32
 #ifndef NOMINMAX
 #define NOMINMAX
 #endif  // !NOMAXMIN
@@ -42,7 +43,7 @@ struct ConsoleCode {
 
   operator WORD() { return static_cast<WORD>(attribute); };
 
-  private:
+ private:
   enum struct Attribute : WORD {
     ANSI_EMPTY = 0U,
     ANSI_DEBUG = FOREGROUND_INTENSITY,
@@ -65,6 +66,7 @@ inline std::ostream& operator<<(std::ostream& stream, ConsoleCode code) {
 #ifndef DBG_ANSI_TYPE
 #define DBG_ANSI_TYPE ConsoleCode
 #endif  // !DBG_ANSI_TYPE
+#endif  // _WIN32
 
 #include <dbg.h>
 
