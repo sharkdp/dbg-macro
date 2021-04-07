@@ -27,7 +27,7 @@ std::string pretty_print(T&& value) {
 
 #define dbg_def(def)                             \
   dbg::DebugOutput(__FILE__, __LINE__, __func__) \
-      .print({#def}, {"definition"}, def)
+      .print(std::cerr, {#def}, {"definition"}, def)
 
 TEST_CASE("Environment information") {
 #if defined(__GNUC__)
