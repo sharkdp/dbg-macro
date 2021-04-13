@@ -653,8 +653,11 @@ class DebugOutput {
   // Helper alias to avoid obscure type `const char* const*` in signature.
   using expr_t = const char*;
 
-  DebugOutput(const char* filepath, int line, const char* function_name)
-      : m_use_colorized_output(isColorizedOutputEnabled()) {
+  DebugOutput(std::ostream& os,
+              const char* filepath,
+              int line,
+              const char* function_name)
+      : m_use_colorized_output(isColorizedOutputEnabled()), stream(os) {
     std::string path = filepath;
     const std::size_t path_length = path.length();
     if (path_length > MAX_PATH_LENGTH) {
@@ -667,8 +670,7 @@ class DebugOutput {
   }
 
   template <typename... T>
-  auto print(std::ostream& os,
-             std::initializer_list<expr_t> exprs,
+  auto print(std::initializer_list<expr_t> exprs,
              std::initializer_list<std::string> types,
              T&&... values) -> last_t<T...> {
     if (exprs.size() != sizeof...(values)) {
@@ -677,16 +679,12 @@ class DebugOutput {
           << "The number of arguments mismatch, please check unprotected comma"
           << ansi(ANSI_RESET) << std::endl;
     }
-    return print_impl(os, exprs.begin(), types.begin(),
-                      std::forward<T>(values)...);
+    return print_impl(exprs.begin(), types.begin(), std::forward<T>(values)...);
   }
 
  private:
   template <typename T>
-  T&& print_impl(std::ostream& os,
-                 const expr_t* expr,
-                 const std::string* type,
-                 T&& value) {
+  T&& print_impl(const expr_t* expr, const std::string* type, T&& value) {
     const T& ref = value;
     std::stringstream stream_value;
     const bool print_expr_and_type = pretty_print(stream_value, ref);
@@ -701,19 +699,18 @@ class DebugOutput {
       output << " (" << ansi(ANSI_TYPE) << *type << ansi(ANSI_RESET) << ")";
     }
     output << std::endl;
-    os << output.str();
+    stream << output.str();
 
     return std::forward<T>(value);
   }
 
   template <typename T, typename... U>
-  auto print_impl(std::ostream& os,
-                  const expr_t* exprs,
+  auto print_impl(const expr_t* exprs,
                   const std::string* types,
                   T&& value,
                   U&&... rest) -> last_t<T, U...> {
-    print_impl(os, exprs, types, std::forward<T>(value));
-    return print_impl(os, exprs + 1, types + 1, std::forward<U>(rest)...);
+    print_impl(exprs, types, std::forward<T>(value));
+    return print_impl(exprs + 1, types + 1, std::forward<U>(rest)...);
   }
 
   const char* ansi(const char* code) const {
@@ -725,6 +722,7 @@ class DebugOutput {
   }
 
   const bool m_use_colorized_output;
+  std::ostream& stream;
 
   std::string m_location;
 
@@ -808,9 +806,9 @@ auto identity(T&&, U&&... u) -> last_t<U...> {
 
 #define DBG_TYPE_NAME(x) dbg::type_name<decltype(x)>()
 
-#define dbg_to(stream, ...)                                 \
-  dbg::DebugOutput(__FILE__, __LINE__, __func__)            \
-      .print(stream, {DBG_MAP(DBG_STRINGIFY, __VA_ARGS__)}, \
+#define dbg_to(stream, ...)                              \
+  dbg::DebugOutput(stream, __FILE__, __LINE__, __func__) \
+      .print({DBG_MAP(DBG_STRINGIFY, __VA_ARGS__)},      \
              {DBG_MAP(DBG_TYPE_NAME, __VA_ARGS__)}, __VA_ARGS__)
 
 #define dbg(...) dbg_to(std::cerr, __VA_ARGS__)
