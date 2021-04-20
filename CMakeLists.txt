@@ -17,6 +17,69 @@ target_include_directories(${PROJECT_NAME}
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 
+set(target ${PROJECT_NAME})
+include(CMakePrintHelpers)
+cmake_print_variables(target)
+
+# set_target_properties(${target} PROPERTIES
+#  INTERFACE_INCLUDE_DIRECTORIES "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR};$<INSTALL_INTERFACE:include>"
+# )
+
+# install the target and create export-set
+install(TARGETS ${target}
+  EXPORT ${target}Targets
+)
+
+# install header file
+install(FILES dbg.h DESTINATION include)
+
+# generate and install export file
+install(EXPORT ${target}Targets
+  FILE ${target}Targets.cmake
+  NAMESPACE ${target}::
+  DESTINATION lib/cmake/${target}
+)
+
+# include CMakePackageConfigHelpers macro
+include(CMakePackageConfigHelpers)
+
+# set version
+set(version 0.4.0)
+
+set_property(TARGET ${target} PROPERTY VERSION ${version})
+set_property(TARGET ${target} PROPERTY SOVERSION 0)
+set_property(TARGET ${target} PROPERTY
+  INTERFACE_${target}_MAJOR_VERSION 0)
+set_property(TARGET ${target} APPEND PROPERTY
+  COMPATIBLE_INTERFACE_STRING ${target}_MAJOR_VERSION
+)
+
+# generate the version file for the config file
+write_basic_package_version_file(
+  "${CMAKE_CURRENT_BINARY_DIR}/${target}ConfigVersion.cmake"
+  VERSION "${version}"
+  COMPATIBILITY AnyNewerVersion
+)
+
+# create config file
+configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/${target}Config.cmake.in
+  "${CMAKE_CURRENT_BINARY_DIR}/${target}Config.cmake"
+  INSTALL_DESTINATION lib/cmake/${target}
+)
+
+# install config files
+install(FILES
+  "${CMAKE_CURRENT_BINARY_DIR}/${target}Config.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/${target}ConfigVersion.cmake"
+  DESTINATION lib/cmake/${target}
+)
+
+# generate the export targets for the build tree
+export(EXPORT ${target}Targets
+  FILE "${CMAKE_CURRENT_BINARY_DIR}/cmake/${target}Targets.cmake"
+  NAMESPACE ${target}::
+)
+
 if (DBG_MACRO_ENABLE_TESTS)
     find_package(Catch2 CONFIG)
     if(NOT Catch2_FOUND)
