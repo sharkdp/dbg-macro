@@ -250,7 +250,11 @@ std::string type_list_to_string() {
   auto unused = {(result += type_name<T>() + ", ", 0)..., 0};
   static_cast<void>(unused);
 
+#if DBG_MACRO_CXX_STANDARD >= 17
+  if constexpr (sizeof...(T) > 0) {
+#else
   if (sizeof...(T) > 0) {
+#endif
     result.pop_back();
     result.pop_back();
   }
@@ -494,7 +498,7 @@ std::string decimalToBinary(T n) {
   toRet.resize(length);
 
   for (size_t i = 0; i < length; ++i) {
-    const auto bit_at_index_i = (n >> i) & 1;
+    const auto bit_at_index_i = static_cast<char>((n >> i) & 1);
     toRet[length - 1 - i] = bit_at_index_i + '0';
   }
 
