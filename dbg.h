@@ -350,6 +350,87 @@ print_type<T> type() {
   return print_type<T>{};
 }
 
+// Forward declarations of "pretty_print"
+
+template <typename T>
+inline void pretty_print(std::ostream& stream, const T& value, std::true_type);
+
+template <typename T>
+inline void pretty_print(std::ostream&, const T&, std::false_type);
+
+template <typename T>
+inline typename std::enable_if<!detail::is_container<const T&>::value &&
+                                   !std::is_enum<T>::value,
+                               bool>::type
+pretty_print(std::ostream& stream, const T& value);
+
+inline bool pretty_print(std::ostream& stream, const bool& value);
+
+inline bool pretty_print(std::ostream& stream, const char& value);
+
+template <typename P>
+inline bool pretty_print(std::ostream& stream, P* const& value);
+
+template <typename T, typename Deleter>
+inline bool pretty_print(std::ostream& stream,
+                         std::unique_ptr<T, Deleter>& value);
+
+template <typename T>
+inline bool pretty_print(std::ostream& stream, std::shared_ptr<T>& value);
+
+template <size_t N>
+inline bool pretty_print(std::ostream& stream, const char (&value)[N]);
+
+template <>
+inline bool pretty_print(std::ostream& stream, const char* const& value);
+
+template <typename... Ts>
+inline bool pretty_print(std::ostream& stream, const std::tuple<Ts...>& value);
+
+template <>
+inline bool pretty_print(std::ostream& stream, const std::tuple<>&);
+
+template <>
+inline bool pretty_print(std::ostream& stream, const time&);
+
+template <typename T>
+inline bool pretty_print(std::ostream& stream,
+                         const print_formatted<T>& value);
+
+template <typename T>
+inline bool pretty_print(std::ostream& stream, const print_type<T>&);
+
+template <typename Enum>
+inline typename std::enable_if<std::is_enum<Enum>::value, bool>::type
+pretty_print(std::ostream& stream, Enum const& value);
+
+inline bool pretty_print(std::ostream& stream, const std::string& value);
+
+#if DBG_MACRO_CXX_STANDARD >= 17
+
+inline bool pretty_print(std::ostream& stream, const std::string_view& value);
+
+#endif
+
+template <typename T1, typename T2>
+inline bool pretty_print(std::ostream& stream, const std::pair<T1, T2>& value);
+
+#if DBG_MACRO_CXX_STANDARD >= 17
+
+template <typename T>
+inline bool pretty_print(std::ostream& stream, const std::optional<T>& value);
+
+template <typename... Ts>
+inline bool pretty_print(std::ostream& stream,
+                         const std::variant<Ts...>& value);
+
+#endif
+
+template <typename Container>
+inline typename std::enable_if<detail::is_container<const Container&>::value,
+                               bool>::type
+pretty_print(std::ostream& stream, const Container& value);
+
 // Specializations of "pretty_print"
 
 template <typename T>
