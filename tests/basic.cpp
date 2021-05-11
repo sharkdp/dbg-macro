@@ -142,6 +142,16 @@ TEST_CASE("pretty_print") {
     CHECK(pretty_print(vec_of_vec_of_ints) == "{{1, 2}, {3, 4, 5}}");
   }
 
+  SECTION("compound types") {
+    std::vector<std::pair<std::string, int>> vector_of_pairs = {
+        {"30+2", 32}, {"30-2", 28}, {"30*2", 60}};
+
+    CHECK(pretty_print(vector_of_pairs) == "{{\"30+2\", 32}, {\"30-2\", 28}, {\"30*2\", 60}}");
+
+    std::tuple<std::vector<int>> tuple_with_vector{{1, 2, 3}};
+    CHECK(pretty_print(tuple_with_vector) == "{{1, 2, 3}}");
+  }
+
   SECTION("std::tuple") {
     CHECK(pretty_print(std::tuple<>{}) == "{}");
     CHECK(pretty_print(std::tuple<int, bool>{42, false}) == "{42, false}");
@@ -342,16 +352,4 @@ TEST_CASE("dbg::hex, dbg::oct, and dbg::bin") {
 
 TEST_CASE("check timestamp") {
   dbg(dbg::time());
-}
-
-TEST_CASE("compound types") {
-  std::vector<std::pair<std::string, int>> container = {
-    {"30+2", 32},
-    {"30-2", 28},
-    {"30*2", 60}
-  };
-  dbg(container);
-  
-  std::tuple<std::vector<int>>hm{{1}};
-  dbg(hm);
 }
