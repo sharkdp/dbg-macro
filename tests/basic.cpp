@@ -343,3 +343,15 @@ TEST_CASE("dbg::hex, dbg::oct, and dbg::bin") {
 TEST_CASE("check timestamp") {
   dbg(dbg::time());
 }
+
+TEST_CASE("compound types") {
+  std::vector<std::pair<std::string, int>> container = {
+    {"30+2", 32},
+    {"30-2", 28},
+    {"30*2", 60}
+  };
+  dbg(container);
+  
+  std::tuple<std::vector<int>>hm{{1}};
+  dbg(hm);
+}
