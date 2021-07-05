@@ -39,10 +39,6 @@ License (MIT):
 #pragma message("WARNING: the 'dbg.h' header is included in your code base")
 #endif  // DBG_MACRO_NO_WARNING
 
-#ifndef _CRT_SECURE_NO_WARNINGS
-#define _CRT_SECURE_NO_WARNINGS
-#endif
-
 #include <algorithm>
 #include <chrono>
 #include <ctime>
@@ -554,7 +550,12 @@ inline bool pretty_print(std::ostream& stream, const time&) {
   const auto us =
       duration_cast<microseconds>(now.time_since_epoch()).count() % 1000000;
   const auto hms = system_clock::to_time_t(now);
+#if _MSC_VER >= 1600
+  std::tm* tm = new std::tm;
+  localtime_s(tm, &hms);
+# else
   const std::tm* tm = std::localtime(&hms);
+#endif
   stream << "current time = " << std::put_time(tm, "%H:%M:%S") << '.'
          << std::setw(6) << std::setfill('0') << us;
 
