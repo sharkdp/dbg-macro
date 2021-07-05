@@ -553,7 +553,7 @@ inline bool pretty_print(std::ostream& stream, const time&) {
 #if _MSC_VER >= 1600
   const auto tm = new std::tm;
   localtime_s(tm, &hms);
-# else
+#else
   const std::tm* tm = std::localtime(&hms);
 #endif
   stream << "current time = " << std::put_time(tm, "%H:%M:%S") << '.'
