@@ -551,14 +551,14 @@ inline bool pretty_print(std::ostream& stream, const time&) {
       duration_cast<microseconds>(now.time_since_epoch()).count() % 1000000;
   const auto hms = system_clock::to_time_t(now);
 #if _MSC_VER >= 1600
-  const auto tm = new std::tm;
-  localtime_s(tm, &hms);
+  struct tm t;
+  localtime_s(&t, &hms);
+  const std::tm* tm = &t;
 #else
   const std::tm* tm = std::localtime(&hms);
 #endif
   stream << "current time = " << std::put_time(tm, "%H:%M:%S") << '.'
          << std::setw(6) << std::setfill('0') << us;
-  delete tm;
   return false;
 }
 
