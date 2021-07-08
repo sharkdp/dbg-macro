@@ -558,7 +558,7 @@ inline bool pretty_print(std::ostream& stream, const time&) {
 #endif
   stream << "current time = " << std::put_time(tm, "%H:%M:%S") << '.'
          << std::setw(6) << std::setfill('0') << us;
-
+  delete tm;
   return false;
 }
 
