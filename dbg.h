@@ -30,10 +30,23 @@ License (MIT):
 #define DBG_MACRO_DBG_H
 
 #if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
-#define DBG_MACRO_UNIX
-#elif defined(_MSC_VER)
-#define DBG_MACRO_WINDOWS
+#  define DBG_MACRO_UNIX
 #endif
+
+#ifndef DBG_MACRO_WINDOWS
+#  if defined(_MSC_VER)
+#    define DBG_MACRO_WINDOWS 1
+#  else
+#    define DBG_MACRO_WINDOWS 0
+#  endif // !defined(_MSC_VER)
+#endif // !DBG_MACRO_WINDOWS
+
+#if DBG_MACRO_WINDOWS
+#  ifndef NOMINMAX
+#    define NOMINMAX
+#  endif  // !NOMINMAX
+#  include <Windows.h>
+#endif  // DBG_MACRO_WINDOWS
 
 #ifndef DBG_MACRO_NO_WARNING
 #pragma message("WARNING: the 'dbg.h' header is included in your code base")
@@ -56,18 +69,22 @@ License (MIT):
 #include <unistd.h>
 #endif
 
-#if __cplusplus >= 201703L
-#define DBG_MACRO_CXX_STANDARD 17
+#if __cplusplus >= 201703L || (defined(_MSC_VER) && defined(__cpp_lib_optional) && defined(__cpp_lib_variant))
+#  define DBG_MACRO_CXX_STANDARD 17
 #elif __cplusplus >= 201402L
-#define DBG_MACRO_CXX_STANDARD 14
+#  define DBG_MACRO_CXX_STANDARD 14
 #else
-#define DBG_MACRO_CXX_STANDARD 11
+#  define DBG_MACRO_CXX_STANDARD 11
 #endif
 
 #if DBG_MACRO_CXX_STANDARD >= 17
 #include <optional>
 #include <variant>
 #endif
+
+#ifndef DBG_ANSI_TYPE
+#define DBG_ANSI_TYPE const char*
+#endif  // !DBG_ANSI_TYPE
 
 namespace dbg {
 
@@ -77,7 +94,7 @@ inline bool isColorizedOutputEnabled() {
 }
 #else
 inline bool isColorizedOutputEnabled() {
-  return true;
+  return true && DBG_MACRO_WINDOWS; // Define -DDBG_MACRO_WINDOWS=0 to disable on Windows.
 }
 #endif
 
@@ -338,7 +355,6 @@ using ostream_operator_t =
 
 template <typename T>
 struct has_ostream_operator : is_detected<ostream_operator_t, T> {};
-
 }  // namespace detail
 
 // Helper to dbg(…)-print types
@@ -747,8 +763,8 @@ class DebugOutput {
       path = ".." + path.substr(path_length - MAX_PATH_LENGTH, MAX_PATH_LENGTH);
     }
     std::stringstream ss;
-    ss << ansi(ANSI_DEBUG) << "[" << path << ":" << line << " ("
-       << function_name << ")] " << ansi(ANSI_RESET);
+    ss << "[" << path << ":" << line << " ("
+       << function_name << ")] ";
     m_location = ss.str();
   }
 
@@ -757,8 +773,9 @@ class DebugOutput {
              std::initializer_list<std::string> types,
              T&&... values) -> last_t<T...> {
     if (exprs.size() != sizeof...(values)) {
+      using namespace detail;
       std::cerr
-          << m_location << ansi(ANSI_WARN)
+          << ansi(ANSI_DEBUG) << m_location << ansi(ANSI_WARN)
           << "The number of arguments mismatch, please check unprotected comma"
           << ansi(ANSI_RESET) << std::endl;
     }
@@ -768,22 +785,21 @@ class DebugOutput {
  private:
   template <typename T>
   T&& print_impl(const expr_t* expr, const std::string* type, T&& value) {
+    using namespace detail;
     const T& ref = value;
     std::stringstream stream_value;
     const bool print_expr_and_type = pretty_print(stream_value, ref);
 
-    std::stringstream output;
-    output << m_location;
+    std::cerr << ansi(ANSI_DEBUG) << m_location;
     if (print_expr_and_type) {
-      output << ansi(ANSI_EXPRESSION) << *expr << ansi(ANSI_RESET) << " = ";
+      std::cerr << ansi(ANSI_EXPRESSION) << *expr << ansi(ANSI_RESET) << " = ";
     }
-    output << ansi(ANSI_VALUE) << stream_value.str() << ansi(ANSI_RESET);
+    std::cerr << ansi(ANSI_VALUE) << stream_value.str() << ansi(ANSI_RESET);
     if (print_expr_and_type) {
-      output << " (" << ansi(ANSI_TYPE) << *type << ansi(ANSI_RESET) << ")";
+      std::cerr << " (" << ansi(ANSI_TYPE) << *type << ansi(ANSI_RESET) << ")";
     }
-    output << std::endl;
-    std::cerr << output.str();
-
+    std::cerr << std::endl;
+    
     return std::forward<T>(value);
   }
 
@@ -796,7 +812,7 @@ class DebugOutput {
     return print_impl(exprs + 1, types + 1, std::forward<U>(rest)...);
   }
 
-  const char* ansi(const char* code) const {
+  DBG_ANSI_TYPE ansi(DBG_ANSI_TYPE code) const {
     if (m_use_colorized_output) {
       return code;
     } else {
