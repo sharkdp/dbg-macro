@@ -3,7 +3,7 @@
 
 // You can use "dbg(..)" in expressions:
 int factorial(int n) {
-  if (dbg(n <= 1)) {
+  if (dbg(dbg(n) <= 1)) {
     return dbg(1);
   } else {
     return dbg(n * factorial(n - 1));

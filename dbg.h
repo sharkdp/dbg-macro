@@ -772,10 +772,41 @@ class DebugOutput {
     std::stringstream stream_value;
     const bool print_expr_and_type = pretty_print(stream_value, ref);
 
+    std::string expr_str = *expr;
+    while (1) {
+      auto pos_dbg = expr_str.find("dbg::DebugOutput");
+      if (pos_dbg == std::string::npos) break;
+      
+      // find the end of ".print({...}, {...}, __VA_ARGS__)"
+      //                                                  ^
+      auto pos_eop = expr_str.find("print(", pos_dbg) + 6;
+      int count = 1;
+      while (1) {
+        pos_eop++;
+        if (expr_str[pos_eop] == ')') { if (--count == 0) break; }
+        else if (expr_str[pos_eop] == '(') { count++; }
+      }
+      
+      // find the end of ".print({...}, {...}, __VA_ARGS__)"
+      //                                       ^
+      auto pos_arg = pos_eop;
+      while (1) {
+        pos_arg--;
+        if (count == 0 && expr_str[pos_arg] == ',') break;
+        else if (expr_str[pos_arg] == ')') { count++; }
+        else if (expr_str[pos_arg] == '(') { count--; }
+      }
+      assert(expr_str[pos_arg - 1] == '}');
+      pos_arg += 2;
+      expr_str = expr_str.substr(0, pos_dbg) + "dbg("
+               + expr_str.substr(pos_arg , pos_eop - pos_arg)
+               + expr_str.substr(pos_eop);
+    }
+
     std::stringstream output;
     output << m_location;
     if (print_expr_and_type) {
-      output << ansi(ANSI_EXPRESSION) << *expr << ansi(ANSI_RESET) << " = ";
+      output << ansi(ANSI_EXPRESSION) << expr_str << ansi(ANSI_RESET) << " = ";
     }
     output << ansi(ANSI_VALUE) << stream_value.str() << ansi(ANSI_RESET);
     if (print_expr_and_type) {
