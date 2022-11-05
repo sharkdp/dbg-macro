@@ -84,6 +84,35 @@ You can install the [`dbg-macro` port](https://github.com/microsoft/vcpkg/tree/m
 vcpkg install dbg-macro
 ```
 
+### With cmake
+
+`CMakeLists.txt`
+```cmake
+cmake_minimum_required(VERSION 3.11) # FetchContent added in cmake 3.11
+project(app) # name of executable
+
+set(CMAKE_CXX_STANDARD 17)
+
+# dbg-macro
+include(FetchContent)
+
+FetchContent_Declare(dbg_macro GIT_REPOSITORY https://github.com/sharkdp/dbg-macro)
+FetchContent_MakeAvailable(dbg_macro)
+
+add_executable(${PROJECT_NAME} main.cpp) # your source files goes here
+target_link_libraries(${PROJECT_NAME} PRIVATE dbg_macro) # make dbg.h available
+```
+
+`main.cpp`
+```cpp
+#include <dbg.h>
+
+int main() {
+  dbg(42, "hello world", false);
+  return 0;
+}
+```
+
 ## Configuration
 
 * Set the `DBG_MACRO_DISABLE` flag to disable the `dbg(…)` macro (i.e. to make it a no-op).
