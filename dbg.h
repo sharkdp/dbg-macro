@@ -71,7 +71,7 @@ License (MIT):
 
 namespace dbg {
 
-#ifdef DBG_MACRO_UNIX
+#if defined(DBG_MACRO_UNIX) && !defined(DBG_MACRO_FORCE_COLOR)
 inline bool isColorizedOutputEnabled() {
   return isatty(fileno(stderr));
 }
