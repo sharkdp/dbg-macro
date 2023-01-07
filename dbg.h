@@ -71,15 +71,15 @@ License (MIT):
 
 namespace dbg {
 
-#if defined(DBG_MACRO_UNIX) && !defined(DBG_MACRO_FORCE_COLOR)
 inline bool isColorizedOutputEnabled() {
-  return isatty(fileno(stderr));
-}
-#else
-inline bool isColorizedOutputEnabled() {
+#if defined(DBG_MACRO_FORCE_COLOR)
   return true;
-}
+#elif defined(DBG_MACRO_UNIX)
+  return isatty(fileno(stderr));
+#else
+  return true;
 #endif
+}
 
 struct time {};
 
