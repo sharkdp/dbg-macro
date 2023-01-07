@@ -46,7 +46,9 @@ License (MIT):
 #include <ios>
 #include <iostream>
 #include <memory>
+#include <queue>
 #include <sstream>
+#include <stack>
 #include <string>
 #include <tuple>
 #include <type_traits>
@@ -312,6 +314,38 @@ using std::size;
 #endif
 }  // namespace
 
+// Specializations for container adapters
+
+template <class T, class C>
+T pop(std::stack<T, C>& adapter) {
+  T value = std::move(adapter.top());
+  adapter.pop();
+  return value;
+}
+
+template <class T, class C>
+T pop(std::queue<T, C>& adapter) {
+  T value = std::move(adapter.front());
+  adapter.pop();
+  return value;
+}
+
+template <class T, class C, class Cmp>
+T pop(std::priority_queue<T, C, Cmp>& adapter) {
+  T value = std::move(adapter.top());
+  adapter.pop();
+  return value;
+}
+
+template <typename T>
+struct remove_cvref {
+  typedef typename std::remove_cv<typename std::remove_reference<T>::type>::type
+      type;
+};
+
+template <typename T>
+using remove_cvref_t = typename remove_cvref<T>::type;
+
 template <typename T>
 using detect_begin_t = decltype(detail::begin(std::declval<T>()));
 
@@ -327,9 +361,17 @@ struct is_container {
       is_detected<detect_begin_t, T>::value &&
       is_detected<detect_end_t, T>::value &&
       is_detected<detect_size_t, T>::value &&
-      !std::is_same<std::string,
-                    typename std::remove_cv<
-                        typename std::remove_reference<T>::type>::type>::value;
+      !std::is_same<std::string, remove_cvref_t<T>>::value;
+};
+
+template <typename T>
+using detect_underlying_container_t =
+    typename remove_cvref_t<T>::container_type;
+
+template <typename T>
+struct is_container_adapter {
+  static constexpr bool value =
+      is_detected<detect_underlying_container_t, T>::value;
 };
 
 template <typename T>
@@ -359,9 +401,11 @@ template <typename T>
 inline void pretty_print(std::ostream&, const T&, std::false_type);
 
 template <typename T>
-inline typename std::enable_if<!detail::is_container<const T&>::value &&
-                                   !std::is_enum<T>::value,
-                               bool>::type
+inline typename std::enable_if<
+    !detail::is_container<const T&>::value &&
+        !detail::is_container_adapter<const T&>::value &&
+        !std::is_enum<T>::value,
+    bool>::type
 pretty_print(std::ostream& stream, const T& value);
 
 inline bool pretty_print(std::ostream& stream, const bool& value);
@@ -394,8 +438,7 @@ template <>
 inline bool pretty_print(std::ostream& stream, const time&);
 
 template <typename T>
-inline bool pretty_print(std::ostream& stream,
-                         const print_formatted<T>& value);
+inline bool pretty_print(std::ostream& stream, const print_formatted<T>& value);
 
 template <typename T>
 inline bool pretty_print(std::ostream& stream, const print_type<T>&);
@@ -431,6 +474,12 @@ inline typename std::enable_if<detail::is_container<const Container&>::value,
                                bool>::type
 pretty_print(std::ostream& stream, const Container& value);
 
+template <typename ContainerAdapter>
+inline std::enable_if_t<
+    detail::is_container_adapter<const ContainerAdapter&>::value,
+    bool>
+pretty_print(std::ostream& stream, ContainerAdapter value);
+
 // Specializations of "pretty_print"
 
 template <typename T>
@@ -445,9 +494,11 @@ inline void pretty_print(std::ostream&, const T&, std::false_type) {
 }
 
 template <typename T>
-inline typename std::enable_if<!detail::is_container<const T&>::value &&
-                                   !std::is_enum<T>::value,
-                               bool>::type
+inline typename std::enable_if<
+    !detail::is_container<const T&>::value &&
+        !detail::is_container_adapter<const T&>::value &&
+        !std::is_enum<T>::value,
+    bool>::type
 pretty_print(std::ostream& stream, const T& value) {
   pretty_print(stream, value,
                typename detail::has_ostream_operator<const T&>::type{});
@@ -707,6 +758,30 @@ pretty_print(std::ostream& stream, const Container& value) {
   using std::end;
   for (auto it = begin(value); it != end(value) && i < n; ++it, ++i) {
     pretty_print(stream, *it);
+    if (i != n - 1) {
+      stream << ", ";
+    }
+  }
+
+  if (size > n) {
+    stream << ", ...";
+    stream << " size:" << size;
+  }
+
+  stream << "}";
+  return true;
+}
+
+template <typename ContainerAdapter>
+inline std::enable_if_t<
+    detail::is_container_adapter<const ContainerAdapter&>::value,
+    bool>
+pretty_print(std::ostream& stream, ContainerAdapter value) {
+  stream << "{";
+  const size_t size = detail::size(value);
+  const size_t n = std::min(size_t{10}, size);
+  for (size_t i = 0; i < n; ++i) {
+    pretty_print(stream, detail::pop(value));
     if (i != n - 1) {
       stream << ", ";
     }
