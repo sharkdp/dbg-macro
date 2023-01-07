@@ -475,9 +475,9 @@ inline typename std::enable_if<detail::is_container<const Container&>::value,
 pretty_print(std::ostream& stream, const Container& value);
 
 template <typename ContainerAdapter>
-inline std::enable_if_t<
+inline typename std::enable_if<
     detail::is_container_adapter<const ContainerAdapter&>::value,
-    bool>
+    bool>::type
 pretty_print(std::ostream& stream, ContainerAdapter value);
 
 // Specializations of "pretty_print"
@@ -773,9 +773,9 @@ pretty_print(std::ostream& stream, const Container& value) {
 }
 
 template <typename ContainerAdapter>
-inline std::enable_if_t<
+inline typename std::enable_if<
     detail::is_container_adapter<const ContainerAdapter&>::value,
-    bool>
+    bool>::type
 pretty_print(std::ostream& stream, ContainerAdapter value) {
   stream << "{";
   const size_t size = detail::size(value);
