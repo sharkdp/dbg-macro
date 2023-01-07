@@ -120,6 +120,24 @@ TEST_CASE("pretty_print") {
           "{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, ... size:14}");
   }
 
+  SECTION("container adapters") {
+    CHECK(pretty_print(std::priority_queue<int>()) == "{}");
+    CHECK(pretty_print(std::stack<int>({1, 2, 3})) == "{3, 2, 1}");
+    CHECK(pretty_print(std::queue<int>({9, 8, 7})) == "{9, 8, 7}");
+    CHECK(pretty_print(std::stack<int>(
+              {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14})) ==
+          "{14, 13, 12, 11, 10, 9, 8, 7, 6, 5, ... size:14}");
+  }
+
+  SECTION("compound container adapters") {
+    std::priority_queue<std::pair<int,int>> pq_of_pairs;
+    pq_of_pairs.push({-3, 4});
+    pq_of_pairs.push({-3, 7});
+    pq_of_pairs.push({2, -8});
+    pq_of_pairs.push({-1, 9});
+    CHECK(pretty_print(pq_of_pairs) == "{{2, -8}, {-1, 9}, {-3, 7}, {-3, 4}}");
+  }
+
   SECTION("std::string") {
     std::string x = "foo";
     std::string y = "bar";
