@@ -122,20 +122,20 @@ TEST_CASE("pretty_print") {
 
   SECTION("container adapters") {
     CHECK(pretty_print(std::priority_queue<int>()) == "{}");
-    CHECK(pretty_print(std::stack<int>({1, 2, 3})) == "{3, 2, 1}");
-    CHECK(pretty_print(std::queue<int>({9, 8, 7})) == "{9, 8, 7}");
+    CHECK(pretty_print(std::stack<int>({1, 2, 3})) == "{1, 2, 3}");
+    CHECK(pretty_print(std::queue<int>({9, 8, 7})) == "{7, 8, 9}");
     CHECK(pretty_print(std::stack<int>(
               {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14})) ==
-          "{14, 13, 12, 11, 10, 9, 8, 7, 6, 5, ... size:14}");
+          "{..., 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 (size:14)}");
   }
 
   SECTION("compound container adapters") {
-    std::priority_queue<std::pair<int,int>> pq_of_pairs;
+    std::priority_queue<std::pair<int, int>> pq_of_pairs;
     pq_of_pairs.push({-3, 4});
     pq_of_pairs.push({-3, 7});
     pq_of_pairs.push({2, -8});
     pq_of_pairs.push({-1, 9});
-    CHECK(pretty_print(pq_of_pairs) == "{{2, -8}, {-1, 9}, {-3, 7}, {-3, 4}}");
+    CHECK(pretty_print(pq_of_pairs) == "{{-3, 4}, {-3, 7}, {-1, 9}, {2, -8}}");
   }
 
   SECTION("std::string") {
@@ -164,7 +164,8 @@ TEST_CASE("pretty_print") {
     std::vector<std::pair<std::string, int>> vector_of_pairs = {
         {"30+2", 32}, {"30-2", 28}, {"30*2", 60}};
 
-    CHECK(pretty_print(vector_of_pairs) == "{{\"30+2\", 32}, {\"30-2\", 28}, {\"30*2\", 60}}");
+    CHECK(pretty_print(vector_of_pairs) ==
+          "{{\"30+2\", 32}, {\"30-2\", 28}, {\"30*2\", 60}}");
 
     std::tuple<std::vector<int>> tuple_with_vector{{1, 2, 3}};
     CHECK(pretty_print(tuple_with_vector) == "{{1, 2, 3}}");
