@@ -780,16 +780,25 @@ pretty_print(std::ostream& stream, ContainerAdapter value) {
   stream << "{";
   const size_t size = detail::size(value);
   const size_t n = std::min(size_t{10}, size);
+
+  std::vector<typename ContainerAdapter::value_type> elements;
+  elements.reserve(n);
   for (size_t i = 0; i < n; ++i) {
-    pretty_print(stream, detail::pop(value));
+    elements.push_back(std::move(detail::pop(value)));
+  }
+  std::reverse(elements.begin(), elements.end());
+
+  if (size > n) {
+    stream << "..., ";
+  }
+  for (size_t i = 0; i < n; ++i) {
+    pretty_print(stream, elements[i]);
     if (i != n - 1) {
       stream << ", ";
     }
   }
-
   if (size > n) {
-    stream << ", ...";
-    stream << " size:" << size;
+    stream << " (size:" << size << ")";
   }
 
   stream << "}";
