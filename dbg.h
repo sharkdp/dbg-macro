@@ -784,7 +784,7 @@ pretty_print(std::ostream& stream, ContainerAdapter value) {
   std::vector<typename ContainerAdapter::value_type> elements;
   elements.reserve(n);
   for (size_t i = 0; i < n; ++i) {
-    elements.push_back(std::move(detail::pop(value)));
+    elements.push_back(detail::pop(value));
   }
   std::reverse(elements.begin(), elements.end());
 
