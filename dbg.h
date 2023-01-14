@@ -202,21 +202,20 @@ std::string type_name() {
   return get_type_name(type_tag<T>{});
 }
 
-inline std::string get_type_name(type_tag<short>) {
-  return "short";
-}
+// Prefer bitsize variant over standard integral types
+#define DBG_MACRO_REGISTER_TYPE_ASSOC(t_std, t_bit)             \
+  inline constexpr const char* get_type_name(type_tag<t_std>) { \
+    return std::is_same<t_std, t_bit>::value ? #t_bit : #t_std; \
+  }
 
-inline std::string get_type_name(type_tag<unsigned short>) {
-  return "unsigned short";
-}
-
-inline std::string get_type_name(type_tag<long>) {
-  return "long";
-}
-
-inline std::string get_type_name(type_tag<unsigned long>) {
-  return "unsigned long";
-}
+DBG_MACRO_REGISTER_TYPE_ASSOC(unsigned char, uint8_t)
+DBG_MACRO_REGISTER_TYPE_ASSOC(unsigned short, uint16_t)
+DBG_MACRO_REGISTER_TYPE_ASSOC(unsigned int, uint32_t)
+DBG_MACRO_REGISTER_TYPE_ASSOC(unsigned long, uint64_t)
+DBG_MACRO_REGISTER_TYPE_ASSOC(signed char, int8_t)
+DBG_MACRO_REGISTER_TYPE_ASSOC(short, int16_t)
+DBG_MACRO_REGISTER_TYPE_ASSOC(int, int32_t)
+DBG_MACRO_REGISTER_TYPE_ASSOC(long, int64_t)
 
 inline std::string get_type_name(type_tag<std::string>) {
   return "std::string";
