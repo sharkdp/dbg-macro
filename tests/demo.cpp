@@ -3,12 +3,12 @@
 #include <iostream>
 #include <list>
 #include <memory>
+#include <queue>
 #include <sstream>
+#include <stack>
 #include <string>
 #include <tuple>
 #include <vector>
-#include <stack>
-#include <queue>
 
 #if DBG_MACRO_CXX_STANDARD >= 17
 #include <optional>
@@ -110,7 +110,7 @@ int main() {
   std::stack<int> dummy_stack({1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12});
   dbg(dummy_stack);
 
-  std::priority_queue<std::pair<int,int>> dummy_pqueue;
+  std::priority_queue<std::pair<int, int>> dummy_pqueue;
   dummy_pqueue.push({-3, 7});
   dummy_pqueue.push({2, -8});
   dummy_pqueue.push({-1, 9});
