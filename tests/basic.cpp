@@ -264,45 +264,52 @@ TEST_CASE("type_name") {
 
   SECTION("primitive types") {
     CHECK(type_name<void>() == "void");
-    CHECK(type_name<int>() == "int");
+    CHECK(type_name<int>() ==
+          (std::is_same<int, int32_t>::value ? "int32_t" : "int"));
     CHECK(type_name<char>() == "char");
-    CHECK(type_name<short>() == "short");
-    CHECK(type_name<long>() == "long");
-    CHECK(type_name<unsigned short>() == "unsigned short");
-    CHECK(type_name<unsigned long>() == "unsigned long");
+    CHECK(type_name<short>() ==
+          (std::is_same<short, int16_t>::value ? "int16_t" : "short"));
+    CHECK(type_name<long>() ==
+          (std::is_same<long, int64_t>::value ? "int64_t" : "long"));
+    CHECK(type_name<unsigned short>() ==
+          (std::is_same<unsigned short, uint16_t>::value ? "uint16_t"
+                                                         : "unsigned short"));
+    CHECK(type_name<unsigned long>() ==
+          (std::is_same<unsigned long, uint64_t>::value ? "uint64_t"
+                                                        : "unsigned long"));
     CHECK(type_name<float>() == "float");
   }
 
   SECTION("const and volatile") {
-    CHECK(type_name<const int>() == "const int");
-    CHECK(type_name<volatile int>() == "volatile int");
+    CHECK(type_name<const char>() == "const char");
+    CHECK(type_name<volatile char>() == "volatile char");
   }
 
   SECTION("references") {
-    CHECK(type_name<int&>() == "int&");
-    CHECK(type_name<const int&>() == "const int&");
+    CHECK(type_name<char&>() == "char&");
+    CHECK(type_name<const char&>() == "const char&");
   }
 
   SECTION("pointers") {
-    CHECK(type_name<int*>() == "int*");
-    CHECK(type_name<int** const*>() == "int** const*");
-    CHECK(type_name<const int*>() == "const int*");
-    CHECK(type_name<int* const>() == "int* const");
-    CHECK(type_name<const int* const>() == "const int* const");
+    CHECK(type_name<char*>() == "char*");
+    CHECK(type_name<char** const*>() == "char** const*");
+    CHECK(type_name<const char*>() == "const char*");
+    CHECK(type_name<char* const>() == "char* const");
+    CHECK(type_name<const char* const>() == "const char* const");
   }
 
   SECTION("common STL types") {
     CHECK(type_name<std::string>() == "std::string");
-    CHECK(type_name<std::vector<int>>() == "std::vector<int>");
-    CHECK(type_name<std::vector<const int*>>() == "std::vector<const int*>");
-    CHECK(type_name<std::vector<std::vector<int>>>() ==
-          "std::vector<std::vector<int>>");
+    CHECK(type_name<std::vector<char>>() == "std::vector<char>");
+    CHECK(type_name<std::vector<const char*>>() == "std::vector<const char*>");
+    CHECK(type_name<std::vector<std::vector<char>>>() ==
+          "std::vector<std::vector<char>>");
   }
 
 #if !defined(DBG_MACRO_WINDOWS)
   SECTION("std::tuple") {
     CHECK(type_name<std::tuple<>>() == "std::tuple<>");
-    CHECK(type_name<std::tuple<int, char>>() == "std::tuple<int, char>");
+    CHECK(type_name<std::tuple<double, char>>() == "std::tuple<double, char>");
     CHECK(type_name<std::tuple<std::string, char>>() ==
           "std::tuple<std::string, char>");
   }
