@@ -221,6 +221,16 @@ inline std::string get_type_name(type_tag<std::string>) {
   return "std::string";
 }
 
+template <typename T, size_t N>
+std::string get_type_name(type_tag<std::array<T, N>>) {
+  return "std::array<" + type_name<T>() + ", " + std::to_string(N) + ">";
+}
+
+template <typename T, size_t N>
+std::string get_type_name(type_tag<T[N]>) {
+  return type_name<T>() + " [" + std::to_string(N) + "]";
+}
+
 template <typename T>
 std::string get_type_name(type_tag<std::vector<T, std::allocator<T>>>) {
   return "std::vector<" + type_name<T>() + ">";

@@ -47,7 +47,7 @@ int32_t main() {
 
 The code above produces this output ([try it yourself](https://repl.it/@sharkdp/dbg-macro-demo)):
 
-![dbg(…) macro output](https://imgur.com/a/fR3lwR7)
+![dbg(…) macro output](https://i.imgur.com/NVTzGRk.png)
 
 ## Features
 
