@@ -14,11 +14,12 @@ macro that can be used in all circumstances where you would typically write
 ## Examples
 
 ``` c++
-#include <vector>
 #include <dbg.h>
+#include <cstdint>
+#include <vector>
 
 // You can use "dbg(..)" in expressions:
-int factorial(int n) {
+int32_t factorial(int32_t n) {
   if (dbg(n <= 1)) {
     return dbg(1);
   } else {
@@ -26,15 +27,15 @@ int factorial(int n) {
   }
 }
 
-int main() {
+int32_t main() {
   std::string message = "hello";
   dbg(message);  // [example.cpp:15 (main)] message = "hello" (std::string)
 
-  const int a = 2;
-  const int b = dbg(3 * a) + 1;  // [example.cpp:18 (main)] 3 * a = 6 (int)
+  const int32_t a = 2;
+  const int32_t b = dbg(3 * a) + 1;  // [example.cpp:18 (main)] 3 * a = 6 (int32_t)
 
-  std::vector<int> numbers{b, 13, 42};
-  dbg(numbers);  // [example.cpp:21 (main)] numbers = {7, 13, 42} (std::vector<int>)
+  std::vector<int32_t> numbers{b, 13, 42};
+  dbg(numbers);  // [example.cpp:21 (main)] numbers = {7, 13, 42} (std::vector<int32_t>)
 
   dbg("this line is executed");  // [example.cpp:23 (main)] this line is executed
 
@@ -46,7 +47,7 @@ int main() {
 
 The code above produces this output ([try it yourself](https://repl.it/@sharkdp/dbg-macro-demo)):
 
-![dbg(…) macro output](https://i.imgur.com/NHEYk9A.png)
+![dbg(…) macro output](https://imgur.com/a/fR3lwR7)
 
 ## Features
 
