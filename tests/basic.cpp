@@ -280,6 +280,14 @@ TEST_CASE("type_name") {
     CHECK(type_name<float>() == "float");
   }
 
+  SECTION("C-style arrays") {
+    CHECK(type_name<int[3]>() ==
+          (std::is_same<int, int32_t>::value ? "int32_t [3]" : "int [3]"));
+    CHECK(type_name<char[1][2][3]>() == "char [1][2][3]");
+    double a[] = {5, 4, 3, 2, 1};
+    CHECK(type_name<decltype(a)>() == "double [5]");
+  }
+
   SECTION("const and volatile") {
     CHECK(type_name<const char>() == "const char");
     CHECK(type_name<volatile char>() == "volatile char");
