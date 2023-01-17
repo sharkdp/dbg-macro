@@ -224,21 +224,21 @@ inline std::string get_type_name(type_tag<std::string>) {
 
 template <typename T>
 typename std::enable_if<(std::rank<T>::value == 1), std::string>::type
-get_dim() {
+get_array_dim() {
   return "[" + std::to_string(std::extent<T>::value) + "]";
 }
 
 template <typename T>
 typename std::enable_if<(std::rank<T>::value > 1), std::string>::type
-get_dim() {
+get_array_dim() {
   return "[" + std::to_string(std::extent<T>::value) + "]" +
-         get_dim<typename std::remove_extent<T>::type>();
+         get_array_dim<typename std::remove_extent<T>::type>();
 }
 
 template <typename T>
 typename std::enable_if<(std::rank<T>::value > 0), std::string>::type
 get_type_name(type_tag<T>) {
-  return type_name<typename std::remove_all_extents<T>::type>() + " " + get_dim<T>();
+  return type_name<typename std::remove_all_extents<T>::type>() + get_array_dim<T>();
 }
 
 template <typename T, size_t N>
