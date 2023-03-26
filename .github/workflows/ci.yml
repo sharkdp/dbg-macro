@@ -91,6 +91,5 @@ jobs:
           -DCMAKE_CXX_COMPILER=${{matrix.job.compiler}} \
           -DCMAKE_CXX_STANDARD=${{matrix.job.cpp_standard}} \
           -DCMAKE_CXX_STANDARD_REQUIRED=ON
-        cmake --build build \
-        ./build/dbg_macro-cmake-demo
+        cmake --build build 
 
