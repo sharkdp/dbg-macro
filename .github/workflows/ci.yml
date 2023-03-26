@@ -77,3 +77,20 @@ jobs:
       working-directory: ${{runner.workspace}}/build
       shell: bash
       run: ./dbg_macro-tests-macro_disabled
+
+    - name: Install (to test CMake export)
+      working-directory: ${{runner.workspace}}/build
+      shell: bash
+      run: cmake --build . --target install
+
+    - name: Try to Use CMake Target
+      working-directory: ${{runner.workspace}}/tests/cmake
+      shell: bash
+      run: |
+        cmake -B build -S . \
+          -DCMAKE_CXX_COMPILER=${{matrix.job.compiler}} \
+          -DCMAKE_CXX_STANDARD=${{matrix.job.cpp_standard}} \
+          -DCMAKE_CXX_STANDARD_REQUIRED=ON
+        cmake --build build \
+        ./build/dbg_macro-cmake-demo
+
