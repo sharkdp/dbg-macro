@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.1)
 
-project(dbg_macro)
+project(dbg_macro
+  VERSION 0.5.0
+  )
 
 include(GNUInstallDirs)
 
@@ -56,3 +58,24 @@ if (DBG_MACRO_ENABLE_TESTS)
 endif()
 
 install(FILES "dbg.h" DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+install(TARGETS ${PROJECT_NAME}
+  EXPORT ${PROJECT_NAME}Targets
+  INCLUDES DESTINATION include
+  )
+install(EXPORT ${PROJECT_NAME}Targets
+  FILE ${PROJECT_NAME}Targets.cmake
+  DESTINATION lib/cmake/${PROJECT_NAME}
+  )
+
+include(CMakePackageConfigHelpers)
+configure_package_config_file(Config.cmake.in
+  "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+  INSTALL_DESTINATION lib/cmake/${PROJECT_NAME}
+  )
+write_basic_package_version_file("${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
+  COMPATIBILITY AnyNewerVersion)
+install(FILES
+  "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
+  DESTINATION lib/cmake/${PROJECT_NAME}
+  )

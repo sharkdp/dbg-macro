@@ -1,0 +1,12 @@
+@PACKAGE_INIT@
+
+# leave early if we have already found fire
+if (@PROJECT_NAME@_FOUND)
+  return()
+endif()
+
+message(STATUS "@PROJECT_NAME@ @PROJECT_VERSION@ found")
+
+include("${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@Targets.cmake")
+
+check_required_components(@PROJECT_NAME@)
