@@ -84,7 +84,7 @@ jobs:
       run: sudo cmake --build . --target install
 
     - name: Try to Use CMake Target
-      working-directory: ${{runner.workspace}}/tests/cmake
+      working-directory: ${{runner.workspace}}/dbg-macro/tests/cmake
       shell: bash
       run: |
         cmake -B build -S . \
