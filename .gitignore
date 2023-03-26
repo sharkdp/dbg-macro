@@ -1,1 +1,4 @@
 /build
+/tests/cmake/build
+# local install for checking CMake target files
+/install
