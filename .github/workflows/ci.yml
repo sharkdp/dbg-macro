@@ -81,7 +81,7 @@ jobs:
     - name: Install (to test CMake export)
       working-directory: ${{runner.workspace}}/build
       shell: bash
-      run: cmake --build . --target install
+      run: sudo cmake --build . --target install
 
     - name: Try to Use CMake Target
       working-directory: ${{runner.workspace}}/tests/cmake
