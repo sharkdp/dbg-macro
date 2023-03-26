@@ -79,11 +79,13 @@ jobs:
       run: ./dbg_macro-tests-macro_disabled
 
     - name: Install (to test CMake export)
+      if: runner.os != 'Windows'
       working-directory: ${{runner.workspace}}/build
       shell: bash
       run: sudo cmake --build . --target install
 
     - name: Try to Use CMake Target
+      if: runner.os != 'Windows'
       working-directory: ${{runner.workspace}}/dbg-macro/tests/cmake
       shell: bash
       run: |
