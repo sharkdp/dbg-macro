@@ -1,12 +1,15 @@
 @PACKAGE_INIT@
 
-# leave early if we have already found fire
+# leave early if we have already found it
 if (@PROJECT_NAME@_FOUND)
   return()
 endif()
 
+# alert user of project version
 message(STATUS "@PROJECT_NAME@ @PROJECT_VERSION@ found")
 
+# include the targets from this project
 include("${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@Targets.cmake")
 
+# make sure the targets the user requested exist
 check_required_components(@PROJECT_NAME@)
