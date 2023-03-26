@@ -68,6 +68,18 @@ to `/usr/include` or to clone the repository and symlink `dbg.h` to `/usr/includ
 git clone https://github.com/sharkdp/dbg-macro
 sudo ln -s $(readlink -f dbg-macro/dbg.h) /usr/include/dbg.h
 ```
+A slightly safer method is to run the tests to make sure `dbg-macro` works within your environment
+and install it with the CMake packaging.
+``` bash
+git clone https://github.com/sharkdp/dbg-macro
+# default cmake install is /usr/local
+#   can choose a different install location with CMAKE_PREFIX_PATH
+cmake -B build -S .
+cmake --build build
+cmake --build build --target test
+sudo cmake --build build --target install
+```
+
 If you don't want to make untracked changes to your filesystem, check below if there is a package for
 your operating system or package manager.
 
@@ -86,6 +98,10 @@ vcpkg install dbg-macro
 ```
 
 ### With cmake
+There are two ways to use `dbg-macro` from CMake. The first option downloads
+a copy of the header for each project that wishes to use it. This is an easy
+way to get started but may not be helpful if you wish to have your tools 
+version-frozen or your users in a limited (e.g. containerized) environment.
 
 `CMakeLists.txt`
 ```cmake
@@ -104,6 +120,25 @@ add_executable(${PROJECT_NAME} main.cpp) # your source files goes here
 target_link_libraries(${PROJECT_NAME} PRIVATE dbg_macro) # make dbg.h available
 ```
 
+The other way to obtain the `dbg-macro` from CMake requires you to install
+`dbg-macro` into your environment using the CMake installation above.
+Then it will be available to any CMake projects within that environment.
+
+`CMakeLists.txt`
+```cmake
+cmake_minimum_required(VERSION 3.11) # Not sure of minimum cmake
+project(app) # name of executable
+
+set(CMAKE_CXX_STANDARD 17)
+
+find_package(dbg_macro REQUIRED)
+
+add_executable(${PROJECT_NAME} main.cpp) # your source files goes here
+target_link_libraries(${PROJECT_NAME} PRIVATE dbg_macro) # make dbg.h available
+```
+
+Both of these CMake options provide the include path of the single header
+to the source files `dbg_macro` is linked to.
 `main.cpp`
 ```cpp
 #include <dbg.h>
