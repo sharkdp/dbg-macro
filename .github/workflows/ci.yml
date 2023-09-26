@@ -9,14 +9,14 @@ jobs:
       matrix:
         job:
           # Linux
-          - { os: ubuntu-20.04, compiler: "g++",     cpp_standard: "11", build_type: "Debug"          }
-          - { os: ubuntu-20.04, compiler: "g++",     cpp_standard: "14", build_type: "Debug"          }
-          - { os: ubuntu-20.04, compiler: "g++",     cpp_standard: "17", build_type: "Debug"          }
-          - { os: ubuntu-20.04, compiler: "g++",     cpp_standard: "17", build_type: "RelWithDebInfo" }
-          - { os: ubuntu-20.04, compiler: "clang++", cpp_standard: "11", build_type: "Debug"          }
-          - { os: ubuntu-20.04, compiler: "clang++", cpp_standard: "14", build_type: "Debug"          }
-          - { os: ubuntu-20.04, compiler: "clang++", cpp_standard: "17", build_type: "Debug"          }
-          - { os: ubuntu-20.04, compiler: "clang++", cpp_standard: "17", build_type: "RelWithDebInfo" }
+          - { os: ubuntu-22.04, compiler: "g++",     cpp_standard: "11", build_type: "Debug"          }
+          - { os: ubuntu-22.04, compiler: "g++",     cpp_standard: "14", build_type: "Debug"          }
+          - { os: ubuntu-22.04, compiler: "g++",     cpp_standard: "17", build_type: "Debug"          }
+          - { os: ubuntu-22.04, compiler: "g++",     cpp_standard: "17", build_type: "RelWithDebInfo" }
+          - { os: ubuntu-22.04, compiler: "clang++", cpp_standard: "11", build_type: "Debug"          }
+          - { os: ubuntu-22.04, compiler: "clang++", cpp_standard: "14", build_type: "Debug"          }
+          - { os: ubuntu-22.04, compiler: "clang++", cpp_standard: "17", build_type: "Debug"          }
+          - { os: ubuntu-22.04, compiler: "clang++", cpp_standard: "17", build_type: "RelWithDebInfo" }
           # MacOS
           - { os: macos-latest, compiler: "clang++", cpp_standard: "17", build_type: "Debug"          }
           # Windows
