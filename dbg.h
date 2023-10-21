@@ -625,7 +625,7 @@ inline bool pretty_print(std::ostream& stream, const time&) {
   const auto us =
       duration_cast<microseconds>(now.time_since_epoch()).count() % 1000000;
   const auto hms = system_clock::to_time_t(now);
-#if _MSC_VER >= 1600
+#if defined(_MSC_VER) && _MSC_VER >= 1600
   struct tm t;
   localtime_s(&t, &hms);
   const std::tm* tm = &t;
