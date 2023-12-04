@@ -847,8 +847,12 @@ class DebugOutput {
   // Helper alias to avoid obscure type `const char* const*` in signature.
   using expr_t = const char*;
 
-  DebugOutput(const char* filepath, int line, const char* function_name)
-      : m_use_colorized_output(isColorizedOutputEnabled()) {
+  DebugOutput(std::ostream& os,
+              bool colorized_output,
+              const char* filepath,
+              int line,
+              const char* function_name)
+      : m_use_colorized_output(colorized_output), stream(os) {
     std::string path = filepath;
     const std::size_t path_length = path.length();
     if (path_length > MAX_PATH_LENGTH) {
@@ -890,7 +894,7 @@ class DebugOutput {
       output << " (" << ansi(ANSI_TYPE) << *type << ansi(ANSI_RESET) << ")";
     }
     output << std::endl;
-    std::cerr << output.str();
+    stream << output.str();
 
     return std::forward<T>(value);
   }
@@ -913,6 +917,7 @@ class DebugOutput {
   }
 
   const bool m_use_colorized_output;
+  std::ostream& stream;
 
   std::string m_location;
 
@@ -996,10 +1001,12 @@ auto identity(T&&, U&&... u) -> last_t<U...> {
 
 #define DBG_TYPE_NAME(x) dbg::type_name<decltype(x)>()
 
-#define dbg(...)                                    \
-  dbg::DebugOutput(__FILE__, __LINE__, __func__)    \
-      .print({DBG_MAP(DBG_STRINGIFY, __VA_ARGS__)}, \
+#define dbg_to(stream, colorized_output, ...)                              \
+  dbg::DebugOutput(stream, colorized_output, __FILE__, __LINE__, __func__) \
+      .print({DBG_MAP(DBG_STRINGIFY, __VA_ARGS__)},                        \
              {DBG_MAP(DBG_TYPE_NAME, __VA_ARGS__)}, __VA_ARGS__)
+
+#define dbg(...) dbg_to(std::cerr, dbg::isColorizedOutputEnabled(), __VA_ARGS__)
 #else
 #define dbg(...) dbg::identity(__VA_ARGS__)
 #endif  // DBG_MACRO_DISABLE
