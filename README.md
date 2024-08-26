@@ -124,8 +124,7 @@ int main() {
 
 ### Multiple arguments
 
-You can pass multiple arguments to the `dbg(…)` macro. The output of
-`dbg(x, y, z)` is same as `dbg(x); dbg(y); dbg(z);`:
+You can pass multiple arguments to the `dbg(…)` macro. This will output all expressions on a single line.
 ``` c++
 dbg(42, "hello world", false);
 ```
@@ -134,6 +133,8 @@ Note that you have to wrap "unprotected commas" in parentheses:
 ```c++
 dbg("a vector:", (std::vector<int>{2, 3, 4}));
 ```
+
+If you want to output expressions each on its own line write `dbg(x); dbg(y); dbg(z);` instead of `dbg(x, y, z)`.
 
 ### Hexadecimal, octal and binary format
 

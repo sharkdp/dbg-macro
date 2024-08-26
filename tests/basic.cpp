@@ -67,22 +67,47 @@ TEST_CASE("side effects") {
 }
 
 TEST_CASE("multiple arguments") {
-  SECTION("output format") {
-    // The output of dbg(x, y) should be same as dbg(x); dbg(y).
+#ifndef DBG_MACRO_DISABLE
+  SECTION("outputs each argument") {
+    // The output of dbg(x, y, z) should print all arguments.
     std::stringstream ss;
     const auto orig_buf = std::cerr.rdbuf(ss.rdbuf());
-    // Put multiple statements in the same line to get exactly same output.
-    // clang-format off
-    dbg(42); dbg("test"); dbg(42, "test");
-    // clang-format on
+    int aaa = 111, bbb = 222, ccc = 333;
+    dbg(aaa, bbb, ccc);
     std::cerr.rdbuf(orig_buf);
 
-    std::string lines[4];
-    for (int i = 0; i < 4; i++) {
+    std::string line;
+    std::getline(ss, line);
+
+    auto pos = line.find("aaa");
+    CHECK(pos != std::string::npos);
+    pos = line.find("111", pos);
+    CHECK(pos != std::string::npos);
+    pos = line.find("bbb", pos);
+    CHECK(pos != std::string::npos);
+    pos = line.find("222", pos);
+    CHECK(pos != std::string::npos);
+    pos = line.find("ccc", pos);
+    CHECK(pos != std::string::npos);
+    pos = line.find("333", pos);
+    CHECK(pos != std::string::npos);
+  }
+#endif  // DBG_MACRO_DISABLE
+
+  SECTION("output single line") {
+    // The output of dbg(x, y) should fit on one line.
+    std::stringstream ss;
+    const auto orig_buf = std::cerr.rdbuf(ss.rdbuf());
+    dbg(42, "test");
+    std::cerr.rdbuf(orig_buf);
+
+    std::string lines[2];
+    for (int i = 0; i < 2; i++) {
       std::getline(ss, lines[i]);
     }
-    CHECK(lines[0] == lines[2]);  // output for 42
-    CHECK(lines[1] == lines[3]);  // output for "test"
+
+    CHECK(lines[1] == "");
+    CHECK(ss.eof());
   }
 
   SECTION("expression") {
