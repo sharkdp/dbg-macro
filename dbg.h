@@ -870,18 +870,20 @@ class DebugOutput {
           << "The number of arguments mismatch, please check unprotected comma"
           << ansi(ANSI_RESET) << std::endl;
     }
-    return print_impl(exprs.begin(), types.begin(), std::forward<T>(values)...);
+    return print_impl_loop(true, exprs.begin(), types.begin(), std::forward<T>(values)...);
   }
 
  private:
   template <typename T>
-  T&& print_impl(const expr_t* expr, const std::string* type, T&& value) {
+  T&& print_impl(bool opens_line, bool close_line, const expr_t* expr, const std::string* type, T&& value) {
     const T& ref = value;
     std::stringstream stream_value;
     const bool print_expr_and_type = pretty_print(stream_value, ref);
 
     std::stringstream output;
-    output << m_location;
+    if (opens_line) {
+      output << m_location;
+    }
     if (print_expr_and_type) {
       output << ansi(ANSI_EXPRESSION) << *expr << ansi(ANSI_RESET) << " = ";
     }
@@ -889,19 +891,29 @@ class DebugOutput {
     if (print_expr_and_type) {
       output << " (" << ansi(ANSI_TYPE) << *type << ansi(ANSI_RESET) << ")";
     }
-    output << std::endl;
-    std::cerr << output.str();
+    if (close_line) {
+      output << std::endl;
+    } else {
+      output << ", ";
+    }
+    std::cerr << output.str() << std::flush;
 
     return std::forward<T>(value);
   }
 
+  template <typename T>
+  T&& print_impl_loop(bool opens_line, const expr_t* expr, const std::string* type, T&& value) {
+    return print_impl(opens_line, true, expr, type, std::forward<T>(value));
+  }
+
   template <typename T, typename... U>
-  auto print_impl(const expr_t* exprs,
+  auto print_impl_loop(bool opens_line,
+                  const expr_t* exprs,
                   const std::string* types,
                   T&& value,
                   U&&... rest) -> last_t<T, U...> {
-    print_impl(exprs, types, std::forward<T>(value));
-    return print_impl(exprs + 1, types + 1, std::forward<U>(rest)...);
+    print_impl(opens_line, false, exprs, types, std::forward<T>(value));
+    return print_impl_loop(false, exprs + 1, types + 1, std::forward<U>(rest)...);
   }
 
   const char* ansi(const char* code) const {
