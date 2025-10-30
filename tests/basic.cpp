@@ -239,6 +239,22 @@ TEST_CASE("pretty_print") {
     CHECK(pretty_print(dummy_variant) == "{42}");
   }
 #endif
+
+#if DBG_MACRO_CXX_STANDARD >= 20
+  SECTION("std::ranges::transform_view") {
+    const auto sqr = std::views::transform([](auto x) { return x * x; });
+    auto endless_view = std::views::iota(0) | sqr;
+    CHECK(pretty_print(endless_view) == "{0, 1, 4, 9, 16, 25, 36, 49, 64, 81, ...}");
+    auto sized_view = std::views::iota(0, 100) | sqr;
+    CHECK(pretty_print(sized_view) == "{0, 1, 4, 9, 16, 25, 36, 49, 64, 81, ... size:100}");
+  }
+
+  SECTION("std::ranges::filter_view") {
+    const auto odd = std::views::filter([](auto x) { return x & 1; });
+    auto endless_view = std::views::iota(0) | odd;
+    CHECK(pretty_print(endless_view) == "{1, 3, 5, 7, 9, 11, 13, 15, 17, 19, ...}");
+  }
+#endif
 }
 
 struct user_defined_type {
