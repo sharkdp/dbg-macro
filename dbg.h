@@ -888,9 +888,11 @@ class DebugOutput {
       output << ansi(ANSI_EXPRESSION) << *expr << ansi(ANSI_RESET) << " = ";
     }
     output << ansi(ANSI_VALUE) << stream_value.str() << ansi(ANSI_RESET);
+    #ifndef DBG_MACRO_NO_TYPES
     if (print_expr_and_type) {
       output << " (" << ansi(ANSI_TYPE) << *type << ansi(ANSI_RESET) << ")";
     }
+    #endif
     if (close_line) {
       output << std::endl;
     } else {
