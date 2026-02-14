@@ -58,12 +58,18 @@ License (MIT):
 #include <unistd.h>
 #endif
 
-#if __cplusplus >= 201703L
+#if __cplusplus >= 202002L
+#define DBG_MACRO_CXX_STANDARD 20 
+#elif __cplusplus >= 201703L
 #define DBG_MACRO_CXX_STANDARD 17
 #elif __cplusplus >= 201402L
 #define DBG_MACRO_CXX_STANDARD 14
 #else
 #define DBG_MACRO_CXX_STANDARD 11
+#endif
+
+#if DBG_MACRO_CXX_STANDARD >= 20
+#include <ranges>
 #endif
 
 #if DBG_MACRO_CXX_STANDARD >= 17
@@ -322,8 +328,13 @@ using is_detected = typename detail_detector::
 namespace detail {
 
 namespace {
+#if DBG_MACRO_CXX_STANDARD < 20
 using std::begin;
 using std::end;
+#else
+using std::ranges::begin;
+using std::ranges::end;
+#endif
 #if DBG_MACRO_CXX_STANDARD < 17
 template <typename T>
 constexpr auto size(const T& c) -> decltype(c.size()) {
@@ -333,8 +344,10 @@ template <typename T, std::size_t N>
 constexpr std::size_t size(const T (&)[N]) {
   return N;
 }
-#else
+#elif DBG_MACRO_CXX_STANDARD < 20
 using std::size;
+#else
+using std::ranges::size;
 #endif
 }  // namespace
 
@@ -380,11 +393,22 @@ template <typename T>
 using detect_size_t = decltype(detail::size(std::declval<T>()));
 
 template <typename T>
+struct is_view {
+  static constexpr bool value =
+#if DBG_MACRO_CXX_STANDARD < 20
+      false;
+#else
+      std::ranges::view<remove_cvref_t<T>>;
+#endif
+};
+
+template <typename T>
 struct is_container {
   static constexpr bool value =
       is_detected<detect_begin_t, T>::value &&
       is_detected<detect_end_t, T>::value &&
       is_detected<detect_size_t, T>::value &&
+      !is_view<T>::value &&
       !std::is_same<std::string, remove_cvref_t<T>>::value;
 };
 
@@ -428,6 +452,7 @@ template <typename T>
 inline typename std::enable_if<
     !detail::is_container<const T&>::value &&
         !detail::is_container_adapter<const T&>::value &&
+        !detail::is_view<T>::value &&
         !std::is_enum<T>::value,
     bool>::type
 pretty_print(std::ostream& stream, const T& value);
@@ -521,6 +546,7 @@ template <typename T>
 inline typename std::enable_if<
     !detail::is_container<const T&>::value &&
         !detail::is_container_adapter<const T&>::value &&
+        !detail::is_view<T>::value &&
         !std::is_enum<T>::value,
     bool>::type
 pretty_print(std::ostream& stream, const T& value) {
@@ -765,6 +791,33 @@ inline bool pretty_print(std::ostream& stream,
   std::visit([&stream](auto&& arg) { pretty_print(stream, arg); }, value);
   stream << "}";
 
+  return true;
+}
+
+#endif
+
+#if DBG_MACRO_CXX_STANDARD >= 20
+
+inline bool pretty_print(std::ostream& stream, std::ranges::view auto value) {
+  stream << "{";
+  const size_t n = 10;
+  size_t i = 0;
+
+  for (auto&& ele : value) {
+    if (i != 0) {
+      stream << ", ";
+    }
+    if (i++ == n) break;
+    pretty_print(stream, ele);
+  }
+  if (i > n) {
+    stream << "...";
+    if constexpr (std::ranges::sized_range<decltype(value)>) {
+      stream << " size:" << detail::size(value);
+    }
+  }
+
+  stream << "}";
   return true;
 }
 
