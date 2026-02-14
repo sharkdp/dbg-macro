@@ -254,6 +254,11 @@ TEST_CASE("pretty_print") {
     auto endless_view = std::views::iota(0) | odd;
     CHECK(pretty_print(endless_view) == "{1, 3, 5, 7, 9, 11, 13, 15, 17, 19, ...}");
   }
+
+  SECTION("empty view") {
+    auto empty_view = std::views::empty<int>;
+    CHECK(pretty_print(empty_view) == "{}");
+  }
 #endif
 }
 
