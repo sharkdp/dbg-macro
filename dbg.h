@@ -394,7 +394,7 @@ using detect_size_t = decltype(detail::size(std::declval<T>()));
 
 template <typename T>
 struct is_view {
-  static constexpr bool value = 
+  static constexpr bool value =
 #if DBG_MACRO_CXX_STANDARD < 20
       false;
 #else
