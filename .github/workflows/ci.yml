@@ -9,71 +9,60 @@ jobs:
       matrix:
         job:
           # Linux
-          - { os: ubuntu-22.04, compiler: "g++",     cpp_standard: "11", build_type: "Debug"          }
-          - { os: ubuntu-22.04, compiler: "g++",     cpp_standard: "14", build_type: "Debug"          }
-          - { os: ubuntu-22.04, compiler: "g++",     cpp_standard: "17", build_type: "Debug"          }
-          - { os: ubuntu-22.04, compiler: "g++",     cpp_standard: "17", build_type: "RelWithDebInfo" }
-          - { os: ubuntu-22.04, compiler: "clang++", cpp_standard: "11", build_type: "Debug"          }
-          - { os: ubuntu-22.04, compiler: "clang++", cpp_standard: "14", build_type: "Debug"          }
-          - { os: ubuntu-22.04, compiler: "clang++", cpp_standard: "17", build_type: "Debug"          }
-          - { os: ubuntu-22.04, compiler: "clang++", cpp_standard: "17", build_type: "RelWithDebInfo" }
+          - { os: ubuntu-24.04, compiler: "g++",     cpp_standard: "11", build_type: "Debug"          }
+          - { os: ubuntu-24.04, compiler: "g++",     cpp_standard: "14", build_type: "Debug"          }
+          - { os: ubuntu-24.04, compiler: "g++",     cpp_standard: "17", build_type: "Debug"          }
+          - { os: ubuntu-24.04, compiler: "g++",     cpp_standard: "17", build_type: "RelWithDebInfo" }
+          - { os: ubuntu-24.04, compiler: "clang++", cpp_standard: "11", build_type: "Debug"          }
+          - { os: ubuntu-24.04, compiler: "clang++", cpp_standard: "14", build_type: "Debug"          }
+          - { os: ubuntu-24.04, compiler: "clang++", cpp_standard: "17", build_type: "Debug"          }
+          - { os: ubuntu-24.04, compiler: "clang++", cpp_standard: "17", build_type: "RelWithDebInfo" }
           # MacOS
-          - { os: macos-latest, compiler: "clang++", cpp_standard: "17", build_type: "Debug"          }
+          - { os: macos-15,     compiler: "clang++", cpp_standard: "17", build_type: "Debug"          }
           # Windows
           # Note: we do not test for C++11 as MSVC does not support a C++11 version switch, see:
           # https://devblogs.microsoft.com/cppblog/msvc-now-correctly-reports-__cplusplus/
-          - { os: windows-2019, compiler: "cl",      cpp_standard: "14", build_type: "Debug"          }
-          - { os: windows-2019, compiler: "cl",      cpp_standard: "17", build_type: "Debug"          }
-          - { os: windows-2019, compiler: "cl",      cpp_standard: "17", build_type: "RelWithDebInfo" }
+          - { os: windows-2022, compiler: "cl",      cpp_standard: "14", build_type: "Debug"          }
+          - { os: windows-2022, compiler: "cl",      cpp_standard: "17", build_type: "Debug"          }
+          - { os: windows-2022, compiler: "cl",      cpp_standard: "17", build_type: "RelWithDebInfo" }
 
     runs-on: ${{ matrix.job.os }}
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
       with:
         submodules: true
 
-    - name: Create Build Environment
-      run: cmake -E make_directory ${{runner.workspace}}/build
-
     - name: Configure CMake
       shell: bash
-      working-directory: ${{runner.workspace}}/build
       run: |
-        cmake \
-          $GITHUB_WORKSPACE \
+        cmake -B build -S $GITHUB_WORKSPACE \
           -DCMAKE_CXX_COMPILER=${{matrix.job.compiler}} \
           -DCMAKE_CXX_STANDARD=${{matrix.job.cpp_standard}} \
           -DCMAKE_CXX_STANDARD_REQUIRED=ON \
           -DCMAKE_BUILD_TYPE=${{matrix.job.build_type}}
 
     - name: Build
-      working-directory: ${{runner.workspace}}/build
       shell: bash
-      run: cmake --build . --config ${{matrix.job.build_type}}
+      run: cmake --build build --config ${{matrix.job.build_type}}
 
     - name: "Copy executables"
       if: runner.os == 'Windows'
-      working-directory: ${{runner.workspace}}/build
       shell: bash
-      run: cp ${{matrix.job.build_type}}/*.exe .
+      run: cp build/${{matrix.job.build_type}}/*.exe build/
 
     - name: Run example
-      working-directory: ${{runner.workspace}}/build
       shell: bash
-      run: ./dbg_macro-example
+      run: ./build/dbg_macro-example
 
     - name: Run demo
-      working-directory: ${{runner.workspace}}/build
       shell: bash
-      run: ./dbg_macro-demo
+      run: ./build/dbg_macro-demo
 
     - name: Run tests
-      working-directory: ${{runner.workspace}}/build
       shell: bash
-      run: ./dbg_macro-tests
+      run: ./build/dbg_macro-tests
 
     - name: Run tests (macro disabled)
-      working-directory: ${{runner.workspace}}/build
       shell: bash
-      run: ./dbg_macro-tests-macro_disabled
+      run: ./build/dbg_macro-tests-macro_disabled
